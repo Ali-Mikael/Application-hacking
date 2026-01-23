@@ -1,7 +1,6 @@
-# Break & Unbreak
-
 # Task X) Summary
 > Read/watch/listen and summarize     
+> <https://terokarvinen.com/application-hacking/>     
 
 ## X.1) Broken access control
 > OWASP Top 10: <https://owasp.org/Top10/2021/A01_2021-Broken_Access_Control/index.html> (link added 21.1.2026)     
@@ -92,8 +91,8 @@
 - Plagiarisation     
 
 
-# Specs for the upcoming tasks
-**HOST**
+# My facilities
+**HOST a.k.a the provider**
 - Lenovo ThinkPad L490
   - CPU: Intel i3-8145U (4) @ 3.900GHz 
   - GPU: Intel WhiskeyLake-U GT2 UHD Graphics 620
@@ -104,7 +103,7 @@
 - Running the VM: KVM/QEMU Standard PC (Q35 + ICH9, 2009) (pc-q35-8.2)
 - Managed by: Virtual Machine Manager v.4.1.0, powered by libvirt.
 
-**VM**
+**VM a.k.a the attacker**
 - OS: Kali GNU/Linux Rolling x86_64
 - Kernel: Linux 6.18.5+kali-amd64
 - Total Memory: 4GB
@@ -165,7 +164,7 @@ Only problem is, `foo` is not the one we're looking for...
 My next attempt was trying to crack it from the command line, and I found a super useful website explaining how to use `curl` for a POST request.     
 > Link: <https://reqbin.com/req/c-g5d14cew/curl-post-example>     
 
-The command I went with looks like this:
+The command I used:
 ```bash
 $ curl -X POST http://127.0.0.1:5000 -H "Content-Type: application/x-www-form-urlencoded" -d "pin=' OR 1=1--"
 ```
@@ -175,13 +174,13 @@ But we're still only getting a `foo` response from the server...
 ## Try #4:
 I was still destined to perform the injection attack, so I kept trying to change the input field type. (Which I later found out doesn't matter as long as you're able to input a string..)     
 
-I once again went back to the web page, opened up the developer tool and changed the `type` to `= nvarchar` (this is the part where a simple `=string` is enough). I then typed in the injection:
+I went back to the web page, opened up the developer tool and changed the `type` to `= nvarchar` (this is the part where a simple `=string` is enough). I then typed in the injection:
 ```sql
 ' OR 1=1--
 ```
 <img width="703" height="558" alt="Screenshot from 2026-01-23 16-11-45" src="https://github.com/user-attachments/assets/938a4ad5-2811-4201-8a95-f2b150388aa2" />     
 
-Still only giving us `foo`.....     
+Still only giving us `foo`...     
 
 I also tried another variation of the attack like so:
 ```sql
