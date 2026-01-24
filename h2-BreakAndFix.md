@@ -195,8 +195,7 @@ I also tried another variation of the attack like so:
 Because we know the query, we can simply add an apostrophe before the 1, and leave the comment character out, as the app code will close the quote for us.     
 But still nothin....      
 - <img width="703" height="558" alt="Screenshot from 2026-01-23 16-16-20" src="https://github.com/user-attachments/assets/730a4ce5-7cd2-4258-b3bd-e76b6cfc829b" />     
-Before accepting defeat, I skimmed through what the tip section is saying (linked in the assigment):     
-- <img width="797" height="940" alt="Screenshot from 2026-01-23 16-23-57" src="https://github.com/user-attachments/assets/7d64f5f3-fab2-481d-86cf-97c35359e593" />     
+Before accepting defeat, I skimmed through what the tip section is saying (linked in the assignment).     
 Apparently i'm very close, but something is not clicking for me right now, so i'll come back to this!     
 
 ----
@@ -225,7 +224,7 @@ This results in us being the new owners of the `pin` and corresponding `password
 # B) 010 Fixing The Source
 > Now that we know how to break it, let's fix it!     
 
-My gameplan here was to remove the hint from `index.html` page, and then check the source code for validating the input type **before** _**initiating the query**_.
+My gameplan here was to remove the hint from the `index.html` page, and **validate the user input _before_ initiating the query**.
 
 ## staff-only.py (source code)
 ```python
@@ -421,7 +420,7 @@ $ source env/bin/activate
 
 
 Now we can move into the `/logtin` directory and update the database:
-```
+```bash
 $ cd logtin && ./manage.py makemigrations; ./manage.py migrate
 ```
 
