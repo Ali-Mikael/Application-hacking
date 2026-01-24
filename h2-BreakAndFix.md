@@ -3,7 +3,7 @@
 > <https://terokarvinen.com/application-hacking/>     
 
 ## X.1) Broken access control
-> OWASP Top 10: <https://owasp.org/Top10/2021/A01_2021-Broken_Access_Control/index.html> (link added 21.1.2026)     
+> [OWASP Top 10](<https://owasp.org/Top10/2021/A01_2021-Broken_Access_Control/index.html>) (link added 21.1.2026)     
 > Note: I have abbreviated _Access Control_ to _AC_ in some instances!     
 
 **A01:2021 - Broken Access Control**     
@@ -26,7 +26,7 @@
 
 
 ## X.2) Fuzzing
-> Find Hidden Web Directories - Fuzz URLs with ffuf <https://terokarvinen.com/2023/fuzz-urls-find-hidden-directories/> (link added 21.1.2026)
+> [Find Hidden Web Directories - Fuzz URLs with ffuf](<https://terokarvinen.com/2023/fuzz-urls-find-hidden-directories/>) (link added 21.1.2026)     
 
 **Background:**
 - Web servers often have non-linked secret directories
@@ -35,7 +35,7 @@
 
 **Get fuzzing**
 - Easy to install: `$ sudo apt-get install ffuf`
-- The tool is installed, still need a wordlist/dictionary. For example: <https://github.com/danielmiessler/SecLists>
+- The tool is installed, still need a wordlist/dictionary. For [example](<https://github.com/danielmiessler/SecLists>)
 - Then specify wordlist and target and get going:
   - `$ ./ffuf -w common.txt -u http://<target>/FUZZ`
   - `-w` flag for **wordlist**
@@ -45,7 +45,7 @@
 
 
 ## X.3) AC vulns and privilege escalation
-> <https://portswigger.net/web-security/access-control> (link added: 21.1.2026)
+> [PortSwigger-AC](<https://portswigger.net/web-security/access-control>) (link added: 21.1.2026)
 
 **What is Access Control?**
 - Put simply, it answers two questions, **who?** && **what?**
@@ -66,8 +66,7 @@
 
 
 ## X.4) Writing reports
-> A guide for writing technical reports     
-> <https://terokarvinen.com/2006/raportin-kirjoittaminen-4/> (link added: 21.1.2026)     
+> [A guide for writing technical reports](<https://terokarvinen.com/2006/raportin-kirjoittaminen-4/>) (link added: 21.1.2026)     
 
 **The meat and bone:**
 - **Repeatability & Clarity**
@@ -113,11 +112,10 @@
 
 
   
-# A) Break-in and enter
+# A) 010 Break-in & Enter
 > Objective:     
-> Break into 010-staff-only     
-> Reveal admin password. (It contains the string "SUPERADMIN")        
-> <https://terokarvinen.com/hack-n-fix/> (link added: 21.1.2026)      
+> [Break into 010-staff-only](<https://terokarvinen.com/hack-n-fix/>) (link added: 21.1.2026)      
+> Reveal admin password. (It contains the string "SUPERADMIN")             
 
 ## Setting up
 It all began with the command:
@@ -188,6 +186,8 @@ I went back to the web page, opened up the developer tool and changed the `type`
 
 Still only giving us `foo`...     
 
+-----
+
 I also tried another variation of the attack like so:
 ```sql
 ' OR '1=1
@@ -206,7 +206,8 @@ After a well deserved break I came back to the computer feeling fresh, and _fina
 As we also learned from reading the tips, you could use the `LIMIT` operator, but that would require some manual labour, and I want to get straight to the sauce, so here we go:     
 
 ## Try #5
-I searched online on how to filter the query response, and was going through some SQL syntax. I tried a few things, and finally found something that worked:
+I searched online on how to filter the query response, and was also going through some basic SQL syntax.    
+I ended up trying a few things, and finally found something that worked:
 ```sql
 ' UNION SELECT pin || '=' || password FROM pins WHERE password LIKE "%ADMIN%"--
 ```
@@ -216,15 +217,15 @@ I searched online on how to filter the query response, and was going through som
 The `UNION` operator allows us to create a new query, where we then join together the pin and password by using -> `|| '=' ||`.     
 We then **filter** the result using a simple regex with the `LIKE` operator.     
 This results in us being the new owners of the `pin` and corresponding `password` for the `admin` user.   
-(Note: The regex only works because we know the admin password contains the word ADMIN)
+(Note: The regex only works because we know the admin password contains the word ADMIN)      
 
 
 
 
-# B) Fixing from source
+# B) 010 Fixing The Source
 > Now that we know how to break it, let's fix it!     
 
-My gameplan here is to remove the hint from `index.html` page, and then check the source code on how we can enforce the input type for the query.
+My gameplan here was to remove the hint from `index.html` page, and then check the source code for validating the input type **before** _**initiating the query**_.
 
 ## staff-only.py (source code)
 ```python
@@ -303,28 +304,22 @@ def hello():
                         error = "You think you slick huh? Only numbers allowed here!"
                         return render_template('index.html', password=password, pin=pin, error=error)
 
-        if "pin" in request.form:
-                pin = str(request.form['pin'])
-        else:
-                pin = "0"
+## Note: some code redacted from the hello() function
 
-        sql = "SELECT password FROM pins WHERE pin='"+pin+"';"
-        row = ""
-        with app.app_context():
-                res=db.session.execute(text(sql))
-                db.session.commit()
-                row = res.fetchone()
-        if row is None:
-                password="(not found)"
-        else:
-                password=row[0]
-        return render_template('index.html', password=password, pin=pin)
+        return render_template('index.html', password=password, pin=pin) # I also removed the sql query, so that it doesn't return it to the client.
 ```
+
+
 ### Explanation:    
 I had to go through some trial and error to get the code to work.      
 For example, my first problem was that it was immediately returning with an error, so I had to handle it by adding `if request.method == 'POST':`, and then under it we validate the input.     
-If the input is something else than an integer, the app will give the `error` variable a value and exit the function. Otherwise it will continue normally.    
-And because we're using the `index.html` as a`template`, we're able to add some conditional logic to the page. (you'll see in just a bit how it works!)
+
+
+The validation includes a very simple type conversion. If the input is something else than an integer, the app will give the `error` variable a value and exit the function. Otherwise it will continue normally.    
+
+
+And because the app is using a `template` for the `index.html` page, we're able to add some conditional logic (so that we don't breake the UX).      
+You'll see how it works in just a bitMy!
 ```html
 {% if error %}
 <p style="color: red;"><b>{{ error }}</b></p>
@@ -337,25 +332,182 @@ And because we're using the `index.html` as a`template`, we're able to add some 
 ### The initDB() function
 ```python
 def initDb():
-
         runSql("CREATE TABLE pins (id SERIAL PRIMARY KEY, pin INT(17), password VARCHAR(20));")
 ```
-Here we enforce the `pin` data type by changing the `column` to only hold `integers`!     
+Here we enforce the `pin` data type by changing the `column` to only hold `integers`.     
 Pretty straightforward!     
 We could also make the DB store hashed values of the passwords, but I think it's outside the scope for the time being.    
 
 
-Let's see it in action then shall we! ->
+**Let's see it in action then shall we! ->**
 
 ## staff-only.py v.2.0
 What happens when we try to inject it now?      
 We change the `type` to = `string` using the developer tool, and type the injection into the field:
 - <img width="1090" height="374" alt="Screenshot from 2026-01-24 15-38-16" src="https://github.com/user-attachments/assets/e283891d-51ff-404b-9768-48e701a22a71" />       
 
-Only integers allowed
+Only integers allowed!
 - <img width="1090" height="374" alt="Screenshot from 2026-01-24 15-40-07" src="https://github.com/user-attachments/assets/cc538589-ec32-4946-959a-a5b35e0529e4" />
 
 
+
+
+# C) dirfuzt-1
+> <https://terokarvinen.com/2023/fuzz-urls-find-hidden-directories/>
+
+## Prerequisites
+First, I downloaded dictionary to use in the attack. (the tool itself is pre-installed on `Kali`)
+```bash
+$ wget https://raw.githubusercontent.com/danielmiessler/SecLists/master/Discovery/Web-Content/common.txt
+```
+Then we downloaded the target:
+```bash
+$ wget https://terokarvinen.com/2023/fuzz-urls-find-hidden-directories/dirfuzt-1
+```
+I still had to make it executable:
+```bash
+$ chmod +x dirfuzt-1
+```
+
+Then we can run the program and paste the link in a browser:
+- <img width="1268" height="309" alt="Screenshot from 2026-01-24 21-10-03" src="https://github.com/user-attachments/assets/05d66d4f-38d8-42be-94c1-a47787791c7d" />     
+
+There's nothing here, so we go back to the command line and draw out the big gun.    
+
+## Executing the attack
+
+On the CLI `$ ffuf --help` is there to help. Besides explaining the params, it also provides an example of how to use the tool:
+- <img width="1089" height="119" alt="Screenshot from 2026-01-24 21-13-45" src="https://github.com/user-attachments/assets/eb0534ac-9209-40cc-a204-1a47da18c012" />     
+
+
+The command we then use looks like this:
+```bash
+$ ffuf -w common.txt -u http://127.0.0.2:8000/FUZZ -mc all -fs 42 -c -v
+```
+It went through the whole wordlist, so the output is pretty heavy to read.     
+The colored output really is a blessing here, as it helps us spot the result we want.
+- <img width="687" height="663" alt="Screenshot from 2026-01-24 21-20-00" src="https://github.com/user-attachments/assets/50959544-bce2-4535-9d73-59401f5e0e54" />     
+
+
+
+Keeping the future in mind, I still wanted to try something.     
+We can see that most of the responses have a size of `154` (I ran the command again without the `verbose flag` = `-v`)
+- <img width="936" height="717" alt="Screenshot from 2026-01-24 21-30-08" src="https://github.com/user-attachments/assets/02f20715-ba8f-476d-83fa-a744db8c091f" />      
+
+If we now change the filter size from `42` to `154` and run the command again. We get a more pleasant output:
+- <img width="982" height="707" alt="Screenshot from 2026-01-24 21-31-00" src="https://github.com/user-attachments/assets/df46de7a-f1fb-4ba8-9ae3-8e7c7e15179e" />
+
+
+The only thing left for us to do, is to claim the treasure!     
+We simply append `.git/` into the URL:
+- <img width="556" height="284" alt="Screenshot from 2026-01-24 21-20-24" src="https://github.com/user-attachments/assets/1bc7a27a-6363-4f93-a694-87e0b0ff1c42" />      
+
+
+# D) 020 Break-in & Enter
+> Objective: [Break into 020-your-eyes-only](<https://terokarvinen.com/hack-n-fix/>
+
+## Setting up
+We already have the target environment installed. We just need to create a virtual environment for it to run in and install requirements.
+```bash
+$ virtualenv --system-site-packages env/ -p python3
+```
+And then activate it:
+```bash
+$ source env/bin/activate
+```
+
+We already have django installed:
+- <img width="982" height="280" alt="Screenshot from 2026-01-24 21-51-28" src="https://github.com/user-attachments/assets/47a7d560-0fef-459c-b20c-1c3ed485f1f6" />
+
+
+Now we can move into the `/logtin` directory are update the database:
+```
+$ cd logtin && ./manage.py makemigrations; ./manage.py migrate
+```
+
+Apparently there was nothing to update:
+- <img width="982" height="214" alt="Screenshot from 2026-01-24 21-55-25" src="https://github.com/user-attachments/assets/62f4234f-cf6e-4d22-b94b-270cc33d756b" />
+
+
+Everything seems to be ready to go. Let's get cracking shall we!     
+
+
+We start the server and move to the browser:
+```
+$ ./manage.py runserver
+```
+<img width="1314" height="856" alt="Screenshot from 2026-01-24 21-58-48" src="https://github.com/user-attachments/assets/5fac4f18-8dad-41ee-8eff-33d471131d6c" />
+
+
+
+## Getting to the money
+> Your hacking goal: Access adminstrative console. The page contains text "you've found the secret page".      
+> Exploit the vulnerability through the web interface, without looking at the source code.     
+> Once you've hacked it, fix the vulnerability in code.     
+> Happy hacking!     
+
+
+On the web page, there's an option to create an account, so I thought might as well, it might lead us somewhere.      
+I created an account and was taken to the `my-data` page, where my data had already so kindly been fille out for me:
+- <img width="1200" height="533" alt="Screenshot from 2026-01-24 22-17-55" src="https://github.com/user-attachments/assets/a9b47acd-c625-458a-acae-718f22ed08f7" />     
+
+
+From this point, if we try to access the `/admin-dashboard`, we're taken to a `403 forbidden page`:
+- <img width="735" height="249" alt="Screenshot from 2026-01-24 22-27-29" src="https://github.com/user-attachments/assets/c2cbd7e6-f049-4a11-9d21-07d8f14e52f0" />     
+
+
+I logged out and went back to the login section to find more information.      
+I inspected the HTML page, and found something interesting:
+- <img width="908" height="105" alt="Screenshot from 2026-01-24 22-44-02" src="https://github.com/user-attachments/assets/73b7b17c-b0d2-4f2a-b245-06a01bfae93d" />
+
+
+A quick search online tells us that a CSRF (Cross-Site Request Forgery) token is a unique, unpredicable secret, that is used to validate a client request. If the correct CSRF token is not provided, the server will refuse to perform the requested action.     
+
+
+
+As the token was just sitting there, I immediately pasted it to my notes.     
+I then tried to access the admin-dashboard with the token by tampering with the URL, but to no use!     
+I also very quickly realised, every time you reload the page, the token changes.      
+
+-----
+
+At this point I was kind of stuck, as neither my SQL or URL injection attacks were going through. I did a whole bunch of stuff, trying to manipulate the input fields and URLs from the frontpage as well as being logged in etc.. But nothing seemed to advance me anywhere, so I decided to look at the tip_level_1 for the lab:
+- <img width="784" height="327" alt="Screenshot from 2026-01-24 23-11-41" src="https://github.com/user-attachments/assets/76335c09-b70d-4dd8-8e64-5322feffd00c" />     
+
+I was actually thinking about using `ffuf` before, but we already knew that the admin page is called `admin-dashboard`, so I thought it's unecessary. But oh well, I tried it and look what I found:
+- <img width="900" height="172" alt="Screenshot from 2026-01-24 23-22-25" src="https://github.com/user-attachments/assets/5faf73da-d3ba-4b89-abe5-4603193a842f" />     
+
+
+I then tried to access it from the front page, but it just takes me to the login page. So I logged in to my user I created before (I knew it was gonna come in handy 😂) and tried to access the `admin-console` this time. And wouldn't you know:
+- <img width="1240" height="491" alt="Screenshot from 2026-01-24 23-28-13" src="https://github.com/user-attachments/assets/9efb157d-8445-4c72-9cf6-c18e2e518618" />     
+
+
+Get that money. 💰    
+Thank you for the tip Tero! 🙏
+
+
+
+
+# E) 020 Fixing The Source
+> Now it's time to fix what we broke. Let's get straight to it!
+
+
+In the challenge directory we have a whole bunch of files. `35 directories` and `193 files` to be exact!     
+I started kind of manually going through it trying to find something of interest.     
+One file lead to another --> which lead to another directory --> which lead to another file etc..     
+
+
+I wasn't really going anywhere, so I took this `Django 101` I found [online](<https://www.w3schools.com/django/django_intro.php>) as a helper:
+- <img width="1053" height="246" alt="Screenshot from 2026-01-25 00-01-02" src="https://github.com/user-attachments/assets/8f3dc6c8-0e97-4856-829c-05104195e222" />     
+
+
+But then again, it's already past 12 and I don't feel like doing an all-nighter :/     
+Unfortunately I don't have time to continue right now, so i'm going to give in this assigment and go to sleep!      
+
+<img width="1094" height="282" alt="Screenshot from 2026-01-25 00-04-44" src="https://github.com/user-attachments/assets/419f1849-dbd8-4b64-a22d-2dd2b2530812" />      
+
+# I'm going to come back and finish what I started at a later time! 
+# Stay tuned for part 2! 🙏
 
 
 
