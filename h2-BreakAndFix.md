@@ -224,9 +224,9 @@ This results in us being the new owners of the `pin` and corresponding `password
 # B) Fixing from source
 > Now that we know how to break it, let's fix it!     
 
-My ==gameplan== here is to remove the hint from `index.html` page, and then check the source code on how we can enforce the input type for the query.
+My gameplan here is to remove the hint from `index.html` page, and then check the source code on how we can enforce the input type for the query.
 
-## staff-only.py
+## staff-only.py (source code)
 ```python
 #!/usr/bin/python3
 # Copyright 2018-2024 Tero Karvinen http://TeroKarvinen.com
@@ -320,6 +320,19 @@ def hello():
                 password=row[0]
         return render_template('index.html', password=password, pin=pin)
 ```
+### Explanation:    
+I had to go through some trial and error to get the code to work.      
+For example, my first problem was that it was immediately returning with an error, so I had to handle it by adding `if request.method == 'POST':`, and then under it we validate the input.     
+If the input is something else than an integer, the app will give the `error` variable a value and exit the function. Otherwise it will continue normally.    
+And because we're using the `index.html` as a`template`, we're able to add some conditional logic to the page. (you'll see in just a bit how it works!)
+```html
+{% if error %}
+<p style="color: red;"><b>{{ error }}</b></p>
+{% else %}
+<p>Your password is <b>{{ password }}</b></p>
+{% endif %}
+```
+-----
 
 ### The initDB() function
 ```python
@@ -327,15 +340,21 @@ def initDb():
 
         runSql("CREATE TABLE pins (id SERIAL PRIMARY KEY, pin INT(17), password VARCHAR(20));")
 ```
+Here we enforce the `pin` data type by changing the `column` to only hold `integers`!     
+Pretty straightforward!     
+We could also make the DB store hashed values of the passwords, but I think it's outside the scope for the time being.    
 
 
-## Execution
-Let's try to put our pin code into the field:     
-<img width="1090" height="374" alt="Screenshot from 2026-01-24 15-40-07" src="https://github.com/user-attachments/assets/cc538589-ec32-4946-959a-a5b35e0529e4" />     
-But as soon as we type something else:       
-<img width="1090" height="374" alt="Screenshot from 2026-01-24 15-38-16" src="https://github.com/user-attachments/assets/e283891d-51ff-404b-9768-48e701a22a71" />      
+Let's see it in action then shall we! ->
 
-## Explanation
+## staff-only.py v.2.0
+What happens when we try to inject it now?      
+We change the `type` to = `string` using the developer tool, and type the injection into the field:
+- <img width="1090" height="374" alt="Screenshot from 2026-01-24 15-38-16" src="https://github.com/user-attachments/assets/e283891d-51ff-404b-9768-48e701a22a71" />       
+
+Only integers allowed
+- <img width="1090" height="374" alt="Screenshot from 2026-01-24 15-40-07" src="https://github.com/user-attachments/assets/cc538589-ec32-4946-959a-a5b35e0529e4" />
+
 
 
 
