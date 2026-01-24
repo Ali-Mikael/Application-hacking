@@ -170,7 +170,7 @@ The command I used:
 ```bash
 $ curl -X POST http://127.0.0.1:5000 -H "Content-Type: application/x-www-form-urlencoded" -d "pin=' OR 1=1--"
 ```
-But we're still only getting a `foo` response from the server...
+But we're still only getting a `foo` response from the server (check the last line of the screenshot)...
 - <img width="604" height="151" alt="Screenshot from 2026-01-23 15-22-58" src="https://github.com/user-attachments/assets/771836c2-7892-4d13-8653-4624103c7e12" />          
 
 ----
@@ -319,8 +319,8 @@ The validation includes a very simple type conversion. If the input is something
 
 
 And because the app is using a `template` for the `index.html` page, we're able to add some conditional logic (so that we don't breake the UX).      
-You'll see how it works in just a bitMy!
-```html
+You'll see how it works in just a bit!
+```
 {% if error %}
 <p style="color: red;"><b>{{ error }}</b></p>
 {% else %}
@@ -356,7 +356,7 @@ Only integers allowed!
 > <https://terokarvinen.com/2023/fuzz-urls-find-hidden-directories/>
 
 ## Prerequisites
-First, I downloaded dictionary to use in the attack. (the tool itself is pre-installed on `Kali`)
+First, I downloaded a dictionary to use in the attack. (the tool itself is pre-installed on `Kali`)
 ```bash
 $ wget https://raw.githubusercontent.com/danielmiessler/SecLists/master/Discovery/Web-Content/common.txt
 ```
@@ -385,7 +385,7 @@ The command we then use looks like this:
 $ ffuf -w common.txt -u http://127.0.0.2:8000/FUZZ -mc all -fs 42 -c -v
 ```
 It went through the whole wordlist, so the output is pretty heavy to read.     
-The colored output really is a blessing here, as it helps us spot the result we want.
+The **colored output** really is a blessing here, as it helps us **spot the result we want.**
 - <img width="687" height="663" alt="Screenshot from 2026-01-24 21-20-00" src="https://github.com/user-attachments/assets/50959544-bce2-4535-9d73-59401f5e0e54" />     
 
 
@@ -404,10 +404,10 @@ We simply append `.git/` into the URL:
 
 
 # D) 020 Break-in & Enter
-> Objective: [Break into 020-your-eyes-only](<https://terokarvinen.com/hack-n-fix/>
+> Objective: [Break into 020-your-eyes-only](<https://terokarvinen.com/hack-n-fix/>)
 
 ## Setting up
-We already have the target environment installed. We just need to create a virtual environment for it to run in and install requirements.
+We already have the target installed. We just need to create a virtual environment for it to run in, and install requirements.
 ```bash
 $ virtualenv --system-site-packages env/ -p python3
 ```
@@ -416,11 +416,11 @@ And then activate it:
 $ source env/bin/activate
 ```
 
-We already have django installed:
+**Django is already present:**
 - <img width="982" height="280" alt="Screenshot from 2026-01-24 21-51-28" src="https://github.com/user-attachments/assets/47a7d560-0fef-459c-b20c-1c3ed485f1f6" />
 
 
-Now we can move into the `/logtin` directory are update the database:
+Now we can move into the `/logtin` directory and update the database:
 ```
 $ cd logtin && ./manage.py makemigrations; ./manage.py migrate
 ```
@@ -431,9 +431,10 @@ Apparently there was nothing to update:
 
 Everything seems to be ready to go. Let's get cracking shall we!     
 
+-----
 
 We start the server and move to the browser:
-```
+```bash
 $ ./manage.py runserver
 ```
 <img width="1314" height="856" alt="Screenshot from 2026-01-24 21-58-48" src="https://github.com/user-attachments/assets/5fac4f18-8dad-41ee-8eff-33d471131d6c" />
@@ -441,14 +442,15 @@ $ ./manage.py runserver
 
 
 ## Getting to the money
-> Your hacking goal: Access adminstrative console. The page contains text "you've found the secret page".      
+> OBJECTIVE:     
+> Access adminstrative console. The page contains text "you've found the secret page".      
 > Exploit the vulnerability through the web interface, without looking at the source code.     
 > Once you've hacked it, fix the vulnerability in code.     
 > Happy hacking!     
 
 
 On the web page, there's an option to create an account, so I thought might as well, it might lead us somewhere.      
-I created an account and was taken to the `my-data` page, where my data had already so kindly been fille out for me:
+I created an account and was taken to the `my-data` page:
 - <img width="1200" height="533" alt="Screenshot from 2026-01-24 22-17-55" src="https://github.com/user-attachments/assets/a9b47acd-c625-458a-acae-718f22ed08f7" />     
 
 
@@ -461,8 +463,7 @@ I inspected the HTML page, and found something interesting:
 - <img width="908" height="105" alt="Screenshot from 2026-01-24 22-44-02" src="https://github.com/user-attachments/assets/73b7b17c-b0d2-4f2a-b245-06a01bfae93d" />
 
 
-A quick search online tells us that a CSRF (Cross-Site Request Forgery) token is a unique, unpredicable secret, that is used to validate a client request. If the correct CSRF token is not provided, the server will refuse to perform the requested action.     
-
+A quick search online tells us that a **CSRF (Cross-Site Request Forgery) token** is a unique, unpredicable secret, that is used to validate a client request. If the correct CSRF token is not provided, the server will refuse to perform the requested action.     
 
 
 As the token was just sitting there, I immediately pasted it to my notes.     
@@ -471,14 +472,15 @@ I also very quickly realised, every time you reload the page, the token changes.
 
 -----
 
-At this point I was kind of stuck, as neither my SQL or URL injection attacks were going through. I did a whole bunch of stuff, trying to manipulate the input fields and URLs from the frontpage as well as being logged in etc.. But nothing seemed to advance me anywhere, so I decided to look at the tip_level_1 for the lab:
+At this point I was kind of stuck, as neither my SQL or URL injection attacks were going through. I did a whole bunch of stuff, trying to manipulate the input fields and URLs from the frontpage as well as being logged in etc.. But nothing seemed to advance me anywhere, so I decided to look at the **"level1"-tip** for the lab:
 - <img width="784" height="327" alt="Screenshot from 2026-01-24 23-11-41" src="https://github.com/user-attachments/assets/76335c09-b70d-4dd8-8e64-5322feffd00c" />     
 
 I was actually thinking about using `ffuf` before, but we already knew that the admin page is called `admin-dashboard`, so I thought it's unecessary. But oh well, I tried it and look what I found:
 - <img width="900" height="172" alt="Screenshot from 2026-01-24 23-22-25" src="https://github.com/user-attachments/assets/5faf73da-d3ba-4b89-abe5-4603193a842f" />     
 
 
-I then tried to access it from the front page, but it just takes me to the login page. So I logged in to my user I created before (I knew it was gonna come in handy 😂) and tried to access the `admin-console` this time. And wouldn't you know:
+I then tried to access the page from the front page, but it just takes me to the login page.     
+So I logged in to my user I created before (I knew it was gonna come in handy 😂) and tried to access the `admin-console` this time. And wouldn't you know:
 - <img width="1240" height="491" alt="Screenshot from 2026-01-24 23-28-13" src="https://github.com/user-attachments/assets/9efb157d-8445-4c72-9cf6-c18e2e518618" />     
 
 
