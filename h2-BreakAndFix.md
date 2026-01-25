@@ -311,10 +311,10 @@ def hello():
 
 ### Explanation:    
 I had to go through some trial and error to get the code to work.      
-For example, my first problem was that it was immediately returning with an error, so I had to handle it by adding `if request.method == 'POST':`, and then under it we validate the input.     
+For example, my first problem was that when i added the validation, it was immediately returning with an error, so I had to handle it by adding `if request.method == 'POST':`, and then under it we validate the input.     
 
 
-The validation includes a very simple type conversion. If the input is something else than an integer, the app will give the `error` variable a value and exit the function. Otherwise it will continue normally.    
+The validation includes a very simple **type conversion**. We are initialising the `error variable` as a placeholder, and if the input is _something else than an integer_, the app will populate the `error variable` and exit the function (by returning it with the template). Otherwise it will continue normally.    
 
 
 And because the app is using a `template` for the `index.html` page, we're able to add some conditional logic (so that we don't breake the UX).      
@@ -326,6 +326,7 @@ You'll see how it works in just a bit!
 <p>Your password is <b>{{ password }}</b></p>
 {% endif %}
 ```
+(Noe: this code is for some reason not rendering properly on github pages, at least for me, so if you can only see 1 line of it, check it out straight from the github repo!)
 -----
 
 ### The initDB() function
@@ -345,7 +346,7 @@ What happens when we try to inject it now?
 We change the `type` to = `string` using the developer tool, and type the injection into the field:
 - <img width="1090" height="374" alt="Screenshot from 2026-01-24 15-38-16" src="https://github.com/user-attachments/assets/e283891d-51ff-404b-9768-48e701a22a71" />       
 
-Only integers allowed!
+**Only integers allowed!**
 - <img width="1090" height="374" alt="Screenshot from 2026-01-24 15-40-07" src="https://github.com/user-attachments/assets/cc538589-ec32-4946-959a-a5b35e0529e4" />
 
 
@@ -355,7 +356,7 @@ Only integers allowed!
 > <https://terokarvinen.com/2023/fuzz-urls-find-hidden-directories/>
 
 ## Prerequisites
-First, I downloaded a dictionary to use in the attack. (the tool itself is pre-installed on `Kali`)
+First, I downloaded a wordlist to use in the attack. (the tool itself is pre-installed on `Kali`)
 ```bash
 $ wget https://raw.githubusercontent.com/danielmiessler/SecLists/master/Discovery/Web-Content/common.txt
 ```
@@ -363,7 +364,7 @@ Then we downloaded the target:
 ```bash
 $ wget https://terokarvinen.com/2023/fuzz-urls-find-hidden-directories/dirfuzt-1
 ```
-I still had to make it executable:
+Made it executable:
 ```bash
 $ chmod +x dirfuzt-1
 ```
@@ -405,8 +406,8 @@ We simply append `.git/` into the URL:
 # D) 020 Break-in & Enter
 > Objective: [Break into 020-your-eyes-only](<https://terokarvinen.com/hack-n-fix/>)
 
-## Setting up
-We already have the target installed. We just need to create a virtual environment for it to run in, and install requirements.
+
+We already have the target installed (from the previous assigment). We just need to create a virtual environment for it to run in, and install requirements.
 ```bash
 $ virtualenv --system-site-packages env/ -p python3
 ```
@@ -471,7 +472,7 @@ I also very quickly realised, every time you reload the page, the token changes.
 
 -----
 
-At this point I was kind of stuck, as neither my SQL or URL injection attacks were going through. I did a whole bunch of stuff, trying to manipulate the input fields and URLs from the frontpage as well as being logged in etc.. But nothing seemed to advance me anywhere, so I decided to look at the **"level1"-tip** for the lab:
+At this point I was kind of stuck, as neither my SQL or URL injection attacks were going through. I did a whole bunch of stuff, trying to manipulate the input fields and URLs from the frontpage, as well as being logged in etc.. But nothing seemed to advance me anywhere, so I decided to look at the **"level1"-tip** for the lab:
 - <img width="784" height="327" alt="Screenshot from 2026-01-24 23-11-41" src="https://github.com/user-attachments/assets/76335c09-b70d-4dd8-8e64-5322feffd00c" />     
 
 I was actually thinking about using `ffuf` before, but we already knew that the admin page is called `admin-dashboard`, so I thought it's unecessary. But oh well, I tried it and look what I found:
@@ -499,17 +500,64 @@ One file lead to another --> which lead to another directory --> which lead to a
 
 
 I wasn't really going anywhere, so I took this `Django 101` I found [online](<https://www.w3schools.com/django/django_intro.php>) as a helper:
-- <img width="1053" height="246" alt="Screenshot from 2026-01-25 00-01-02" src="https://github.com/user-attachments/assets/8f3dc6c8-0e97-4856-829c-05104195e222" />     
+- <img width="1053" height="246" alt="Screenshot from 2026-01-25 00-01-02" src="https://github.com/user-attachments/assets/8f3dc6c8-0e97-4856-829c-05104195e222" />
 
 
-But then again, it's already past 12 and I don't feel like doing an all-nighter :/     
-Unfortunately I don't have time to continue right now, so i'm going to give in this assigment and go to sleep!      
-
-<img width="1094" height="282" alt="Screenshot from 2026-01-25 00-04-44" src="https://github.com/user-attachments/assets/419f1849-dbd8-4b64-a22d-2dd2b2530812" />      
-
-# I'm going to come back and finish what I started at a later time! 
-# Stay tuned for part 2! 🙏
+I kept seeing `hats` everywhere while going through the files, so I had to google it:
+- <img width="709" height="309" alt="Screenshot from 2026-01-25 16-14-30" src="https://github.com/user-attachments/assets/df699ed0-206e-4a5b-bb35-a85dd26ec02e" />
 
 
+This seemed like something to pursue, so I started going through the files again, **purposefully** this time!
+- And wouldn't you know, I stumbled upon 2 interesting files immediately
+- In the `/logtin/hats` directory there were two files: `views.py` && `urls.py`
+- <img width="1068" height="731" alt="Screenshot from 2026-01-25 16-18-36" src="https://github.com/user-attachments/assets/c821d9d0-6f2a-4ccc-8289-4e5ce946f24b" />
+- These two files in conjuction with `django 101` gave me a feeling of being on the right track.     
 
+## Discovery
+The file `020-your-eyes-only/logtin/hats/views.py` was a jackpot!      
+I added some comments into the code to highlight my discovery.
+```python
+from django.views.generic import TemplateView
+from django.contrib.auth.mixins import UserPassesTestMixin
 
+class MyDataView(UserPassesTestMixin, TemplateView):
+        template_name="hats/my-data.html"
+
+        def test_func(self):
+                return self.request.user.is_authenticated # <-- For a normal user, only checks if "user.is_authenticated"
+
+class AdminDashboardView(UserPassesTestMixin, TemplateView):
+        template_name="hats/admin-show-all.html"
+
+        def test_func(self):
+                return self.request.user.is_authenticated and self.request.user.is_staff # <<--- For admin dashboard also checks if "user.is_staff"
+
+class AdminShowAllView(UserPassesTestMixin, TemplateView):
+        template_name="hats/admin-show-all.html"
+
+        def test_func(self):
+                return self.request.user.is_authenticated # <<--- The vulnerability!
+                                                          # <<-- Here only the authentication is checked, NOT if the "user.is_staff" like above.
+```
+
+## Fixing it
+Now that we found the vulnerability, it should be pretty straightforward to fix!      
+We simply add **a second check** to the **last function**.      
+```python
+def test_func(self):
+    return self.request.user.is_authenticated and self.request.user.is_staff
+```
+
+## Trying it
+We start the web server again and give it a go!
+
+```bash
+$ ./manage.py runserver
+```
+- We then navigate to the browser
+- Log in as a normal user
+- Change the URL to point to /admin-console
+- And voilà!
+- <img width="1067" height="262" alt="Screenshot from 2026-01-25 16-33-06" src="https://github.com/user-attachments/assets/973bbff3-1d7c-484e-836f-e8e0ea4934a6" />    
+
+# Problem solved, no more normal users accessing the admin dashboard!
