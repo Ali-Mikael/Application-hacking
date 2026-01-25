@@ -122,7 +122,7 @@ It all began with the command:
 ```bash
 $ mkdir terosChallenge && cd terosChallenge && wget https://terokarvinen.com/hack-n-fix/teros-challenges.zip
 ```
-This creates a directory, moves into it and downloads the necessities.     
+This creates a directory, moves into it and downloads the target.  
 We can then decompress the contents:
 ```bash
 $ unzip teros-challenges.zip
@@ -138,6 +138,9 @@ And paste the address we're given into a browser
 - <img width="578" height="378" alt="Screenshot from 2026-01-22 18-09-25" src="https://github.com/user-attachments/assets/c1f3a805-7e78-46ba-8571-274889e92e96" />     
 
 ## Walkthrough
+> TL;DR: skip straight to **try #5** for the answer!     
+
+
 By typing in the pin code found at the bottom of the page (123), we're able to recover a password
 - <img width="992" height="326" alt="Screenshot from 2026-01-22 18-50-40" src="https://github.com/user-attachments/assets/3fb716d3-3b98-48d3-a6ed-b08697fc937c" />     
 
@@ -145,7 +148,7 @@ The website is kind enough to let us know the SQL query used to recover it:
 ```sql
 SELECT password FROM pins WHERE pin='<input>';
 ```
-So I tried to inject it by typing the following attach into the input field:
+So I tried to inject it by typing the following attack into the input field:
 ```sql
 ' OR 1=1--
 ``` 
@@ -176,9 +179,9 @@ But we're still only getting a `foo` response from the server (check the last li
 ----
 
 ## Try #4:
-I was still destined to perform the injection attack, so I kept trying to change the input field type. (Which I later found out doesn't matter as long as you're able to input a string..)     
+I was still destined to perform the injection attack, so I kept trying to change the input field type. (Which I later found out doesn't matter **as long as** you're **able to input a string**..)     
 
-I went back to the web page, opened up the developer tool and changed the `type` to `= nvarchar` (this is the part where a simple `=string` is enough). I then typed in the injection:
+I went back to the web page, opened up the developer tool and changed the `type` to `= nvarchar` (this is the part where a simple `=string` is enough for example). I then typed in the injection:
 ```sql
 ' OR 1=1--
 ```
@@ -226,7 +229,7 @@ This results in us being the new owners of the `pin` and corresponding `password
 
 My gameplan here was to remove the hint from the `index.html` page, and **validate the user input _before_ initiating the query**.
 
-## staff-only.py (source code)
+### staff-only.py (source code)
 ```python
 #!/usr/bin/python3
 # Copyright 2018-2024 Tero Karvinen http://TeroKarvinen.com
