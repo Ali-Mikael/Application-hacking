@@ -43,9 +43,9 @@ Now we can type it in the program while it's none the wiser:
 
 
 # B) Hiding in plain sight
-OBJECTIVE:
+**OBJECTIVE:**
 - Make a new version of the `passtr.c` program where the password doesn't appear directly as-is in the binary.
-- Demonstrate with a test that it works.
+- Demonstrate with a test that it works.     
 
 
 The task was much harder than I anticipated (especially because i'm not familiar with the C language). It actually took me a while to get it.      
@@ -53,8 +53,8 @@ At first I tried to obfuscate a variable holding the password. The problem here 
 So my instinct said: Don't write it down in plain text anywhere.      
 
 
-This is what I came up with:
-- First transform the string into bytes, then XOR it with a non printable character like `0x1b`
+**This is what I came up with:**
+- First transform the string into bytes (represented as hex), then XOR it with a non printable character like `0x1b`
 - Add the encoded array into the program manually
 - Byte array is then decoded at runtime
 
