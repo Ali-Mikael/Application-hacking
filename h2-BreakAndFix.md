@@ -113,30 +113,28 @@
 
   
 # A) 010 Break-in & Enter
-> Objective:     
-> [Break into 010-staff-only](<https://terokarvinen.com/hack-n-fix/>) (link added: 21.1.2026)      
-> Reveal admin password. It contains the string "SUPERADMIN"             
+- Objective:
+- [Break into 010-staff-only](<https://terokarvinen.com/hack-n-fix/>) (link added: 21.1.2026)
+- Reveal admin password. It contains the string "SUPERADMIN"             
 
 ## Setting up
-It all began with the command:
+Create directory, move into it & download target:
 ```bash
 $ mkdir terosChallenge && cd terosChallenge && wget https://terokarvinen.com/hack-n-fix/teros-challenges.zip
 ```
-This creates a directory, moves into it and downloads the target.  
-We can then decompress the contents:
+Decompress the contents:
 ```bash
 $ unzip teros-challenges.zip
 ```      
- 
 Start the challenge:
 ```bash
 $ ./staff-only.py
 ```
-And paste the address we're given into a browser
+Paste the address we're given into a browser:
 - <img width="578" height="378" alt="Screenshot from 2026-01-22 18-09-25" src="https://github.com/user-attachments/assets/c1f3a805-7e78-46ba-8571-274889e92e96" />     
 
 ## Walkthrough
-> TL;DR: skip straight to **try #5** for the answer!     
+> TL;DR: skip straight to **try #4** for the answer!     
 
 
 By typing in the pin code found at the bottom of the page (123), we're able to recover a password
@@ -182,10 +180,11 @@ Apparently i'm very close, but something is not clicking for me right now, so i'
 # (Took a 40min lunch break....)
 After a well deserved break I came back to the computer feeling fresh, and _finally internalised_ the fact that the injected query is always going to be true, so it's just delivering us the _first match from the table_. -**I needed a way to filter it somehow-**      
 The tip section pushed me in the right direction, but only when I took the break was I able to internalise this. (Reminder: take breaks! 😃)      
-As we also learned from reading the tips, you could use the `LIMIT` operator, but that would require some manual labour, and I want to get straight to the sauce, so here we go:     
+As we also learned from reading the tips, you could use the `LIMIT` operator, but that would require some manual labour and I want to get straight to the sauce.
+So here we go:     
 
-## Try #5
-I searched online on how to filter the query response, and was also going through some basic SQL syntax.    
+## Try #4
+I  through some basic SQL syntax and searched online on how to filter the query response, and was also going through some basic SQL syntax.    
 I ended up trying a few things, and finally found something that worked:
 ```sql
 ' UNION SELECT pin || '=' || password FROM pins WHERE password LIKE "%ADMIN%"--
@@ -324,13 +323,12 @@ We could also make the DB store hashed values of the passwords, but I think it's
 
 **Let's see it in action then shall we! ->**
 
-## staff-only.py v.2.0
-What happens when we try to inject it now?      
-We change the `type` to = `string` using the developer tool, and type the injection into the field:
+### staff-only.py v.2.0
+What happens when we try to inject it now?
 - <img width="1090" height="374" alt="Screenshot from 2026-01-24 15-38-16" src="https://github.com/user-attachments/assets/e283891d-51ff-404b-9768-48e701a22a71" />       
 
 **Only integers allowed!**
-- <img width="1090" height="374" alt="Screenshot from 2026-01-24 15-40-07" src="https://github.com/user-attachments/assets/cc538589-ec32-4946-959a-a5b35e0529e4" />
+- <img width="1090" height="374" alt="Screenshot from 2026-01-24 15-40-07" src="https://github.com/user-attachments/assets/cc538589-ec32-4946-959a-a5b35e0529e4" />     
 
 
 
@@ -355,7 +353,7 @@ $ chmod +x dirfuzt-1
 Then we can run the program and paste the link in a browser:
 - <img width="1268" height="309" alt="Screenshot from 2026-01-24 21-10-03" src="https://github.com/user-attachments/assets/05d66d4f-38d8-42be-94c1-a47787791c7d" />     
 
-There's nothing here, so we go back to the command line and draw out the big gun.    
+There's nothing there, so we go back to the command line and draw out the big gun.    
 
 ## Executing the attack
 The attack tool `ffuf` comes pre-installed on kali, but we don't know how to use it yet. Luckily `$ ffuf --help` is there to help.      
@@ -540,14 +538,12 @@ def test_func(self):
 
 ## Trying it
 We start the web server again and give it a go!
-
-```bash
-$ ./manage.py runserver
-```
-- We then navigate to the browser
+- We navigate to the browser
 - Log in as a normal user
-- Change the URL to point to /admin-console
+- Try to access /admin-console
 - And voilà!
-- <img width="1067" height="262" alt="Screenshot from 2026-01-25 16-33-06" src="https://github.com/user-attachments/assets/973bbff3-1d7c-484e-836f-e8e0ea4934a6" />    
+- <img width="1067" height="262" alt="Screenshot from 2026-01-25 16-33-06" src="https://github.com/user-attachments/assets/973bbff3-1d7c-484e-836f-e8e0ea4934a6" />   
 
-# Problem solved, no more normal users accessing the admin dashboard!
+
+
+**Problem solved, no more normal users accessing the admin dashboard!**
