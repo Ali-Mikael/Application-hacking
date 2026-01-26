@@ -329,10 +329,12 @@ You'll see how it works in just a bit!
 <p>Your password is <b>{{ password }}</b></p>
 {% endif %}
 ```
-(Noe: this code is for some reason not rendering properly on github pages, at least for me, so if you can only see 1 line of it, check it out straight from the github repo!)
+(Note: this code is for some reason not rendering properly on github pages, at least for me, so if you can only see 1 line of it, check it out straight from the github repo!)     
+
+
 -----
 
-### The initDB() function
+### The initDb() function
 ```python
 def initDb():
         runSql("CREATE TABLE pins (id SERIAL PRIMARY KEY, pin INT(17), password VARCHAR(20));")
