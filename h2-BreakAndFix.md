@@ -113,7 +113,7 @@
 
   
 # A) 010 Break-in & Enter
-- Objective:
+Objective:
 - [Break into 010-staff-only](<https://terokarvinen.com/hack-n-fix/>) (link added: 21.1.2026)
 - Reveal admin password. It contains the string "SUPERADMIN"             
 
@@ -178,24 +178,21 @@ Apparently i'm very close, but something is not clicking for me right now, so i'
 ----
 
 # (Took a 40min lunch break....)
-After a well deserved break I came back to the computer feeling fresh, and _finally internalised_ the fact that the injected query is always going to be true, so it's just delivering us the _first match from the table_. -**I needed a way to filter it somehow-**      
-The tip section pushed me in the right direction, but only when I took the break was I able to internalise this. (Reminder: take breaks! 😃)      
-As we also learned from reading the tips, you could use the `LIMIT` operator, but that would require some manual labour and I want to get straight to the sauce.
-So here we go:     
+After a well deserved break I came back to the computer feeling fresh, and _finally internalised_ the fact that the injected query is always going to be true, so it's just delivering us the _first match from the table_.      
+-**I need a way to filter it somehow-**         
 
 ## Try #4
-I  through some basic SQL syntax and searched online on how to filter the query response, and was also going through some basic SQL syntax.    
-I ended up trying a few things, and finally found something that worked:
+I went through some basic SQL syntax, and ways to create filtered queries. After trying a few methods, I finally found something that worked:
 ```sql
 ' UNION SELECT pin || '=' || password FROM pins WHERE password LIKE "%ADMIN%"--
 ```
 <img width="1113" height="554" alt="Screenshot from 2026-01-23 23-09-19" src="https://github.com/user-attachments/assets/a61fd145-c96d-4af5-952d-5ce94d149a7f" />     
 
 ## Explanation
-The `UNION` operator allows us to create a new query, where we then join together the pin and password by using -> `|| '=' ||`.     
-We then **filter** the result using a simple regex with the `LIKE` operator.     
-This results in us being the new owners of the `pin` and corresponding `password` for the `admin` user.   
-(Note: The regex only works because we know the admin password contains the word ADMIN)      
+- The `UNION` operator allows us to create a new query, where we then join together the pin and password by using -> `|| '=' ||`.     
+- We then **filter** the result using a simple regex with the `LIKE` operator.     
+- This results in us being the new owners of the `pin` and corresponding `password` for the `admin` user.       
+( Note: This only works because we know the password contains the string "ADMIN")
 
 
 
