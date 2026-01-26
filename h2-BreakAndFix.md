@@ -115,7 +115,7 @@
 # A) 010 Break-in & Enter
 > Objective:     
 > [Break into 010-staff-only](<https://terokarvinen.com/hack-n-fix/>) (link added: 21.1.2026)      
-> Reveal admin password. (It contains the string "SUPERADMIN")             
+> Reveal admin password. It contains the string "SUPERADMIN"             
 
 ## Setting up
 It all began with the command:
@@ -126,11 +126,9 @@ This creates a directory, moves into it and downloads the target.
 We can then decompress the contents:
 ```bash
 $ unzip teros-challenges.zip
-```    
-We get a new directory containing the challenge:
-- <img width="303" height="170" alt="Screenshot from 2026-01-22 18-03-00" src="https://github.com/user-attachments/assets/73b62eb8-1848-40c1-af31-983217299204" />     
-
-We then start the challenge by running:
+```      
+ 
+Start the challenge:
 ```bash
 $ ./staff-only.py
 ```
@@ -175,36 +173,15 @@ $ curl -X POST http://127.0.0.1:5000 -H "Content-Type: application/x-www-form-ur
 ```
 But we're still only getting a `foo` response from the server (check the last line of the screenshot)...
 - <img width="604" height="151" alt="Screenshot from 2026-01-23 15-22-58" src="https://github.com/user-attachments/assets/771836c2-7892-4d13-8653-4624103c7e12" />          
-
-----
-
-## Try #4:
-I was still destined to perform the injection attack, so I kept trying to change the input field type. (Which I later found out doesn't matter **as long as** you're **able to input a string**..)     
-
-I went back to the web page, opened up the developer tool and changed the `type` to `= nvarchar` (this is the part where a simple `=string` is enough for example). I then typed in the injection:
-```sql
-' OR 1=1--
-```
-<img width="703" height="558" alt="Screenshot from 2026-01-23 16-11-45" src="https://github.com/user-attachments/assets/938a4ad5-2811-4201-8a95-f2b150388aa2" />     
-
-Still only giving us `foo`...     
-
------
-
-I also tried another variation of the attack like so:
-```sql
-' OR '1=1
-```
-Because we know the query, we can simply add an apostrophe before the 1, and leave the comment character out, as the app code will close the quote for us.     
-But still nothin....      
-- <img width="703" height="558" alt="Screenshot from 2026-01-23 16-16-20" src="https://github.com/user-attachments/assets/730a4ce5-7cd2-4258-b3bd-e76b6cfc829b" />     
+  
 Before accepting defeat, I skimmed through what the tip section is saying (linked in the assignment).     
 Apparently i'm very close, but something is not clicking for me right now, so i'll come back to this!     
 
 ----
 
 # (Took a 40min lunch break....)
-After a well deserved break I came back to the computer feeling fresh, and _finally internalised_ the fact that the injected query is always going to be true, so it's just delivering us the _first match from the table_. I needed a way to filter it somehow. The tip section pushed me in the right direction, but only when I took the break was I able to internalise this. (Reminder: take breaks! 😃)      
+After a well deserved break I came back to the computer feeling fresh, and _finally internalised_ the fact that the injected query is always going to be true, so it's just delivering us the _first match from the table_. -**I needed a way to filter it somehow-**      
+The tip section pushed me in the right direction, but only when I took the break was I able to internalise this. (Reminder: take breaks! 😃)      
 As we also learned from reading the tips, you could use the `LIMIT` operator, but that would require some manual labour, and I want to get straight to the sauce, so here we go:     
 
 ## Try #5
@@ -329,7 +306,8 @@ You'll see how it works in just a bit!
 <p>Your password is <b>{{ password }}</b></p>
 {% endif %}
 ```
-(Note: this code is for some reason not rendering properly on github pages, at least for me, so if you can only see 1 line of it, check it out straight from the github repo!)     
+
+(Note: this code is for some reason not rendering properly on **github pages**, at least for me, so if you can only see 1 line of it, check it out straight from the github [repo](<https://github.com/Ali-Mikael/Application-hacking/edit/main/h2-BreakAndFix.md>)!)     
 
 
 -----
@@ -361,7 +339,7 @@ We change the `type` to = `string` using the developer tool, and type the inject
 > <https://terokarvinen.com/2023/fuzz-urls-find-hidden-directories/>
 
 ## Prerequisites
-First, I downloaded a wordlist to use in the attack. (the tool itself is pre-installed on `Kali`)
+First, I downloaded a wordlist to use in the attack.      
 ```bash
 $ wget https://raw.githubusercontent.com/danielmiessler/SecLists/master/Discovery/Web-Content/common.txt
 ```
@@ -380,8 +358,8 @@ Then we can run the program and paste the link in a browser:
 There's nothing here, so we go back to the command line and draw out the big gun.    
 
 ## Executing the attack
-
-On the CLI `$ ffuf --help` is there to help. Besides explaining the params, it also provides an example of how to use the tool:
+The attack tool `ffuf` comes pre-installed on kali, but we don't know how to use it yet. Luckily `$ ffuf --help` is there to help.      
+Besides explaining the different parameters, it also provides an example of how to use the tool:
 - <img width="1089" height="119" alt="Screenshot from 2026-01-24 21-13-45" src="https://github.com/user-attachments/assets/eb0534ac-9209-40cc-a204-1a47da18c012" />     
 
 
@@ -389,13 +367,21 @@ The command we then use looks like this:
 ```bash
 $ ffuf -w common.txt -u http://127.0.0.2:8000/FUZZ -mc all -fs 42 -c -v
 ```
+Flags explained:
+- `-w` = Wordlist to use
+- `-u` = Target URL
+- `-mc` = Match HTTP status codes (we're matching all)
+- `-fs` = filter response size (we're using 42 bytes)
+- `-c` = For a colorized output
+- `-v` = For verbose output    
+
+
 It went through the whole wordlist, so the output is pretty heavy to read.     
-The **colored output** really is a blessing here, as it helps us **spot the result we want.**
+The **colorized output** really is a blessing here, as it helps us **spot the result we want.**
 - <img width="687" height="663" alt="Screenshot from 2026-01-24 21-20-00" src="https://github.com/user-attachments/assets/50959544-bce2-4535-9d73-59401f5e0e54" />     
 
 
-
-Keeping the future in mind, I still wanted to try something.     
+  
 We can see that most of the responses have a size of `154` (I ran the command again without the `verbose flag` = `-v`)
 - <img width="936" height="717" alt="Screenshot from 2026-01-24 21-30-08" src="https://github.com/user-attachments/assets/02f20715-ba8f-476d-83fa-a744db8c091f" />      
 
@@ -447,11 +433,10 @@ $ ./manage.py runserver
 
 
 ## Getting to the money
-> OBJECTIVE:     
-> Access adminstrative console. The page contains text "you've found the secret page".      
-> Exploit the vulnerability through the web interface, without looking at the source code.     
-> Once you've hacked it, fix the vulnerability in code.     
-> Happy hacking!     
+OBJECTIVE:
+- Access adminstrative console. The page contains text "you've found the secret page".
+- Exploit the vulnerability through the web interface, without looking at the source code.
+- Once you've hacked it, fix the vulnerability in code.          
 
 
 On the web page, there's an option to create an account, so I thought might as well, it might lead us somewhere.      
@@ -480,11 +465,11 @@ I also very quickly realised, every time you reload the page, the token changes.
 At this point I was kind of stuck, as neither my SQL or URL injection attacks were going through. I did a whole bunch of stuff, trying to manipulate the input fields and URLs from the frontpage, as well as being logged in etc.. But nothing seemed to advance me anywhere, so I decided to look at the **"level1"-tip** for the lab:
 - <img width="784" height="327" alt="Screenshot from 2026-01-24 23-11-41" src="https://github.com/user-attachments/assets/76335c09-b70d-4dd8-8e64-5322feffd00c" />     
 
-I was actually thinking about using `ffuf` before, but we already knew that the admin page is called `admin-dashboard`, so I thought it's unecessary. But oh well, I tried it and look what I found:
+I naturally pulled out the web fuzzer and wouldn't you know:
 - <img width="900" height="172" alt="Screenshot from 2026-01-24 23-22-25" src="https://github.com/user-attachments/assets/5faf73da-d3ba-4b89-abe5-4603193a842f" />     
 
 
-I then tried to access the page from the front page, but it just takes me to the login page.     
+I then tried to access it from the front page, but it just takes me to the login page.     
 So I logged in to my user I created before (I knew it was gonna come in handy 😂) and tried to access the `admin-console` this time. And wouldn't you know:
 - <img width="1240" height="491" alt="Screenshot from 2026-01-24 23-28-13" src="https://github.com/user-attachments/assets/9efb157d-8445-4c72-9cf6-c18e2e518618" />     
 
@@ -514,7 +499,7 @@ I kept seeing `hats` everywhere while going through the files, so I had to googl
 
 This seemed like something to pursue, so I started going through the files again, **purposefully** this time!
 - And wouldn't you know, I stumbled upon 2 interesting files immediately
-- In the `/logtin/hats` directory there were two files: `views.py` && `urls.py`
+- In the `/logtin/hats` directory there were two files of interest: `views.py` && `urls.py`
 - <img width="1068" height="731" alt="Screenshot from 2026-01-25 16-18-36" src="https://github.com/user-attachments/assets/c821d9d0-6f2a-4ccc-8289-4e5ce946f24b" />
 - These two files in conjuction with `django 101` gave me a feeling of being on the right track.     
 
@@ -529,7 +514,7 @@ class MyDataView(UserPassesTestMixin, TemplateView):
         template_name="hats/my-data.html"
 
         def test_func(self):
-                return self.request.user.is_authenticated # <-- For a normal user, only checks if "user.is_authenticated"
+                return self.request.user.is_authenticated # <-- For "normal" activity, only checks if "user.is_authenticated"
 
 class AdminDashboardView(UserPassesTestMixin, TemplateView):
         template_name="hats/admin-show-all.html"
