@@ -4,25 +4,25 @@
 - Run `passtr`
 - Find the password
 
-Download the target:
-```zsh
+**Download the target:**
+```bash
 $ wget https://terokarvinen.com/loota/yctjx7/ezbin-challenges.zip
 ```
 
-Decompress:
-```zsh
+**Decompress:**
+```bash
 $ unzip ezbin-challenges.zip
 ```
 
-Move into the challenge directory uncovered from the zip file:
-```zsh
+**Move into the challenge directory uncovered from the zip file:**
+```bash
 $ cd challenges
 ```
 
-We have two programs:
+**We have two programs:**
 - <img width="580" height="106" alt="Screenshot from 2026-01-26 14-34-31" src="https://github.com/user-attachments/assets/c1ce9b66-bd07-47ec-b5fd-39af99fc2b12" />
 
-We run the other one:
+**We run the other one:**
 - <img width="657" height="295" alt="Screenshot from 2026-01-26 14-36-02" src="https://github.com/user-attachments/assets/ddac4d9d-8346-4fb7-a58d-eceb89a219a3" />
 
 
@@ -31,10 +31,10 @@ We don't know the password, so we quit the program and inspect it using `strings
 ```zsh
 $ strings passtr
 ```
-**Q:** What is strings?
-**A:** A utility used to print the sequences of printable characters in files (**especially binaries!**. Normal text files you'd usually just `cat` away!).        
+**Q:** What is `strings`?      
+**A:** A utility used to print the sequences of printable characters in files, particularly useful for binaries!              
 
-And just like that we retrieve the psswd!
+And just like that we're able to retrieve the password!
 - <img width="778" height="494" alt="Screenshot from 2026-01-26 14-38-43" src="https://github.com/user-attachments/assets/618fd177-22cf-4f0b-ae44-2914b7327d57" />
 
 Now we can type it in the program while it's none the wiser:
