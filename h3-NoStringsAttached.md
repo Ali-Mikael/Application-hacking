@@ -28,7 +28,7 @@ $ cd challenges
 
 
 We don't know the password, so we quit the program and inspect it using `strings`:
-```zsh
+```bash
 $ strings passtr
 ```
 **Q:** What is `strings`?      
@@ -156,7 +156,7 @@ int main() {
 ```
 
 Compile the program and run it:
-```zsh
+```bash
 $ gcc passtr.c -o passtr2
 ```
 <img width="784" height="142" alt="Screenshot from 2026-01-26 18-24-17" src="https://github.com/user-attachments/assets/cdc0a2ac-2740-423b-a3d1-f2b87fbd615c" />     
@@ -179,7 +179,7 @@ Objective is same as before, put this time a bit more challenging apparently.
 
 
 I started off with a simple
-```
+```bash
 $ strings packd
 ```
 <img width="449" height="712" alt="image" src="https://github.com/user-attachments/assets/7b8ad732-376d-4cbe-8b55-76c48849bec0" />
@@ -187,7 +187,7 @@ $ strings packd
 
 This time the password is not clearly visible, and deducing from the flag, the contents are properly scrambled.
 
-I started by gathering stuff that look like it could take us somewhere:
+I started by gathering stuff from the ouput that look like it could take us somewhere, and found the following human readable strings:
 ```
 $Info: This file is packed with the UPX executable packer http://upx.sf.net $
 $Id: UPX 4.21 Copyright (C) 1996-2023 the UPX Team. All Rights Reserved. $
@@ -200,23 +200,23 @@ GLOBAL_OFFSET_TABL
 
 .gnu.prop
 ```
-We can atleast deduce that the program was compressed by the [UPX packer](<https://upx.github.io/>)....
+We can atleast deduce that the program was compressed by the [UPX packer](<https://upx.github.io/>)
 
-I then did some digging, and found a CLI tool for UPX. I inspected the man pages and `upx --help` for help.
+I then did some digging and found a CLI tool for `UPX`. I inspected the man pages and `upx --help` for help.
 
 
 I found a decompress option, so I decided to use that one:
-```
+```bash
 $ upx -d packd
 ```
-And wouldn't you know:
+**And wouldn't you know:**
 
 <img width="784" height="521" alt="Screenshot from 2026-01-27 21-32-52" src="https://github.com/user-attachments/assets/09a32072-cf56-4247-ac0c-6a18310c1a97" />
 
 <img width="777" height="134" alt="Screenshot from 2026-01-27 21-33-23" src="https://github.com/user-attachments/assets/b0c8a5bd-6cc6-45f5-8998-f8c69379b3af" />
 
 
-Basically we just had to uncompress the program in order to read it cleanly. 
+Basically we just had to uncompress the program in order to read it cleanly! 
 
 
 
