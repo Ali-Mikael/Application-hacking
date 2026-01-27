@@ -49,7 +49,8 @@ Now we can type it in the program while it's none the wiser:
 
 
 The task was much harder than I anticipated (especially because i'm not familiar with the C language). It actually took me a while to get it.      
-At first I tried to obfuscate a variable holding the password. The problem here is that you have to initialise a variable with the password, and it will show up when using `strings`.     
+At first I tried to obfuscate a variable holding the password. The problem here is that you have to initialise a variable with the password, and it will show up when using `strings`.
+
 So my instinct said: Don't write it down in plain text anywhere.      
 
 
@@ -58,23 +59,25 @@ So my instinct said: Don't write it down in plain text anywhere.
 - Add the encoded array into the program manually
 - Byte array is then **decoded at runtime**
 
-**Q:** What is XOR?     
-**A:**
+
+What is XOR?
 - **XOR = eXclusive OR**
 - One of the foundational **logic gates** used in computing
-- Good to know:
+- **Nice to know:**
   - Modern computers use _transistors_ to form what are known as `logic gates`
-  - They take input and produce output
-  - The operation is based upon boolean algebra
+  - They take input and produce output, the operation which takes place is based upon boolean algebra
   - Fun fact: A modern CPU consists of billions upon billions of transistors
 - A logic gate commonly takes 2 (allthough can take more) inputs, and produces an **output**
-  - Except the `NOT gate` a.k.a the inverter which only takes one input and produces one output
-- The `XOR gate` takes two values, 1 and/or 0
-  - If both values are the same, the output is **FALSE**, a.k.a `0`
-  - If the two values are different, the output is **TRUE**, a.k.a `1`
+  - Except the `NOT gate` a.k.a _the inverter_ which only takes one input and produces one output
+- **To better understand the XOR gate:**
+  - It's derived from the `OR gate`, which will _always output a `1`_ if either `input1` **OR** `input2` or both are `1`, otherwise it will output a `0`
+- The `XOR gate` works in the same fashion, but in contrast is `exclusive`, meaning that **only** either one can be a one to get an output of 1.
+- Simplified:
+  - If both values are the same, it will be **FALSE**, a.k.a the output is `0`
+  - When exactly **a single input** is `1`, it will be **TRUE**, a.k.a the output `1`
 
 The XOR truth table:
-| V1 | V2 | Output |
+| input1 | input2 | Output |
 | -- | -- | ------ |
 | 0  |  0 |  0     |
 | 1  |  0 |  1     |
@@ -82,7 +85,7 @@ The XOR truth table:
 | 1  |  1 |  0     | 
 
 If you'd like to know more about XOR and how it's applied, I found this [interesting article](<https://accu.org/journals/overload/20/109/lewin_1915/>).      
-Here is more on [logic gates](<https://learnabout-electronics.org/Digital/dig21.php>).
+Here is more on [logic gates](<https://learnabout-electronics.org/Digital/dig21.php>).     
 
 I found a [list of nonprintable characters](<https://condor.depaul.edu/sjost/lsp121/documents/ascii-npr.htm>) and chose the escape character (represented as `1b` in hex).     
 At first I tried to write the encoder myself, but without any prior experience with C, this proved to be properly cumbersome. With python I could've **maybe** done it myself.     
