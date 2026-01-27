@@ -74,8 +74,8 @@ So my instinct said: Don't write it down in plain text anywhere.
     - Which will _always output a `1`_ if either `input1` **OR** `input2` **OR** `both` are `1`, otherwise it will output a `0`
 - The `XOR gate` works in the same fashion, but in contrast is `exclusive`, meaning that **only** _either one_ can be a `1` to get an output of `1`.
 - **Simplified:**
-  - If both values are the same, it will be **FALSE**, a.k.a the output is `0`
-  - When exactly **a single input** is `1`, it will be **TRUE**, a.k.a the output `1`
+  - If the input values are equal >> it will result in **FALSE** >> a.k.a the output is `0`
+  - When exactly **a single input** is `1` >> it will be **TRUE** >> a.k.a the output `1`
 
 **The XOR truth table:**
 | input1 | input2 | Output |
