@@ -54,9 +54,35 @@ So my instinct said: Don't write it down in plain text anywhere.
 
 
 **This is what I came up with:**
-- First transform the string into bytes (represented as hex), then XOR it with a non printable character like `0x1b`
+- First transform the string into bytes (represented as hex), then `XOR` it with a non printable character like `0x1b`
 - Add the encoded array into the program manually
-- Byte array is then decoded at runtime
+- Byte array is then **decoded at runtime**
+
+**Q:** What is XOR?     
+**A:**
+- **XOR = eXclusive OR**
+- One of the foundational **logic gates** used in computing
+- Good to know:
+  - Modern computers use _transistors_ to form what are known as `logic gates`
+  - They take input and produce output
+  - The operation is based upon boolean algebra
+  - Fun fact: A modern CPU consists of billions upon billions of transistors
+- A logic gate commonly takes 2 (allthough can take more) inputs, and produces an **output**
+  - Except the `NOT gate` a.k.a the inverter which only takes one input and produces one output
+- The `XOR gate` takes two values, 1 and/or 0
+  - If both values are the same, the output is **FALSE**, a.k.a `0`
+  - If the two values are different, the output is **TRUE**, a.k.a `1`
+
+The XOR truth table:
+| V1 | V2 | Output |
+| -- | -- | ------ |
+| 0  |  0 |  0     |
+| 1  |  0 |  1     |
+| 0  |  1 |  1     | 
+| 1  |  1 |  0     | 
+
+If you'd like to know more about XOR and how it's applied, I found this [interesting article](<https://accu.org/journals/overload/20/109/lewin_1915/>).      
+Here is more on [logic gates](<https://learnabout-electronics.org/Digital/dig21.php>).
 
 I found a [list of nonprintable characters](<https://condor.depaul.edu/sjost/lsp121/documents/ascii-npr.htm>) and chose the escape character (represented as `1b` in hex).     
 At first I tried to write the encoder myself, but without any prior experience with C, this proved to be properly cumbersome. With python I could've **maybe** done it myself.     
