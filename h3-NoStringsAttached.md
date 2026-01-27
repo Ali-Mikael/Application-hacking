@@ -60,7 +60,7 @@ So my instinct said: Don't write it down in plain text anywhere.
 - Byte array is then **decoded at runtime**
 
 
-What is XOR?
+**What is XOR?**
 - **XOR = eXclusive OR**
 - One of the foundational **logic gates** used in computing
 - **Nice to know:**
@@ -161,14 +161,17 @@ $ gcc passtr.c -o passtr2
 <img width="784" height="142" alt="Screenshot from 2026-01-26 18-24-17" src="https://github.com/user-attachments/assets/cdc0a2ac-2740-423b-a3d1-f2b87fbd615c" />     
 
 
-No traces of the password:
+**No traces of the password:**
 - <img width="779" height="585" alt="Screenshot from 2026-01-26 18-22-51" src="https://github.com/user-attachments/assets/8987e3dc-9f97-44fa-979e-cb670dfd8d4b" />
 - <img width="673" height="129" alt="Screenshot from 2026-01-26 18-23-29" src="https://github.com/user-attachments/assets/7a57b0af-ec17-4e6d-a3b8-4c3b764ce9d8" />     
 
 
-Passtr version 1 for reference:
+**Passtr version 1 for reference:**
 - <img width="677" height="87" alt="Screenshot from 2026-01-26 18-33-21" src="https://github.com/user-attachments/assets/2e78700b-92bc-453c-aee4-2a7f6e1a0e4d" />
 
+
+
+# C) 
 
 
 
