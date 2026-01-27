@@ -171,8 +171,73 @@ $ gcc passtr.c -o passtr2
 
 
 
-# C) 
+# C) Packd
+Objective is same as before, put this time a bit more challenging apparently.
+
+<img width="664" height="446" alt="Screenshot from 2026-01-27 20-52-17" src="https://github.com/user-attachments/assets/9db5fe87-5d5c-4c41-bd67-257601dbf3bb" />
+
+
+I started off with a simple
+```
+$ strings packd
+```
+<img width="449" height="712" alt="image" src="https://github.com/user-attachments/assets/7b8ad732-376d-4cbe-8b55-76c48849bec0" />
+
+
+This time the password is not clearly visible, and deducing from the flag, the contents are properly scrambled.
+
+I started by gathering stuff that look like it could take us somewhere:
+```
+$Info: This file is packed with the UPX executable packer http://upx.sf.net $
+$Id: UPX 4.21 Copyright (C) 1996-2023 the UPX Team. All Rights Reserved. $
+
+/proc/self/exe
+
+GCC: (Debian 12.
+
+GLOBAL_OFFSET_TABL
+
+.gnu.prop
+```
+We can atleast deduce that the program was compressed by the [UPX packer](<https://upx.github.io/>)....
+
+I then did some digging, and found a CLI tool for UPX. I inspected the man pages and `upx --help` for help.
+
+
+I found a decompress option, so I decided to use that one:
+```
+$ upx -d packd
+```
+And wouldn't you know:
+
+<img width="784" height="521" alt="Screenshot from 2026-01-27 21-32-52" src="https://github.com/user-attachments/assets/09a32072-cf56-4247-ac0c-6a18310c1a97" />
+
+<img width="777" height="134" alt="Screenshot from 2026-01-27 21-33-23" src="https://github.com/user-attachments/assets/b0c8a5bd-6cc6-45f5-8998-f8c69379b3af" />
+
+
+Basically we just had to uncompress the program in order to read it cleanly. 
 
 
 
 
+# D) Optional Bonus: Cryptopals
+The challenge set can be found at [here](<https://www.cryptopals.com/sets/1>)!
+
+
+> [!NOTE}
+>
+> This is not my primary concern at the moment, so I will be doing this on the side during the upcoming weeks!
+
+
+Let's start with:
+
+### [1. Convert hex to base64](<https://www.cryptopals.com/sets/1/challenges/1>)
+The string:
+```
+49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d
+```
+
+Should produce:
+```
+SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t
+```
