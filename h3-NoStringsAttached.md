@@ -70,13 +70,13 @@ So my instinct said: Don't write it down in plain text anywhere.
 - A logic gate commonly takes 2 (allthough can take more) inputs, and produces an **output**
   - Except the `NOT gate` a.k.a _the inverter_ which only takes one input and produces one output
 - **To better understand the XOR gate:**
-  - It's derived from the `OR gate`, which will _always output a `1`_ if either `input1` **OR** `input2` or both are `1`, otherwise it will output a `0`
-- The `XOR gate` works in the same fashion, but in contrast is `exclusive`, meaning that **only** either one can be a one to get an output of 1.
-- Simplified:
+  - It's derived from the `OR gate`, which will _always output a `1`_ if either `input1` **OR** `input2` **or** both are `1`, otherwise it will output a `0`
+- The `XOR gate` works in the same fashion, but in contrast is `exclusive`, meaning that **only** either one can be a `1`, to get an output of `1`.
+- **Simplified:**
   - If both values are the same, it will be **FALSE**, a.k.a the output is `0`
   - When exactly **a single input** is `1`, it will be **TRUE**, a.k.a the output `1`
 
-The XOR truth table:
+**The XOR truth table:**
 | input1 | input2 | Output |
 | -- | -- | ------ |
 | 0  |  0 |  0     |
