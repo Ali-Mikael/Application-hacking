@@ -224,7 +224,7 @@ Basically we just had to uncompress the program in order to read it cleanly.
 The challenge set can be found at [here](<https://www.cryptopals.com/sets/1>)!
 
 
-> [!NOTE}
+> [!NOTE]
 >
 > This is not my primary concern at the moment, so I will be doing this on the side during the upcoming weeks!
 
