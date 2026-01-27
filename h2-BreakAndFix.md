@@ -303,7 +303,13 @@ You'll see how it works in just a bit!
 {% endif %}
 ```
 
-(Note: this code is for some reason not rendering properly on **github pages**, at least for me, so if you can only see 1 line of it, check it out straight from the github [repo](<https://github.com/Ali-Mikael/Application-hacking/blob/main/h2-BreakAndFix.md>)!)     
+> [!NOTE]
+>
+> The code snippet is for some reason not rendering properly on **github pages**.
+> 
+> So if you can only see 1 line of it:
+>
+> Check it out straight from the github [repo](<https://github.com/Ali-Mikael/Application-hacking/blob/main/h2-BreakAndFix.md#explanation-1>)!)     
 
 
 -----
