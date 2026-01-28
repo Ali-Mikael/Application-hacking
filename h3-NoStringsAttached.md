@@ -222,17 +222,16 @@ Basically we just had to uncompress the program in order to read it cleanly!
 
 
 # D) Optional Bonus: Cryptopals
-The challenge set can be found at [here](<https://www.cryptopals.com/sets/1>)!
+The challenge set can be found [here](<https://www.cryptopals.com/sets/1>)!
 
 
 > [!NOTE]
 >
-> This is not my primary concern at the moment, so I will be doing this on the side during the upcoming weeks!
+> This is not my primary concern at the moment, so I will be doing this as a side hustle!
 
 
-Let's start with:
 
-### [1. Convert hex to base64](<https://www.cryptopals.com/sets/1/challenges/1>)
+## [1. Convert hex to base64](<https://www.cryptopals.com/sets/1/challenges/1>)
 The string:
 ```
 49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d
@@ -242,3 +241,50 @@ Should produce:
 ```
 SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t
 ```
+
+### My Solution
+```python
+import base64
+
+def hexToBase(s):
+    
+    raw_bytes = bytes.fromhex(s)
+    b64 = base64.b64encode(raw_bytes).decode("ascii")
+    return b64
+
+s = input("Insert the hex sequence to convert to base64: ")
+print("Here you go:")
+print(hexToBase(s))
+```
+
+
+**And here's the program in action:**
+
+<img width="1147" height="163" alt="Screenshot 2026-01-28 at 20 19 30" src="https://github.com/user-attachments/assets/68ebfcc7-591c-45d5-9968-fcff11aafa0e" />
+
+
+## [2. Fixed XOR](<https://www.cryptopals.com/sets/1/challenges/2>)
+Objective:
+- Write a function that takes two equal-length buffers and produces their XOR combination.
+
+The function should be able to take a string:
+```
+1c0111001f010100061a024b53535009181c
+```
+
+After hex decoded and when XOR'd against:
+```
+686974207468652062756c6c277320657965
+```
+
+Should produce:
+```
+746865206b696420646f6e277420706c6179
+```
+
+
+
+
+
+
+
