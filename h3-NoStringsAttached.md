@@ -88,6 +88,7 @@ So my instinct said: Don't write it down in plain text anywhere.
 If you'd like to know more about XOR and how it's applied, I found this [interesting article](<https://accu.org/journals/overload/20/109/lewin_1915/>).      
 Here is more on [logic gates](<https://learnabout-electronics.org/Digital/dig21.php>).     
 
+### Getting down to business
 I found a [list of nonprintable characters](<https://condor.depaul.edu/sjost/lsp121/documents/ascii-npr.htm>) and chose the escape character (represented as `1b` in hex).     
 At first I tried to write the encoder myself, but without any prior experience with C, this proved to be properly cumbersome. With python I could've **maybe** done it myself.     
 As the next natural step, I asked chatGPT to create me simple `XOR program for C`.      
