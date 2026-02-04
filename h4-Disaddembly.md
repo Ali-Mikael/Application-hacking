@@ -31,33 +31,32 @@ Then I fired up `ghidra` and opened up the binary.
 <img width="688" height="373" alt="Screenshot from 2026-02-04 23-02-01" src="https://github.com/user-attachments/assets/07133052-f5b5-4122-a9f1-1bb1c9f10537" />
 
 
-We then let ghidra do the heavy lifting for us, and analyze the contents in order to reverse engineer it to C:
-
+#### We then let ghidra do the heavy lifting for us, and analyze the contents in order to reverse engineer it to C:
 <img width="1317" height="790" alt="Screenshot from 2026-02-04 23-04-21" src="https://github.com/user-attachments/assets/d9c23ccd-ded2-44e0-b65b-481f6139cbbc" />
 
 
-We're able to navigate through different parts of the code using the symbol tree:
-
+#### We're able to navigate through different parts of the code using the symbol tree:
 <img width="1310" height="773" alt="Screenshot from 2026-02-04 23-08-01" src="https://github.com/user-attachments/assets/845e87d9-3ef8-4f37-af75-b8c1e574e2f3" />
 
 
-Luckily for us, there's not that many functions and it's a pretty small program. Plus the main program is called main, so we find it pretty easy:
-
+#### Luckily for us, there's not that many functions and it's a pretty small program. Plus the main program is called main, so we find it pretty easy:
 <img width="831" height="421" alt="Screenshot from 2026-02-04 23-12-10" src="https://github.com/user-attachments/assets/bc2335fc-0743-4e17-bae8-9aa86072c5ad" />
 
 
 
-We then change the variable name to something more easily recognizable:
-
+#### We then change the variable name to something more easily recognizable:
 <img width="723" height="252" alt="Screenshot from 2026-02-04 23-14-17" src="https://github.com/user-attachments/assets/b972d6a7-4d31-4405-be35-84288d7124e8" />
 
 
-We do the same for the user input. And like so, it's much easier to read the program now:
-
+#### We do the same for the user input. And like so, it's much easier to read the program now:
 <img width="766" height="285" alt="Screenshot from 2026-02-04 23-28-29" src="https://github.com/user-attachments/assets/7daca284-0abc-4fc5-864f-e8afc313f3f2" />
 
 ### How does the program work?
-The program it pretty simple. It initialises a variable with the password, and then asks for user input. The user input is then matched against the variable using a simple `if else` statement, and if `true`, the flag is provided, `else` == no bonus :/
+The program is pretty simple. It initialises a variable with the password and then asks for user input.
+
+The user input is then matched against the variable using a simple `if else` statement
+- if `true` == the flag is provided
+- `else` == no bonus :/
 
 ------
 
@@ -65,7 +64,7 @@ The program it pretty simple. It initialises a variable with the password, and t
 # C) Backwards
 **Objective**
 - Modify the passtr programs's binary so that it accepts all passwords except the correct one
-  - Without the original source code ofcourse
+  - Without the original source code of course!
 - Demonstrate with tests that your solution works
 
 # Manipulation
