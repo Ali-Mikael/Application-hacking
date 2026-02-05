@@ -30,6 +30,11 @@ Then I fired up `ghidra` and opened up the binary.
 
 <img width="688" height="373" alt="Screenshot from 2026-02-04 23-02-01" src="https://github.com/user-attachments/assets/07133052-f5b5-4122-a9f1-1bb1c9f10537" />
 
+> [!NOTE]
+>
+> It should be mentioned that i'm using the same exact copy of the binary in the _h3 task_, so I already unpacked it previously.
+>
+> If this sounds unfamiliar, check [this out](<https://github.com/Ali-Mikael/Application-hacking/blob/main/h3-NoStringsAttached.md#c-packd>)
 
 #### We then let ghidra do the heavy lifting for us, and analyze the contents in order to reverse engineer it to C:
 <img width="1317" height="790" alt="Screenshot from 2026-02-04 23-04-21" src="https://github.com/user-attachments/assets/d9c23ccd-ded2-44e0-b65b-481f6139cbbc" />
@@ -75,3 +80,49 @@ We import the second program called `passtr` --> analyze it --> open up the main
 <img width="833" height="447" alt="Screenshot from 2026-02-04 23-37-18" src="https://github.com/user-attachments/assets/ac8830d5-3d42-4e6f-a169-ae6f74be359f" />
 
 
+I then opened up the assembly instructions alongside the decompiler and highlighed the function I wanted to change so that I would notice it in the instructions:
+
+<img width="1314" height="539" alt="Screenshot from 2026-02-05 18-45-09" src="https://github.com/user-attachments/assets/25426108-b8dd-4c30-a9e5-733dcaf1d808" />
+
+I knew I had to modify the assembly somehow, so I did some googling on assembly syntax and how `if else` logic is built in assembly.
+
+I realised that after _comparing the passwords_ there's an instruction after it == `JNZ`, which will jump to the **"sorry no bonus"** if value is **not zero**
+- `JNZ` = Jump if Not Zero
+- Otherwise it will give the flag, which is next up in the execution order if we don't jump.
+
+<img width="972" height="247" alt="Screenshot from 2026-02-05 18-55-32" src="https://github.com/user-attachments/assets/83337733-a322-4375-a15f-46f2bbb1c211" />
+
+
+### This is what I came up with
+Just remove the `N` innit. 😂
+
+I pressed Ctrl+Shift+G to `Patch Instruction`, meaning I just modified it.
+
+<img width="813" height="96" alt="Screenshot from 2026-02-05 18-59-44" src="https://github.com/user-attachments/assets/27a6cdb5-e53b-4e8e-b196-b818d31ecfa9" />
+
+
+I then saved the file and _exported it_ to the same format as the original program (binary). Ghidra takes care of the recompilation! 
+
+We also needed to make the binary executable after exporting:
+
+<img width="1670" height="398" alt="Screenshot from 2026-02-05 19-07-02" src="https://github.com/user-attachments/assets/4736f74b-e063-4ed7-bdbc-358949b18469" />
+
+
+#### We then test it by typing in two wrong passwords, and lastly the right one:
+
+<img width="939" height="509" alt="Screenshot from 2026-02-05 19-07-50" src="https://github.com/user-attachments/assets/c34743cb-22ca-4864-bcf7-3d68d4e45e23" />
+
+
+**Explanation:**
+- We just reverse the logic
+- Earlier the program checked that the password _matches user input_ **before** it provides the flag
+- Now **only** strings that **DO NOT match the password** will get the flag!
+- In high level code this means we switch the `==` to `!=`
+
+
+Help used:
+- [An article on modifying a port number from binary](<https://blog.cjearls.io/2019/04/editing-executable-binary-file-with.html>)
+- [Assembly instructions](<https://www.tutorialspoint.com/assembly_programming/assembly_conditions.htm>)
+
+
+# D) Nora
