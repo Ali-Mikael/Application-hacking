@@ -8,8 +8,11 @@ Run it by typing `$ ghidra`:
 <img width="1202" height="738" alt="Screenshot from 2026-01-27 21-54-40" src="https://github.com/user-attachments/assets/38020368-4485-4cdc-b92a-e287703f46c4" />
 
 
+------
+
+
 # B) Rever-C
-**Objective:**
+**OBJECTIVE**
 - Reverse engineer the packd binary to C language using `ghidra`
 - Find the main program
 - Give variables descriptive names
@@ -32,7 +35,7 @@ Then I fired up `ghidra` and opened up the binary.
 
 > [!NOTE]
 >
-> It should be mentioned that i'm using the same exact copy of the binary in the _h3 task_, so I already unpacked it previously.
+> It should be mentioned that i'm using the _same exact copy_ of the binary in the `h3 task`, so it's already _unpacked_.
 >
 > If this sounds unfamiliar, check [this out](<https://github.com/Ali-Mikael/Application-hacking/blob/main/h3-NoStringsAttached.md#c-packd>)
 
@@ -63,11 +66,12 @@ The user input is then matched against the variable using a simple `if else` sta
 - if `true` == the flag is provided
 - `else` == no bonus :/
 
+
 ------
 
 
 # C) Backwards
-**Objective**
+**OBJECTIVE**
 - Modify the passtr programs's binary so that it accepts all passwords except the correct one
   - Without the original source code of course!
 - Demonstrate with tests that your solution works
@@ -114,9 +118,9 @@ We also needed to make the binary executable after exporting:
 
 
 **Explanation:**
-- We just reverse the logic
-- Earlier the program checked that the password _matches user input_ **before** it provides the flag
-- Now **only** strings that **DO NOT match the password** will get the flag!
+- We reverse the logic 
+- Earlier the program made sure that the `password` and `user_input` strings were equivailent before providing the flag
+- After modification: only strings that are NOT equal to the password will get the flag!
 - In high level code this means we switch the `==` to `!=`
 
 
@@ -125,4 +129,90 @@ Help used:
 - [Assembly instructions](<https://www.tutorialspoint.com/assembly_programming/assembly_conditions.htm>)
 
 
+------
+
+
 # D) Nora
+**OBJECTIVE:**
+- Compile the [NoraCodes/crackmes](<https://github.com/NoraCodes/crackmes<) to binary
+
+
+I downloaded the github repo
+```
+$ git clone https://github.com/NoraCodes/crackmes.git
+```
+
+There's about 20 `C`-files that came with it and we have to compile them all to binary. I didn't feel like doing it manually one by one, so i created a quick `for loop`
+```bash
+for crack in *.c; do
+  gcc "$crack" -o "${crack%.c}"
+done
+```
+<img width="1304" height="474" alt="Screenshot from 2026-02-06 09-33-47" src="https://github.com/user-attachments/assets/34c82f59-2d18-4815-b042-dc6aa1e4e672" />
+
+Now we're ready to get cracking!
+
+------
+
+
+# E) crackme01
+**OBJECTIVE**
+- Solve the binary
+
+## Solving it
+First things first let's execute the binary:
+
+<img width="488" height="197" alt="Screenshot from 2026-02-06 09-38-39" src="https://github.com/user-attachments/assets/dc22c016-b22c-4e3c-b5a9-e9f2ce1a0472" />
+
+Because I cannot look into the original source code, and the binary code is not going to make sense, I decided to exract some human readable content from the executable by using our old friend `strings`. And wouldn't you know, my guy delivered once again: 
+
+
+<img width="457" height="541" alt="Screenshot from 2026-02-06 09-39-29" src="https://github.com/user-attachments/assets/9e0f6663-1e84-4f4a-a78b-83a3c5569b48" />
+
+<img width="468" height="121" alt="Screenshot from 2026-02-06 09-46-25" src="https://github.com/user-attachments/assets/f2bdba7b-1685-411e-a05d-84bfdc23088a" />
+
+
+# E.2) crackme01e
+**OBJECTIVE**
+- Same as above
+
+## Solving it
+Same kind of workflow:
+
+<img width="650" height="710" alt="Screenshot from 2026-02-06 09-50-31" src="https://github.com/user-attachments/assets/a37917f5-dae2-47f9-be33-608aebfb9656" />
+
+
+This time we had to escape the special character:
+
+<img width="499" height="296" alt="Screenshot from 2026-02-06 09-50-44" src="https://github.com/user-attachments/assets/51b55c95-e12b-4629-b86b-4ab22cb0c734" />
+
+
+
+# F) crackme02
+**OBJECTIVE**
+- Name the main program's variables from the reverse-engineered binary and explain the program's operation
+- Solve the binary
+
+## Reverse Engineering and Renaming
+
+I fired up the big gun a.k.a `ghidra`.
+
+We created a new project and imported the `crackme02` binary.
+
+Ghidra then did the heavy lifting and analysed the file for us, producing assembly instructions and C code.
+
+<img width="566" height="444" alt="Screenshot from 2026-02-06 10-01-51" src="https://github.com/user-attachments/assets/308d29c2-0dd4-442c-8f92-6996800f9ea1" />
+
+
+I figured the first declared variable inside the function might the `exit code`, as the function will always return with it no matter what. 
+
+**To support our hypothesis**
+- We can see that it's used in the `if else` clause:
+  - If the password is correct the variable is set to `0` and returned, indicating that everything went well.
+  - If the password is wrong the variable is set to `0xffffffff`, which will result in returning the highest possible exit code status.
+
+
+That out of the way, we still needed to find the password and user_input.
+
+
+
