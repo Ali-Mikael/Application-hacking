@@ -5,7 +5,8 @@ Hammond 2022 - [GHIDRA for Reverse Engineering](<https://www.youtube.com/watch?v
 - Find the main function, familiarise yourself with the code and rename variables if applicable/possible/feasible
 - Pay attention to the way the function behaves
 - The solution for the example in the video was to find a `hex string` and pass the decimal representation of it into the program in order to capture the flag
-- 
+
+-----
 
 # A) Install Ghidra
 For `kali linux`:
