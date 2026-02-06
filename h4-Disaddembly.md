@@ -24,7 +24,7 @@ Target can be installed from [here!](<https://terokarvinen.com/loota/yctjx7/ezbi
 
 ## Reverse engineering
 I created a new directory for my project
-```
+```bash
 $ mkdir -p ghidraProjects/packd/
 ```
 Then I fired up `ghidra` and opened up the binary. 
@@ -32,6 +32,7 @@ Then I fired up `ghidra` and opened up the binary.
 <img width="668" height="525" alt="Screenshot from 2026-02-04 23-00-23" src="https://github.com/user-attachments/assets/c6f4e5f5-21e1-4832-9267-7c35c2257808" />
 
 <img width="688" height="373" alt="Screenshot from 2026-02-04 23-02-01" src="https://github.com/user-attachments/assets/07133052-f5b5-4122-a9f1-1bb1c9f10537" />
+
 
 > [!NOTE]
 >
@@ -63,9 +64,8 @@ Then I fired up `ghidra` and opened up the binary.
 The program is pretty simple. It initialises a variable with the password and then asks for user input.
 
 The user input is then matched against the variable using a simple `if else` statement
-- if `true` == the flag is provided
+- `if true` == the flag is provided
 - `else` == no bonus :/
-
 
 ------
 
@@ -77,14 +77,20 @@ The user input is then matched against the variable using a simple `if else` sta
 - Demonstrate with tests that your solution works
 
 # Manipulation
-We import the second program called `passtr` --> analyze it --> open up the main function --> give variables descriptive names:
+We import the second program called `passtr` 
+
+--> analyze it 
+
+--> open up the main function
+
+--> give variables descriptive names:
 
 <img width="1039" height="356" alt="Screenshot from 2026-02-04 23-34-26" src="https://github.com/user-attachments/assets/f12f92aa-f8fe-426c-9a35-91d15ae60d8f" />
 
 <img width="833" height="447" alt="Screenshot from 2026-02-04 23-37-18" src="https://github.com/user-attachments/assets/ac8830d5-3d42-4e6f-a169-ae6f74be359f" />
 
 
-I then opened up the assembly instructions alongside the decompiler and highlighed the function I wanted to change so that I would notice it in the instructions:
+I opened up the assembly instructions alongside the decompiler and highlighed the function I wanted to change so that I would notice it in the instructions (also being automatically highlighted as a result):
 
 <img width="1314" height="539" alt="Screenshot from 2026-02-05 18-45-09" src="https://github.com/user-attachments/assets/25426108-b8dd-4c30-a9e5-733dcaf1d808" />
 
@@ -97,7 +103,7 @@ I realised that after _comparing the passwords_ there's an instruction after it 
 <img width="972" height="247" alt="Screenshot from 2026-02-05 18-55-32" src="https://github.com/user-attachments/assets/83337733-a322-4375-a15f-46f2bbb1c211" />
 
 
-### This is what I came up with
+### This is what I came up with:
 Just remove the `N` innit. 😂
 
 I pressed Ctrl+Shift+G to `Patch Instruction` (modify).
@@ -112,8 +118,7 @@ We also needed to make the binary executable after exporting:
 <img width="1670" height="398" alt="Screenshot from 2026-02-05 19-07-02" src="https://github.com/user-attachments/assets/4736f74b-e063-4ed7-bdbc-358949b18469" />
 
 
-#### We then test it by typing in two wrong passwords, and lastly the right one:
-
+### We then test it by typing in 2 wrong passwords followed by the correct one:
 <img width="939" height="509" alt="Screenshot from 2026-02-05 19-07-50" src="https://github.com/user-attachments/assets/c34743cb-22ca-4864-bcf7-3d68d4e45e23" />
 
 
@@ -124,23 +129,26 @@ We also needed to make the binary executable after exporting:
 - In high level code this means we switch the `==` to `!=`
 
 
-Help used:
+**Help used:**
 - [An article on modifying a port number from binary](<https://blog.cjearls.io/2019/04/editing-executable-binary-file-with.html>)
 - [Assembly instructions](<https://www.tutorialspoint.com/assembly_programming/assembly_conditions.htm>)
 
 -----
+
 
 # D) Nora
 **OBJECTIVE:**
 - Compile the [NoraCodes/crackmes](<https://github.com/NoraCodes/crackmes>) to binary
 
 
-I downloaded the github repo
+Download the repository containing the targets
 ```
 $ git clone https://github.com/NoraCodes/crackmes.git
 ```
 
-There's about 20 `C`-files that came with it and we have to compile them all to binary. I didn't feel like doing it manually one by one, so i created a quick `for loop`
+There's about 20 `C`-files in the repo and we have to compile them all to binary. 
+
+I didn't feel like doing it manually one by one, so i created a quick `for loop`
 ```bash
 for crack in *.c; do
   gcc "$crack" -o "${crack%.c}"
@@ -161,9 +169,9 @@ First things first let's execute the binary:
 
 <img width="488" height="197" alt="Screenshot from 2026-02-06 09-38-39" src="https://github.com/user-attachments/assets/dc22c016-b22c-4e3c-b5a9-e9f2ce1a0472" />
 
-Because I cannot look into the original source code and the binary code is not going to make sense, I decided to exract some human readable content from the executable by using our old friend `strings`. And wouldn't you know, it delivered once again: 
+Because I cannot look at the original source code and the machine code is alien language, I decided to exract some human readable content from the executable by using our old friend `strings`. 
 
-
+#### And wouldn't you know, it delivered once again: 
 <img width="457" height="541" alt="Screenshot from 2026-02-06 09-39-29" src="https://github.com/user-attachments/assets/9e0f6663-1e84-4f4a-a78b-83a3c5569b48" />
 
 
@@ -182,7 +190,7 @@ Same kind of workflow:
 <img width="650" height="710" alt="Screenshot from 2026-02-06 09-50-31" src="https://github.com/user-attachments/assets/a37917f5-dae2-47f9-be33-608aebfb9656" />
 
 
-This time we had to escape a special character:
+### This time we had to escape a special character in order to complete the objective:
 
 <img width="499" height="296" alt="Screenshot from 2026-02-06 09-50-44" src="https://github.com/user-attachments/assets/51b55c95-e12b-4629-b86b-4ab22cb0c734" />
 
@@ -193,12 +201,15 @@ This time we had to escape a special character:
 - Name the main program's variables from the reverse-engineered binary and explain the program's operation
 - Solve the binary
 
-## Reverse Engineering and Renaming
-I fired up the big gun a.k.a `ghidra`.
+## Reverse Engineering, Explaining and Renaming
+> I'm going to dissect the binary, rename some variables and explain what's happening as we go!
+
+
+Naturally we start off by firing up the big gun a.k.a `ghidra`.
 
 We created a new project and imported the `crackme02` binary.
 
-Ghidra then did the heavy lifting and analysed the file for us, producing assembly instructions and C code.
+Ghidra then did the heavy lifting and analysed the file for us, producing `assembly instructions` and `C code`.
 
 The `main` function:
 ```C
@@ -229,7 +240,7 @@ undefined8 main(int param_1,long param_2)
 ```
 
 
-I figured the first declared variable inside the function might the `exit code`, as the function will always return with it no matter what. 
+I figured the first variable inside the function might the `exit code`, as the function will always return with it no matter what. 
 
 **To support our hypothesis**
 - We can see that it's used in the `if else` clause:
@@ -237,7 +248,56 @@ I figured the first declared variable inside the function might the `exit code`,
   - If the password is wrong the variable is set to `0xffffffff`, which will result in returning the highest possible exit code status.
 
 
-That out of the way, we still needed to find the password and user_input.
+I also found a few other variables to name. But before that, let's go through how the program works a little bit:
+
+First of all, **the main function takes two parameters**
+1. Amount of **arguments** in `CLI` command
+  - For clarity: calling the program itself (`$ ./<program>`) counts as an argument on the CLI!
+2. Input provided by the user
+
+If the number of command line arguments are not == 2, meaning the `program call` + `user input`, the program will exit with the text "Need exactly one argument".
+
+If the arguments are 2 in number, the function will then do some operation on the password and user input.
 
 
+This is achieved in the following manner 
 
+> [!NOTE]
+> Code modified to drive the point across
+
+```C
+if (cliArgs == 2){
+  -- doing some magic on strings --
+}
+else {
+  puts("Exactly one argument needed");
+  exitCode = FAIL;
+}
+```
+
+Now let's reveal the variables before diving into the solution:
+
+`cliArgs`, `userInput`, `exitCode` and `i` (the index used in the for loop). This makes it easier to understand the program:
+
+<img width="969" height="540" alt="Screenshot from 2026-02-06 16-25-22" src="https://github.com/user-attachments/assets/f3370ee2-f020-4627-9e25-a48913cb11fa" />
+
+
+### Now to the interesting part
+
+The following section in the code really caught my interest:
+```
+if ("password1"[i] + -1
+```
+It seems like the program is taking each character of the password and shifting it back by one (presumably ascii).
+
+It also seemed like the loop is not accounting for the length of the input. Which takes us to the next step:
+
+The letter before `p` is `o` so let's it a go 
+> It can't be wrong if it rhymes
+
+<img width="524" height="107" alt="Screenshot from 2026-02-06 16-45-27" src="https://github.com/user-attachments/assets/3e293b28-560f-4ceb-b655-ff1fe850d619" />
+
+
+And wouldn't you know, didn't even have to type in the whole password == ``o`rrvnqc0``
+
+Here's an [ascii table](<https://www.ascii-code.com/>) for reference. For the most part just knowing the alphabet was enough here, I just needed to know what comes before `a`, which was the backtick
