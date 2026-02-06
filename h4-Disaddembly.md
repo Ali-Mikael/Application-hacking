@@ -211,9 +211,9 @@ Same kind of workflow:
 
 
 Naturally we start off by firing up the big gun a.k.a `ghidra`
-- We created a new project and imported the `crackme02` binary.
+- We created a new project and imported the `crackme02` binary
 - Ghidra then did the heavy lifting and analysed the file for us:
-  - Producing `assembly instructions` and `C code`.
+  - Producing `assembly instructions` and `C code`
 
 The `main` function:
 ```C
