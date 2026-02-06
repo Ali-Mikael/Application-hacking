@@ -1,3 +1,7 @@
+# X) Read/Watch/Listen and Summarize
+Hammond 2022 - [GHIDRA for Reverse Engineering](<https://www.youtube.com/watch?v=oTD_ki86c9I>) (video)
+- 
+
 # A) Install Ghidra
 For `kali linux`:
 ```
@@ -165,7 +169,7 @@ Now we're ready to get cracking!
 - Solve the binary
 
 ## Solving it
-First things first let's execute the binary:
+First things first let's execute the binary and see what happens:
 
 <img width="488" height="197" alt="Screenshot from 2026-02-06 09-38-39" src="https://github.com/user-attachments/assets/dc22c016-b22c-4e3c-b5a9-e9f2ce1a0472" />
 
@@ -194,6 +198,7 @@ Same kind of workflow:
 
 <img width="499" height="296" alt="Screenshot from 2026-02-06 09-50-44" src="https://github.com/user-attachments/assets/51b55c95-e12b-4629-b86b-4ab22cb0c734" />
 
+-----
 
 
 # F) crackme02
@@ -202,14 +207,13 @@ Same kind of workflow:
 - Solve the binary
 
 ## Reverse Engineering, Explaining and Renaming
-> I'm going to dissect the binary, rename some variables and explain what's happening as we go!
+> I'm going to dissect the binary, rename some variables and explain what's going on as we go!
 
 
-Naturally we start off by firing up the big gun a.k.a `ghidra`.
-
-We created a new project and imported the `crackme02` binary.
-
-Ghidra then did the heavy lifting and analysed the file for us, producing `assembly instructions` and `C code`.
+Naturally we start off by firing up the big gun a.k.a `ghidra`
+- We created a new project and imported the `crackme02` binary.
+- Ghidra then did the heavy lifting and analysed the file for us:
+  - Producing `assembly instructions` and `C code`.
 
 The `main` function:
 ```C
@@ -240,7 +244,7 @@ undefined8 main(int param_1,long param_2)
 ```
 
 
-I figured the first variable `uVar1` inside the function might the `exit code`, as the function will always return with it no matter what. 
+I figured the first variable `uVar1` inside the function might be used as the `exit code`, as the function will always return with it no matter what. 
 
 **To support our hypothesis**
 - We can see that it's used in the `if else` clause:
@@ -250,14 +254,14 @@ I figured the first variable `uVar1` inside the function might the `exit code`, 
 
 I also found a few other variables to name. But before that, let's go through how the program works a little bit:
 
-First of all, **the main function takes two parameters**
-1. Amount of **arguments** in `CLI` command
+First of all, **the main function takes 2 parameters**
+1. _Amount of arguments in the CLI command used_
   - For clarity: calling the program itself (`$ ./<program>`) counts as an argument on the CLI!
-2. Input provided by the user
+2. _Param/Input provided by the user_
 
-If the number of command line arguments are not == 2, meaning the `program call` + `user input`, the program will exit with the text "Need exactly one argument".
+If the _number of command line arguments_ are **NOT** == 2 (`program invocation` + `user input`) the program will exit.
 
-If the arguments are 2 in number, the function will then do some operation on the password and user input.
+If the arguments are exactly 2 in number, the function will then do some operation on the password and user input.
 
 
 This is achieved in the following manner 
@@ -285,19 +289,19 @@ Now let's reveal the variables before diving into the solution:
 ### Now to the interesting part
 
 The following section in the code really caught my interest:
-```
+```C
 if ("password1"[i] + -1
 ```
 It seems like the program is taking each character of the password and shifting it back by one (presumably ascii).
 
 It also seemed like the loop is not accounting for the length of the input. Which takes us to the next step:
 
-The letter before `p` is `o` so let's it a go 
-> It can't be wrong if it rhymes
+The letter before `p` is `o` so let's give it a go 
+> It can't be wrong if it rhymes...
 
 <img width="524" height="107" alt="Screenshot from 2026-02-06 16-45-27" src="https://github.com/user-attachments/assets/3e293b28-560f-4ceb-b655-ff1fe850d619" />
 
 
 And wouldn't you know, didn't even have to type in the whole password == ``o`rrvnqc0``
 
-Here's an [ascii table](<https://www.ascii-code.com/>) for reference. For the most part just knowing the alphabet was enough here, I just needed to know what comes before `a`, which was the backtick
+Here's an [ascii table](<https://www.ascii-code.com/>) for reference. For the most part just knowing the alphabet was enough here, I just needed to know what comes before `a`, which was the backtick!
