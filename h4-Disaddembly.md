@@ -254,17 +254,17 @@ I figured the first variable `uVar1` inside the function might be used as the `e
 
 I also found a few other variables to name. But before that, let's go through how the program works a little bit:
 
-First of all, **the main function takes 2 parameters**
+**The main function takes 2 parameters**
 1. _Amount of arguments in the CLI command used_
   - For clarity: calling the program itself (`$ ./<program>`) counts as an argument on the CLI!
 2. _Param/Input provided by the user_
 
-If the _number of command line arguments_ are **NOT** == 2 (`program invocation` + `user input`) the program will exit.
+**What happens next?**
+- If the _number of command line arguments_ are **NOT** == 2 (`program invocation` + `user input`) the program will exit
+- If the arguments are exactly 2 in number, the function will then do some operation on the password and user input
 
-If the arguments are exactly 2 in number, the function will then do some operation on the password and user input.
 
-
-This is achieved in the following manner 
+#### This is achieved in the following manner:
 
 > [!NOTE]
 > Code modified to drive the point across
@@ -286,7 +286,7 @@ Now let's reveal the variables before diving into the solution:
 <img width="969" height="540" alt="Screenshot from 2026-02-06 16-25-22" src="https://github.com/user-attachments/assets/f3370ee2-f020-4627-9e25-a48913cb11fa" />
 
 
-### Now to the interesting part
+### Now to the interesting part (the -- magic --)
 
 The following section in the code really caught my interest:
 ```C
@@ -305,3 +305,4 @@ The letter before `p` is `o` so let's give it a go
 And wouldn't you know, didn't even have to type in the whole password == ``o`rrvnqc0``
 
 Here's an [ascii table](<https://www.ascii-code.com/>) for reference. For the most part just knowing the alphabet was enough here, I just needed to know what comes before `a`, which was the backtick!
+
