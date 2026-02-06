@@ -1,5 +1,10 @@
 # X) Read/Watch/Listen and Summarize
 Hammond 2022 - [GHIDRA for Reverse Engineering](<https://www.youtube.com/watch?v=oTD_ki86c9I>) (video)
+- Before pulling out ghidra, it might prove itself fruitful to poke the ice with tools such as `ltrace`, `strace` and `objdump`
+- Once the file is imported and analyzed in ghidra, first order of business is to locate strings
+- Find the main function, familiarise yourself with the code and rename variables if applicable/possible/feasible
+- Pay attention to the way the function behaves
+- The solution for the example in the video was to find a `hex string` and pass the decimal representation of it into the program in order to capture the flag
 - 
 
 # A) Install Ghidra
@@ -305,4 +310,47 @@ The letter before `p` is `o` so let's give it a go
 And wouldn't you know, didn't even have to type in the whole password == ``o`rrvnqc0``
 
 Here's an [ascii table](<https://www.ascii-code.com/>) for reference. For the most part just knowing the alphabet was enough here, I just needed to know what comes before `a`, which was the backtick!
+
+
+
+
+# I) Optional: solve the crackme02e
+**You already know the drill!**
+
+<img width="512" height="523" alt="Screenshot from 2026-02-06 22-03-39" src="https://github.com/user-attachments/assets/58e0fb00-2f28-4dbd-aa5d-13886d466691" />
+
+
+<img width="513" height="105" alt="Screenshot from 2026-02-06 22-04-11" src="https://github.com/user-attachments/assets/7329c63d-bc33-4929-a4fe-ad40b24adb90" />
+
+
+<img width="1683" height="966" alt="Screenshot from 2026-02-06 22-13-36" src="https://github.com/user-attachments/assets/0807b865-d0ad-4c52-a0e0-1f5c69d8166c" />
+
+After renaming the variables, this is the main function ghidra spit out for us:
+```C
+undefined8 main(int cliArgs,long userInput)
+
+{
+  undefined8 exitCode;
+  int i;
+  
+  if (cliArgs == 2) {
+    for (i = 0; ((&DAT_0010201f)[i] != '\0' &&
+                (*(char *)((long)i + *(long *)(userInput + 8)) != '\0')); i = i + 1) {
+      if ((char)(&DAT_0010201f)[i] + -2 != (int)*(char *)((long)i + *(long *)(userInput + 8))) {
+        printf("No, %s is not correct.\n",*(undefined8 *)(userInput + 8));
+        return 1;
+      }
+    }
+    printf("Yes, %s is correct!\n",*(undefined8 *)(userInput + 8));
+    exitCode = 0;
+  }
+  else {
+    puts("Need exactly one argument.");
+    exitCode = 0xffffffff;
+  }
+  return exitCode;
+```
+
+
+
 
