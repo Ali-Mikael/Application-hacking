@@ -240,7 +240,7 @@ undefined8 main(int param_1,long param_2)
 ```
 
 
-I figured the first variable inside the function might the `exit code`, as the function will always return with it no matter what. 
+I figured the first variable `uVar1` inside the function might the `exit code`, as the function will always return with it no matter what. 
 
 **To support our hypothesis**
 - We can see that it's used in the `if else` clause:
