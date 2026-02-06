@@ -39,6 +39,7 @@ Then I fired up `ghidra` and opened up the binary.
 >
 > If this sounds unfamiliar, check [this out](<https://github.com/Ali-Mikael/Application-hacking/blob/main/h3-NoStringsAttached.md#c-packd>)
 
+
 #### We then let ghidra do the heavy lifting for us, and analyze the contents in order to reverse engineer it to C:
 <img width="1317" height="790" alt="Screenshot from 2026-02-04 23-04-21" src="https://github.com/user-attachments/assets/d9c23ccd-ded2-44e0-b65b-481f6139cbbc" />
 
@@ -49,7 +50,6 @@ Then I fired up `ghidra` and opened up the binary.
 
 #### Luckily for us, there's not that many functions and it's a pretty small program. Plus the main program is called main, so we find it pretty easy:
 <img width="831" height="421" alt="Screenshot from 2026-02-04 23-12-10" src="https://github.com/user-attachments/assets/bc2335fc-0743-4e17-bae8-9aa86072c5ad" />
-
 
 
 #### We then change the variable name to something more easily recognizable:
@@ -100,7 +100,7 @@ I realised that after _comparing the passwords_ there's an instruction after it 
 ### This is what I came up with
 Just remove the `N` innit. 😂
 
-I pressed Ctrl+Shift+G to `Patch Instruction`, meaning I just modified it.
+I pressed Ctrl+Shift+G to `Patch Instruction` (modify).
 
 <img width="813" height="96" alt="Screenshot from 2026-02-05 18-59-44" src="https://github.com/user-attachments/assets/27a6cdb5-e53b-4e8e-b196-b818d31ecfa9" />
 
@@ -128,13 +128,11 @@ Help used:
 - [An article on modifying a port number from binary](<https://blog.cjearls.io/2019/04/editing-executable-binary-file-with.html>)
 - [Assembly instructions](<https://www.tutorialspoint.com/assembly_programming/assembly_conditions.htm>)
 
-
-------
-
+-----
 
 # D) Nora
 **OBJECTIVE:**
-- Compile the [NoraCodes/crackmes](<https://github.com/NoraCodes/crackmes<) to binary
+- Compile the [NoraCodes/crackmes](<https://github.com/NoraCodes/crackmes>) to binary
 
 
 I downloaded the github repo
@@ -152,8 +150,7 @@ done
 
 Now we're ready to get cracking!
 
-------
-
+-----
 
 # E) crackme01
 **OBJECTIVE**
@@ -164,12 +161,15 @@ First things first let's execute the binary:
 
 <img width="488" height="197" alt="Screenshot from 2026-02-06 09-38-39" src="https://github.com/user-attachments/assets/dc22c016-b22c-4e3c-b5a9-e9f2ce1a0472" />
 
-Because I cannot look into the original source code, and the binary code is not going to make sense, I decided to exract some human readable content from the executable by using our old friend `strings`. And wouldn't you know, my guy delivered once again: 
+Because I cannot look into the original source code and the binary code is not going to make sense, I decided to exract some human readable content from the executable by using our old friend `strings`. And wouldn't you know, it delivered once again: 
 
 
 <img width="457" height="541" alt="Screenshot from 2026-02-06 09-39-29" src="https://github.com/user-attachments/assets/9e0f6663-1e84-4f4a-a78b-83a3c5569b48" />
 
+
 <img width="468" height="121" alt="Screenshot from 2026-02-06 09-46-25" src="https://github.com/user-attachments/assets/f2bdba7b-1685-411e-a05d-84bfdc23088a" />
+
+-----
 
 
 # E.2) crackme01e
@@ -182,7 +182,7 @@ Same kind of workflow:
 <img width="650" height="710" alt="Screenshot from 2026-02-06 09-50-31" src="https://github.com/user-attachments/assets/a37917f5-dae2-47f9-be33-608aebfb9656" />
 
 
-This time we had to escape the special character:
+This time we had to escape a special character:
 
 <img width="499" height="296" alt="Screenshot from 2026-02-06 09-50-44" src="https://github.com/user-attachments/assets/51b55c95-e12b-4629-b86b-4ab22cb0c734" />
 
@@ -194,14 +194,39 @@ This time we had to escape the special character:
 - Solve the binary
 
 ## Reverse Engineering and Renaming
-
 I fired up the big gun a.k.a `ghidra`.
 
 We created a new project and imported the `crackme02` binary.
 
 Ghidra then did the heavy lifting and analysed the file for us, producing assembly instructions and C code.
 
-<img width="566" height="444" alt="Screenshot from 2026-02-06 10-01-51" src="https://github.com/user-attachments/assets/308d29c2-0dd4-442c-8f92-6996800f9ea1" />
+The `main` function:
+```C
+undefined8 main(int param_1,long param_2)
+
+{
+  undefined8 uVar1;
+  int local_c;
+  
+  if (param_1 == 2) {
+    for (local_c = 0;
+        ("password1"[local_c] != '\0' && (*(char *)((long)local_c + *(long *)(param_2 + 8)) != '\0')
+        ); local_c = local_c + 1) {
+      if ("password1"[local_c] + -1 != (int)*(char *)((long)local_c + *(long *)(param_2 + 8))) {
+        printf("No, %s is not correct.\n",*(undefined8 *)(param_2 + 8));
+        return 1;
+      }
+    }
+    printf("Yes, %s is correct!\n",*(undefined8 *)(param_2 + 8));
+    uVar1 = 0;
+  }
+  else {
+    puts("Need exactly one argument.");
+    uVar1 = 0xffffffff;
+  }
+  return uVar1;
+}
+```
 
 
 I figured the first declared variable inside the function might the `exit code`, as the function will always return with it no matter what. 
