@@ -8,6 +8,27 @@ Hammond 2022 - [GHIDRA for Reverse Engineering](<https://www.youtube.com/watch?v
 
 -----
 
+# My facilities
+**HOST a.k.a the provider**
+- Lenovo ThinkPad L490
+  - CPU: Intel i3-8145U (4) @ 3.900GHz 
+  - GPU: Intel WhiskeyLake-U GT2 UHD Graphics 620
+  - Total Memory: 8GB
+  - Total Disk size: 256GB
+  - OS: Ubuntu 24.04.3 LTS x86_64
+  - Kernel: 6.8.0-90-generic
+- Running the VM: KVM/QEMU Standard PC (Q35 + ICH9, 2009) (pc-q35-8.2)
+- Managed by: Virtual Machine Manager v.4.1.0, powered by libvirt.
+
+**VM a.k.a the attacker**
+- OS: Kali GNU/Linux Rolling x86_64
+- Kernel: Linux 6.18.5+kali-amd64
+- Total Memory: 4GB
+- Total Disk size: 28GB
+
+
+-----
+
 # A) Install Ghidra
 For `kali linux`:
 ```
