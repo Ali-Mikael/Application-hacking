@@ -1,3 +1,23 @@
+# My facilities
+**HOST a.k.a the provider**
+- Lenovo ThinkPad L490
+  - CPU: Intel i3-8145U (4) @ 3.900GHz 
+  - GPU: Intel WhiskeyLake-U GT2 UHD Graphics 620
+  - Total Memory: 8GB
+  - Total Disk size: 256GB
+  - OS: Ubuntu 24.04.3 LTS x86_64
+  - Kernel: 6.8.0-90-generic
+- Running the VM: KVM/QEMU Standard PC (Q35 + ICH9, 2009) (pc-q35-8.2)
+- Managed by: Virtual Machine Manager v.4.1.0, powered by libvirt.
+
+**VM a.k.a the attacker**
+- OS: Kali GNU/Linux Rolling x86_64
+- Kernel: Linux 6.18.5+kali-amd64
+- Total Memory: 4GB
+- Total Disk size: 28GB
+
+-----
+
 # A) Hidden strings
 **OBJECTIVE:**
 - Download [ezbin-challenges.zip](<https://terokarvinen.com/loota/yctjx7/ezbin-challenges.zip>)
@@ -40,7 +60,7 @@ And just like that we're able to retrieve the password!
 Now we can type it in the program while it's none the wiser:
 - <img width="817" height="144" alt="Screenshot from 2026-01-26 15-18-06" src="https://github.com/user-attachments/assets/65eeaa0b-aee0-4965-991f-f0d80c649795" />
 
-
+-----
 
 # B) Hiding in plain sight
 **OBJECTIVE:**
@@ -172,6 +192,8 @@ $ gcc passtr.c -o passtr2
 - <img width="677" height="87" alt="Screenshot from 2026-01-26 18-33-21" src="https://github.com/user-attachments/assets/2e78700b-92bc-453c-aee4-2a7f6e1a0e4d" />
 
 
+-----
+
 
 # C) Packd
 Objective is same as before, put this time a bit more challenging apparently.
@@ -220,7 +242,7 @@ $ upx -d packd
 Basically we just had to uncompress the program in order to read it cleanly! 
 
 
-
+-----
 
 # D) Optional Bonus: Cryptopals
 The challenge set can be found [here](<https://www.cryptopals.com/sets/1>)!
