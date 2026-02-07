@@ -33,13 +33,13 @@ Target can be installed from [here!](<https://terokarvinen.com/loota/yctjx7/ezbi
 
 
 ## Reverse engineering
-I created a new directory to store ghidra projects, fired up `ghidra` and imported the binary
+I created a new directory for storing ghidra projects, and within it a directory for the current task.
 ```bash
 $ mkdir -p ghidraProjects/packd/
 ```
-<img width="668" height="525" alt="Screenshot from 2026-02-04 23-00-23" src="https://github.com/user-attachments/assets/c6f4e5f5-21e1-4832-9267-7c35c2257808" />
-
-<img width="688" height="373" alt="Screenshot from 2026-02-04 23-02-01" src="https://github.com/user-attachments/assets/07133052-f5b5-4122-a9f1-1bb1c9f10537" />
+Fire up `ghidra` and import the binary:
+- <img width="668" height="525" alt="Screenshot from 2026-02-04 23-00-23" src="https://github.com/user-attachments/assets/c6f4e5f5-21e1-4832-9267-7c35c2257808" />
+- <img width="688" height="373" alt="Screenshot from 2026-02-04 23-02-01" src="https://github.com/user-attachments/assets/07133052-f5b5-4122-a9f1-1bb1c9f10537" />
 
 
 > [!NOTE]
@@ -58,7 +58,7 @@ $ mkdir -p ghidraProjects/packd/
 >
 > "Fundamentally, p-code works by translating individual processor instructions into a sequence of p-code operations that take parts of the processor state as input and output variables (varnodes)" - P-Code Reference manual
 > 
-> The _high level C code_ you then see in the decompiler is actually `C pseudocode` derived from the aforementioned P-Code
+> The _high level C code_ you then see in the `decompiler` is actually `C pseudocode` derived from the aforementioned p-code
 >
 > Sources:
 >- [P-Code Reference manual](<https://ghidra.re/ghidra_docs/languages/html/pcoderef.html>)
@@ -72,16 +72,14 @@ $ mkdir -p ghidraProjects/packd/
 <img width="831" height="421" alt="Screenshot from 2026-02-04 23-12-10" src="https://github.com/user-attachments/assets/bc2335fc-0743-4e17-bae8-9aa86072c5ad" />
 
 
-#### We then change the variable names to something comprehensible, so that it's easier to read the function (user_input and password):
-<img width="723" height="252" alt="Screenshot from 2026-02-04 23-14-17" src="https://github.com/user-attachments/assets/b972d6a7-4d31-4405-be35-84288d7124e8" />
+#### We then rename the variables to something comprehensible, so that it's easier to read and understand the function:
+Highlight the variable you want to change and press `L`
+- <img width="723" height="252" alt="Screenshot from 2026-02-04 23-14-17" src="https://github.com/user-attachments/assets/b972d6a7-4d31-4405-be35-84288d7124e8" />
+- <img width="766" height="285" alt="Screenshot from 2026-02-04 23-28-29" src="https://github.com/user-attachments/assets/7daca284-0abc-4fc5-864f-e8afc313f3f2" />
 
-
-<img width="766" height="285" alt="Screenshot from 2026-02-04 23-28-29" src="https://github.com/user-attachments/assets/7daca284-0abc-4fc5-864f-e8afc313f3f2" />
-
-### How does the program work?
-The program is pretty simple
-- It initialises a password variable and later populates that variable with a number
-- The number in question is the **result** of `comparing` the password with user input
+#### How does the program work?
+- It _initialises a password variable_ and later on in the function populates that variable with a number
+- The number in question is the **result** of `comparing` the **password** with **user input**
 - If the strings `match` == 0
   - 0 means the comparison operation was successful and the strings are equal
 - This is all done using a simple `if else` statement
@@ -102,26 +100,23 @@ We import the second program called `passtr`
 - Analyze it
 - Open up the main function
 - Give variables descriptive names
-
-<img width="833" height="447" alt="Screenshot from 2026-02-04 23-37-18" src="https://github.com/user-attachments/assets/ac8830d5-3d42-4e6f-a169-ae6f74be359f" />
+- <img width="833" height="447" alt="Screenshot from 2026-02-04 23-37-18" src="https://github.com/user-attachments/assets/ac8830d5-3d42-4e6f-a169-ae6f74be359f" />
 
 
 
 #### I opened up the assembly instructions alongside the decompiler and highlighed the function I wanted to change so that the _corresponding instructions_ would be highlighted as well:
+- <img width="1314" height="539" alt="Screenshot from 2026-02-05 18-45-09" src="https://github.com/user-attachments/assets/25426108-b8dd-4c30-a9e5-733dcaf1d808" />
 
-<img width="1314" height="539" alt="Screenshot from 2026-02-05 18-45-09" src="https://github.com/user-attachments/assets/25426108-b8dd-4c30-a9e5-733dcaf1d808" />
-
-I knew I had to modify the assembly somehow, so I did some googling on assembly syntax and how `if else` logic is built in assembly.
+#### I knew I had to modify the assembly instructions somehow
+So I did some googling on assembly syntax and how `if else` logic is built in assembly.
 
 I realised that after _comparing the passwords_ there's an instruction after it == `JNZ`, which will **jump** to the **"sorry no bonus"** if value is **not zero**
 - `JNZ` = Jump Not Zero
 - Otherwise it will give the flag, which is next up in the execution order if we don't jump
-
-<img width="972" height="247" alt="Screenshot from 2026-02-05 18-55-32" src="https://github.com/user-attachments/assets/83337733-a322-4375-a15f-46f2bbb1c211" />
+- <img width="972" height="247" alt="Screenshot from 2026-02-05 18-55-32" src="https://github.com/user-attachments/assets/83337733-a322-4375-a15f-46f2bbb1c211" />
 
 
 ### This is what I came up with:
-
 
 Just remove the `N` innit 😂
 - `Ctrl+Shift+G` to `Patch Instruction` (modify)
