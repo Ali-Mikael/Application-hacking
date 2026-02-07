@@ -42,7 +42,6 @@ $ mkdir -p ghidraProjects/packd/
 <img width="688" height="373" alt="Screenshot from 2026-02-04 23-02-01" src="https://github.com/user-attachments/assets/07133052-f5b5-4122-a9f1-1bb1c9f10537" />
 
 
-
 > [!NOTE]
 > It should be mentioned that i'm using the **same exact copy** of the binary in the **h3-task**, so it's already **unpacked**!
 >
@@ -52,7 +51,7 @@ $ mkdir -p ghidraProjects/packd/
 #### We then let ghidra analyze the file and produce high level C code and assembly instructions:
 <img width="1317" height="790" alt="Screenshot from 2026-02-04 23-04-21" src="https://github.com/user-attachments/assets/d9c23ccd-ded2-44e0-b65b-481f6139cbbc" />
 
-> [!INFO]
+> [!NOTE]
 > Regarding the decompiled C code:
 >
 > By analysing the binary Ghidra generates what is known as `P-Code`, which is the _intermediary representation_ of the instruction set
