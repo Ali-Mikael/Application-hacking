@@ -23,7 +23,7 @@ Run it by typing `$ ghidra`:
 
 # B) Rever-C
 **OBJECTIVE**
-- Reverse engineer the packd binary to C language using `ghidra`
+- Reverse engineer the `packd` binary to C language using `ghidra`
 - Find the main program
 - Give variables descriptive names
 - Explain the programs operation
@@ -33,56 +33,68 @@ Target can be installed from [here!](<https://terokarvinen.com/loota/yctjx7/ezbi
 
 
 ## Reverse engineering
-I created a new directory for my project
+I created a new directory to store ghidra projects, fired up `ghidra` and imported the binary
 ```bash
 $ mkdir -p ghidraProjects/packd/
 ```
-Then I fired up `ghidra` and opened up the binary. 
-
 <img width="668" height="525" alt="Screenshot from 2026-02-04 23-00-23" src="https://github.com/user-attachments/assets/c6f4e5f5-21e1-4832-9267-7c35c2257808" />
 
 <img width="688" height="373" alt="Screenshot from 2026-02-04 23-02-01" src="https://github.com/user-attachments/assets/07133052-f5b5-4122-a9f1-1bb1c9f10537" />
 
 
+
 > [!NOTE]
->
-> It should be mentioned that i'm using the _same exact copy_ of the binary in the `h3 task`, so it's already _unpacked_.
+> It should be mentioned that i'm using the **same exact copy** of the binary in the **h3-task**, so it's already **unpacked**!
 >
 > If this sounds unfamiliar, check [this out](<https://github.com/Ali-Mikael/Application-hacking/blob/main/h3-NoStringsAttached.md#c-packd>)
 
 
-#### We then let ghidra do the heavy lifting for us, and analyze the contents in order to reverse engineer it to C:
+#### We then let ghidra analyze the file and produce high level C code and assembly instructions:
 <img width="1317" height="790" alt="Screenshot from 2026-02-04 23-04-21" src="https://github.com/user-attachments/assets/d9c23ccd-ded2-44e0-b65b-481f6139cbbc" />
 
+> [!INFO]
+> Regarding the decompiled C code:
+>
+> By analysing the binary Ghidra generates what is known as `P-Code`, which is the _intermediary representation_ of the instruction set
+>
+> "Fundamentally, p-code works by translating individual processor instructions into a sequence of p-code operations that take parts of the processor state as input and output variables (varnodes)" - P-Code Reference manual
+> 
+> The _high level C code_ you then see in the decompiler is `pseudocode` derived from the aforementioned P-Code
+>
+> Sources:
+>- [P-Code Reference manual](<https://ghidra.re/ghidra_docs/languages/html/pcoderef.html>)
+>- [HackadayU: Reverse Engineering with Ghidra Class 1 (starting at 52:29)](<https://www.youtube.com/watch?v=d4Pgi5XML8E&list=PL_tws4AXg7auglkFo6ZRoWGXnWL0FHAEi&index=2>)
 
-#### We're able to navigate through different parts of the code using the symbol tree:
+#### We're able to navigate through different parts of the code using the symbol tree on the left:
 <img width="1310" height="773" alt="Screenshot from 2026-02-04 23-08-01" src="https://github.com/user-attachments/assets/845e87d9-3ef8-4f37-af75-b8c1e574e2f3" />
 
 
-#### Luckily for us, there's not that many functions and it's a pretty small program. Plus the main program is called main, so we find it pretty easy:
+#### Lucky for us there's not that many functions and it's a small program. Plus the main program is called main, so we find it pretty easily:
 <img width="831" height="421" alt="Screenshot from 2026-02-04 23-12-10" src="https://github.com/user-attachments/assets/bc2335fc-0743-4e17-bae8-9aa86072c5ad" />
 
 
-#### We then change the variable name to something more easily recognizable:
+#### We then change the variable names to something comprehensible, so that it's easier to read the function (user_input and password):
 <img width="723" height="252" alt="Screenshot from 2026-02-04 23-14-17" src="https://github.com/user-attachments/assets/b972d6a7-4d31-4405-be35-84288d7124e8" />
 
 
-#### We do the same for the user input. And like so, it's much easier to read the program now:
 <img width="766" height="285" alt="Screenshot from 2026-02-04 23-28-29" src="https://github.com/user-attachments/assets/7daca284-0abc-4fc5-864f-e8afc313f3f2" />
 
 ### How does the program work?
-The program is pretty simple. It initialises a variable with the password and then asks for user input.
-
-The user input is then matched against the variable using a simple `if else` statement
-- `if true` == the flag is provided
-- `else` == no bonus :/
+The program is pretty simple
+- It initialises a password variable and later populates that variable with a number
+- The number in question is the **result** of `comparing` the _password string_ with the _user provided input_
+- If the strings match => the result is true, meaning == 0
+  - 0 means the comparison operation was successful and the strings are equal
+- This is all done using a simple `if else` statement
+  - `if true` == the flag is provided
+  - `else` (anything else than 0) == no bonus :/
 
 ------
 
 
 # C) Backwards
 **OBJECTIVE**
-- Modify the passtr programs's binary so that it accepts all passwords except the correct one
+- Modify the `passtr` programs's binary so that it accepts all passwords except the correct one
   - Without the original source code of course!
 - Demonstrate with tests that your solution works
 
@@ -95,20 +107,19 @@ We import the second program called `passtr`
 
 --> give variables descriptive names:
 
-<img width="1039" height="356" alt="Screenshot from 2026-02-04 23-34-26" src="https://github.com/user-attachments/assets/f12f92aa-f8fe-426c-9a35-91d15ae60d8f" />
-
 <img width="833" height="447" alt="Screenshot from 2026-02-04 23-37-18" src="https://github.com/user-attachments/assets/ac8830d5-3d42-4e6f-a169-ae6f74be359f" />
 
 
-I opened up the assembly instructions alongside the decompiler and highlighed the function I wanted to change so that I would notice it in the instructions (also being automatically highlighted as a result):
+
+#### I opened up the assembly instructions alongside the decompiler and highlighed the function I wanted to change so that the _corresponding instructions_ would be highlighted as well:
 
 <img width="1314" height="539" alt="Screenshot from 2026-02-05 18-45-09" src="https://github.com/user-attachments/assets/25426108-b8dd-4c30-a9e5-733dcaf1d808" />
 
 I knew I had to modify the assembly somehow, so I did some googling on assembly syntax and how `if else` logic is built in assembly.
 
-I realised that after _comparing the passwords_ there's an instruction after it == `JNZ`, which will jump to the **"sorry no bonus"** if value is **not zero**
-- `JNZ` = Jump if Not Zero
-- Otherwise it will give the flag, which is next up in the execution order if we don't jump.
+I realised that after _comparing the passwords_ there's an instruction after it == `JNZ`, which will **jump** to the **"sorry no bonus"** if value is **not zero**
+- `JNZ` = Jump Not Zero
+- Otherwise it will give the flag, which is next up in the execution order if we don't jump
 
 <img width="972" height="247" alt="Screenshot from 2026-02-05 18-55-32" src="https://github.com/user-attachments/assets/83337733-a322-4375-a15f-46f2bbb1c211" />
 
@@ -121,14 +132,14 @@ I pressed Ctrl+Shift+G to `Patch Instruction` (modify).
 <img width="813" height="96" alt="Screenshot from 2026-02-05 18-59-44" src="https://github.com/user-attachments/assets/27a6cdb5-e53b-4e8e-b196-b818d31ecfa9" />
 
 
-I then saved the file and _exported it_ to the same format as the original program (binary). Ghidra takes care of the recompilation! 
+I then saved the file (Ctrl+S) and _exported it_ back to binary. Ghidra takes care of recompiling! 
 
 We also needed to make the binary executable after exporting:
 
 <img width="1670" height="398" alt="Screenshot from 2026-02-05 19-07-02" src="https://github.com/user-attachments/assets/4736f74b-e063-4ed7-bdbc-358949b18469" />
 
 
-### We then test it by typing in 2 wrong passwords followed by the correct one:
+### We then test that it works by typing in 2 wrong passwords followed by the correct one:
 <img width="939" height="509" alt="Screenshot from 2026-02-05 19-07-50" src="https://github.com/user-attachments/assets/c34743cb-22ca-4864-bcf7-3d68d4e45e23" />
 
 
@@ -158,7 +169,7 @@ $ git clone https://github.com/NoraCodes/crackmes.git
 
 There's about 20 `C`-files in the repo and we have to compile them all to binary. 
 
-I didn't feel like doing it manually one by one, so i created a quick `for loop`
+I didn't feel like doing any manual labour so i created a quick `for loop`
 ```bash
 for crack in *.c; do
   gcc "$crack" -o "${crack%.c}"
@@ -179,7 +190,7 @@ First things first let's execute the binary and see what happens:
 
 <img width="488" height="197" alt="Screenshot from 2026-02-06 09-38-39" src="https://github.com/user-attachments/assets/dc22c016-b22c-4e3c-b5a9-e9f2ce1a0472" />
 
-Because I cannot look at the original source code and the machine code is alien language, I decided to exract some human readable content from the executable by using our old friend `strings`. 
+Because the original source code is off limits and the machine code is alien language, I decided to exract some human readable content from the executable by using our old friend `strings`. 
 
 #### And wouldn't you know, it delivered once again: 
 <img width="457" height="541" alt="Screenshot from 2026-02-06 09-39-29" src="https://github.com/user-attachments/assets/9e0f6663-1e84-4f4a-a78b-83a3c5569b48" />
@@ -200,9 +211,9 @@ Same kind of workflow:
 <img width="650" height="710" alt="Screenshot from 2026-02-06 09-50-31" src="https://github.com/user-attachments/assets/a37917f5-dae2-47f9-be33-608aebfb9656" />
 
 
-### This time we had to escape a special character in order to complete the objective:
+### This time we had to escape a special character in order to complete the objective (either use a forward slash or single quotes so that the shell takes the string "literally" and doesn't expand it)
+<img width="512" height="218" alt="Screenshot from 2026-02-07 12-04-38" src="https://github.com/user-attachments/assets/c695e774-6bde-411b-966d-3bad39f01a25" />
 
-<img width="499" height="296" alt="Screenshot from 2026-02-06 09-50-44" src="https://github.com/user-attachments/assets/51b55c95-e12b-4629-b86b-4ab22cb0c734" />
 
 -----
 
@@ -273,7 +284,8 @@ I also found a few other variables to name. But before that, let's go through ho
 #### This is achieved in the following manner:
 
 > [!NOTE]
-> Code modified to drive the point across
+> This is pseudocode derived from the representation of the original source code to drive the point across!
+>
 
 ```C
 if (cliArgs == 2){
@@ -292,15 +304,18 @@ Now let's reveal the variables before diving into the solution:
 <img width="969" height="540" alt="Screenshot from 2026-02-06 16-25-22" src="https://github.com/user-attachments/assets/f3370ee2-f020-4627-9e25-a48913cb11fa" />
 
 
-### Now to the interesting part (the -- magic --)
+### The magic
 
 The following section in the code really caught my interest:
 ```C
 if ("password1"[i] + -1
 ```
-It seems like the program is taking each character of the password and shifting it back by one (presumably ascii).
+It seems like the program is taking each character of the password and shifting it back by one, a.k.a performing the `ceasar cipher`.
 
-It also seemed like the loop is not accounting for the length of the input. Which takes us to the next step:
+It also seemed as the loop is not accounting for the length of the input. Mainly because the for loop ends when **either** string ends.
+
+
+Which takes us to the next step:
 
 The letter before `p` is `o` so let's give it a go 
 > It can't be wrong if it rhymes...
@@ -310,9 +325,10 @@ The letter before `p` is `o` so let's give it a go
 
 And wouldn't you know, didn't even have to type in the whole password == ``o`rrvnqc0``
 
+
 Here's an [ascii table](<https://www.ascii-code.com/>) for reference. For the most part just knowing the alphabet was enough here, I just needed to know what comes before `a`, which was the backtick!
 
-
+-----
 
 
 # I) Optional: solve the crackme02e
@@ -326,7 +342,7 @@ Here's an [ascii table](<https://www.ascii-code.com/>) for reference. For the mo
 
 <img width="1683" height="966" alt="Screenshot from 2026-02-06 22-13-36" src="https://github.com/user-attachments/assets/0807b865-d0ad-4c52-a0e0-1f5c69d8166c" />
 
-After renaming the variables, this is the main function ghidra spit out for us:
+This is the main function ghidra spit out for us (I already took the liberty to rename a few entry level variables):
 ```C
 undefined8 main(int cliArgs,long userInput)
 
@@ -351,6 +367,71 @@ undefined8 main(int cliArgs,long userInput)
   }
   return exitCode;
 ```
+
+This time around there's even more magic happening inside the for loop.
+
+My attention immediately went to the `&DAT_0010201f`, which seems to be be the password. I then created an array from it using ghidra
+- I _double clicked_ the variable which took me to the assembly view
+- Then right click -> Data and chose `char`
+- Right click again -> Data and `Create Array`, where I chose 8 as the length
+- <img width="1265" height="420" alt="Screenshot from 2026-02-07 14-31-01" src="https://github.com/user-attachments/assets/e14b7ac8-e3d1-4b35-ac83-3ff0d3f509e5" />
+
+As a result, we have the password string as a char array and we can now spot it in the decompiler
+- <img width="1008" height="442" alt="Screenshot from 2026-02-07 14-34-55" src="https://github.com/user-attachments/assets/4f24cffa-a79c-470c-9f0c-e0f842a3d2a2" />
+- <img width="909" height="184" alt="Screenshot from 2026-02-07 14-34-17" src="https://github.com/user-attachments/assets/315bb68b-2efa-4078-abf0-ad217559b7c9" />
+
+
+**Had some help**
+- From this [video by Matthew Alt produced by Hackaday](<https://www.youtube.com/watch?v=uyWVztMHWtk&list=PL_tws4AXg7auglkFo6ZRoWGXnWL0FHAEi&index=3>) (starting at the 53:12 mark)
+
+
+**Further clean up**
+- I also changed the _function return type_ to `int` and _userInput type_ to `char **`
+- The function we modify by right clicking it and choosing `Edit Function Signature`, from there -> `builtin` and -> `int`
+  - <img width="1008" height="442" alt="Screenshot from 2026-02-07 14-34-55" src="https://github.com/user-attachments/assets/e2d9175f-6076-40ba-85a8-93241c96de87" />
+- The userInput parameter we modify with `Ctrl+L` (Retype Variable) and enter `char **`, so that we get rid off the ugly pointers in the code
+
+
+DevOps who? Call me the CleanOps engineer!
+```C
+int main(int cliArgs,char **userInput)
+
+{
+  int exitCode;
+  int i;
+  
+  if (cliArgs == 2) {
+    for (i = 0; ("yuvmnpoi"[i] != '\0' && (userInput[1][i] != '\0')); i = i + 1) {
+      if ("yuvmnpoi"[i] + -2 != (int)userInput[1][i]) {
+        printf("No, %s is not correct.\n",userInput[1]);
+        return 1;
+      }
+    }
+    printf("Yes, %s is correct!\n",userInput[1]);
+    exitCode = 0;
+  }
+  else {
+    puts("Need exactly one argument.");
+    exitCode = -1;
+  }
+  return exitCode;
+
+```
+
+
+I also had some help from [The Ghidra Book, Chris Eagle 2020](<https://www.oreilly.com/library/view/the-ghidra-book/9781098125684/xhtml/ch02.xhtml#ch02lev29>) Chapter 19: The Ghidra Decompiler
+
+
+Now that we have the code, it seems that it does the same thing as previously, but shifting with a 2 instead of 1 this time.
+
+Let's put that to test:
+- `yuvmnpoi` shifted back by 2 ascii is == `wstklnmg`
+- <img width="617" height="395" alt="Screenshot from 2026-02-07 16-06-52" src="https://github.com/user-attachments/assets/2a8018bd-3716-41ea-b0a4-9e4d81998e6f" />
+- Again, the loop is ending when either string end, so we can type either _one character_ of the string, the whole string or anything in between
+- Fu**it, we can even go above and beyond as the password ends and doesn't have any more characters to compare
+  - <img width="635" height="131" alt="Screenshot from 2026-02-07 16-09-55" src="https://github.com/user-attachments/assets/71bbdc4c-06dc-4e89-bb5f-9f7d864237ec" />
+- But as soon as the first character is different, we're denied entry:
+  - <img width="635" height="131" alt="Screenshot from 2026-02-07 16-10-12" src="https://github.com/user-attachments/assets/51c3969e-1883-4dc5-a06e-079741b4e649" />
 
 
 
