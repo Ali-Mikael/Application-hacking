@@ -8,34 +8,36 @@ Hammond 2022 - [GHIDRA for Reverse Engineering](<https://www.youtube.com/watch?v
 
 -----
 
-# My facilities
-**HOST a.k.a the provider**
-- Lenovo ThinkPad L490
-  - CPU: Intel i3-8145U (4) @ 3.900GHz 
-  - GPU: Intel WhiskeyLake-U GT2 UHD Graphics 620
-  - Total Memory: 8GB
-  - Total Disk size: 256GB
-  - OS: Ubuntu 24.04.3 LTS x86_64
-  - Kernel: 6.8.0-90-generic
-- Running the VM: KVM/QEMU Standard PC (Q35 + ICH9, 2009) (pc-q35-8.2)
-- Managed by: Virtual Machine Manager v.4.1.0, powered by libvirt.
+# Infrastructure for completing objectives
+**HOST a.k.a The Provider**
+- **Lenovo ThinkPad L490**
+  - _CPU:_ Intel i3-8145U (4) @ 3.900GHz 
+  - _GPU:_ Intel WhiskeyLake-U GT2 UHD Graphics 620
+  - _Memory:_ 8GB
+  - _Disk size:_ 256GB
+  - _OS:_ Ubuntu 24.04.3 LTS x86_64
+  - _Kernel:_ 6.8.0-90-generic
+- _Virtualization:_ KVM/QEMU Standard PC (Q35 + ICH9, 2009) (pc-q35-8.2)
+- _Managed by:_ Virtual Machine Manager v.4.1.0, powered by libvirt.
 
-**VM a.k.a the attacker**
-- OS: Kali GNU/Linux Rolling x86_64
-- Kernel: Linux 6.18.5+kali-amd64
-- Total Memory: 4GB
-- Total Disk size: 28GB
+**VM a.k.a The Playmaker a.k.a The Attacker**
+- _OS:_ Kali GNU/Linux Rolling x86_64
+- _Kernel:_ Linux 6.18.5+kali-amd64
+- _Memory:_ 4GB
+- _Storage:_ 28GB
 
 
 -----
 
 # A) Install Ghidra
-For `kali linux`:
-```
+For `Kali Linux`:
+```bash
 $ sudo apt update && sudo apt install -y ghidra
 ```
-Run it by typing `$ ghidra`:
-
+Run it:
+```
+$ ghidra
+```
 <img width="1202" height="738" alt="Screenshot from 2026-01-27 21-54-40" src="https://github.com/user-attachments/assets/38020368-4485-4cdc-b92a-e287703f46c4" />
 
 
@@ -75,9 +77,9 @@ Fire up `ghidra` and import the binary:
 > [!NOTE]
 > **Regarding the decompiled C code**
 >
-> By analysing the binary Ghidra generates what is known as `P-Code`, which is the _intermediary representation_ of the instruction set
+> By analysing the binary Ghidra generates what is known as `P-Code`, which is the _intermediary representation_ of the _instruction set_
 >
-> "Fundamentally, p-code works by translating individual processor instructions into a sequence of p-code operations that take parts of the processor state as input and output variables (varnodes)" - P-Code Reference manual
+> "_Fundamentally, p-code works by translating individual processor instructions into a sequence of p-code operations that take parts of the processor state as input and output variables (varnodes)_" - P-Code Reference manual
 > 
 > The _high level C code_ you then see in the `decompiler` is actually `C pseudocode` derived from the aforementioned p-code
 >
@@ -129,10 +131,13 @@ We import the second program called `passtr`
 - <img width="1314" height="539" alt="Screenshot from 2026-02-05 18-45-09" src="https://github.com/user-attachments/assets/25426108-b8dd-4c30-a9e5-733dcaf1d808" />
 
 #### I knew I had to modify the assembly instructions somehow
-So I did some googling on assembly syntax and how `if else` logic is built in assembly.
-
-I realised that after _comparing the passwords_ there's an instruction after it == `JNZ`, which will **jump** to the **"sorry no bonus"** if value is **not zero**
+So I did some googling on instructions, syntax and how `if else` logic is built in assembly
+- I realised that after _comparing the passwords_ there's an instruction following it == `JNZ`, which will **jump** to the **"sorry no bonus"** if value is **not zero**
 - `JNZ` = Jump Not Zero
+- And after the instructions `JNZ` the target of the operation is specified == `LAB_001011b6`
+  - Which signifies **some code to be executed** at a **specified address** (Chris Eagle, 2020)
+  - `LAB` = some code
+  - `001011b6` = the address
 - Otherwise it will give the flag, which is next up in the execution order if we don't jump
 - <img width="972" height="247" alt="Screenshot from 2026-02-05 18-55-32" src="https://github.com/user-attachments/assets/83337733-a322-4375-a15f-46f2bbb1c211" />
 
@@ -141,7 +146,7 @@ I realised that after _comparing the passwords_ there's an instruction after it 
 
 Just remove the `N` innit 😂
 - `Ctrl+Shift+G` to `Patch Instruction` (modify)
-- Remove the N and apply
+- Remove the `N` and apply
 - <img width="813" height="96" alt="Screenshot from 2026-02-05 18-59-44" src="https://github.com/user-attachments/assets/27a6cdb5-e53b-4e8e-b196-b818d31ecfa9" />
 - Save the file `Ctrl+S`
 - Export it back to binary
@@ -164,6 +169,7 @@ Just remove the `N` innit 😂
 **Help used:**
 - [An article on modifying a port number from binary](<https://blog.cjearls.io/2019/04/editing-executable-binary-file-with.html>)
 - [Assembly instructions](<https://www.tutorialspoint.com/assembly_programming/assembly_conditions.htm>)
+- [The Ghidra Book by Chris Eagle 2020, Chapter 7](<https://learning.oreilly.com/library/view/the-ghidra-book/9781098125684/>)
 
 -----
 
@@ -220,7 +226,7 @@ Same kind of workflow
 - <img width="650" height="710" alt="Screenshot from 2026-02-06 09-50-31" src="https://github.com/user-attachments/assets/a37917f5-dae2-47f9-be33-608aebfb9656" />
 
 
-This time we had to escape a special character in order to complete the objective 
+This time we had to _escape a special character_ in order to complete the objective 
 - Either using a forward slash
 - or
 - Single quotes: so the shell interprets it _literally_ and doesn't expand it
@@ -276,10 +282,10 @@ I figured the first variable `uVar1` inside the function might be used as the `e
 
 **To support our hypothesis**
 - We can see that it's used in the `if else` clause:
-  - If the password is correct the variable is set to `0` and later returned
+  - If the password is **correct** the variable is set to `0` and later returned
     - Indicating that everything went well.
-  - If the password is wrong the variable is set to `0xffffffff`
-    - Which will result in returning the highest possible exit status
+  - If the password is **wrong** the variable is set to `0xffffffff`
+    - Which will result in returning the highest possible exit status (which is 255 in Linux)
 
 
 **We found 4 variables to rename:**
@@ -386,14 +392,15 @@ undefined8 main(int cliArgs,long userInput)
 
 My attention immediately went to the `&DAT_0010201f` variable, which seems to be be the password
 - This time around the password is not in clear text though
-- It's rather a **pointer** to _some data_ located at the specified address (`0010201f` in this case)
-  - Note: The `DAT` prefix signifies `data` (Chris Eagle, 2020)
+- It's rather a **pointer** to **some data** located at a **specified address** (Chris Eagle, 2020)
+  - The `DAT` prefix signifies `data`
+  - `0010201f` is the address
 
 
 I created an array from it using ghidra:
-- Double click the variable which takes us to the assembly view
+- Double click the variable which takes us to the `assembly view`
 - Then right click -> Data -> `char`
-- Right click **again** -> Data and `Create Array`, where I chose 8 as the length
+- Right click **again** -> Data -> `Create Array`, where I chose 8 as the length
 - <img width="1265" height="420" alt="Screenshot from 2026-02-07 14-31-01" src="https://github.com/user-attachments/assets/e14b7ac8-e3d1-4b35-ac83-3ff0d3f509e5" />
 
 
@@ -403,12 +410,13 @@ As a result, we have the password string as a char array and we can now spot it 
 
 
 **Further clean up**
-- I also changed the _function return type_ to `int` and _userInput type_ to `char **`
-- The `function` we modify by right clicking it and choosing `Edit Function Signature`, from there -> `builtin` and finally -> `int`
-- The `userInput parameter` we modify by placing the cursor on top of it, then with `Ctrl+L` (Retype Variable) we enter `char **`, so that we get rid off the ugly pointers in the code
+- I also changed the **function return type** to `int` and **userInput type** to `char **`
+  - `function` we modify by right clicking it -> `Edit Function Signature` -> `builtin` -> `int`
+  - `userInput parameter` we modify by placing the cursor on top of it, then -> `Ctrl+L` (Retype Variable) -> `char **`
+    - By specifying the correct type, the code then becomes more readable and easier to interpret
 
 
-DevOps who? Call me the CleanOps engineer!
+#### DevOps who? Call me the CleanOps engineer!
 ```C
 int main(int cliArgs,char **userInput)
 
@@ -439,16 +447,18 @@ Now that we have the code, we quickly realise it does the same thing as previous
 Let's put that to test:
 - `yuvmnpoi` shifted back by 2 ascii is == `wstklnmg`
 - <img width="617" height="395" alt="Screenshot from 2026-02-07 16-06-52" src="https://github.com/user-attachments/assets/2a8018bd-3716-41ea-b0a4-9e4d81998e6f" />
-- Again, the loop is ending when either string end, so we can type either _one character_ of the string, the whole string or anything in between
-- Fu**it, we can even go above and beyond as the password ends and doesn't have any more characters to compare
+
+
+Again, the loop ends when either string runs out, so we can type either _one character_ of the string, the whole string or anything in between
+- Fu**it, we can even go _above and beyond_ as the password ends and doesn't have any more characters to compare
   - <img width="635" height="131" alt="Screenshot from 2026-02-07 16-09-55" src="https://github.com/user-attachments/assets/71bbdc4c-06dc-4e89-bb5f-9f7d864237ec" />
 - But as soon as the first character is different, we're denied entry:
   - <img width="635" height="131" alt="Screenshot from 2026-02-07 16-10-12" src="https://github.com/user-attachments/assets/51c3969e-1883-4dc5-a06e-079741b4e649" />
 
 
 **Help received**
-- From this [video by Matthew Alt produced by Hackaday](<https://www.youtube.com/watch?v=uyWVztMHWtk&list=PL_tws4AXg7auglkFo6ZRoWGXnWL0FHAEi&index=3>) (starting at the 53:12 mark)
-- As well as [The Ghidra Book by Chris Eagle 2020](<https://www.oreilly.com/library/view/the-ghidra-book/9781098125684/xhtml/ch02.xhtml#ch02lev29>)
+- From this [video](<https://www.youtube.com/watch?v=uyWVztMHWtk&list=PL_tws4AXg7auglkFo6ZRoWGXnWL0FHAEi&index=3>) by Matthew Alt produced by Hackaday (The whole video was interesting, but I specifically learned how to create the char array from the section starting at the **53:12** mark)
+- As well as [The Ghidra Book](<https://learning.oreilly.com/library/view/the-ghidra-book/9781098125684/>) by Chris Eagle 2020
   - Chapter 7: Disassembly Manipulation
   - Chapter 19: The Ghidra Decompiler
 
