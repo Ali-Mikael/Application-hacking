@@ -301,10 +301,10 @@ I figured the first variable `uVar1` inside the function might be used as the `e
 
 
 **We found 4 variables to rename:**
-- `cliArgs` 
-- `userInput`
-- `exitCode`
-- `i` (the index used in the for loop).
+- `param_1` => `cliArgs` 
+- `param_2` => `userInput`
+- `uVar1` => `exitCode`
+- `local_c` => `i` (index used in the `for loop`)
 
 #### This makes it easier to read and understand the program
 <img width="969" height="540" alt="Screenshot from 2026-02-06 16-25-22" src="https://github.com/user-attachments/assets/f3370ee2-f020-4627-9e25-a48913cb11fa" />
