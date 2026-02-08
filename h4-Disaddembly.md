@@ -392,9 +392,10 @@ undefined8 main(int cliArgs,long userInput)
 
 My attention immediately went to the `&DAT_0010201f` variable, which seems to be be the password
 - This time around the password is not in clear text though
-- It's rather a **pointer** to **some data** located at a **specified address** (Chris Eagle, 2020)
+- It's rather a **pointer** to **some data** located at a **specified address**
   - The `DAT` prefix signifies `data`
   - `0010201f` is the address
+  - The Ghidra Book Chapter 7 did a great job explaining this concept!
 
 
 I created an array from it using ghidra:
