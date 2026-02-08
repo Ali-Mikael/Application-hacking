@@ -408,13 +408,14 @@ My attention immediately went to the `&DAT_0010201f` variable, which seems to be
 
 
 **I went ahead and created an array from it:**
+- **Why?** So that the decompiler output would make more sense!
 - Double click the variable which takes us to the `assembly view`
 - Then right click -> Data -> `char`
-- Right click **again** -> Data -> `Create Array`, where I chose 8 as the length
+- Right click **again** -> Data -> `Create Array` -> `Length` == 8
 - <img width="1265" height="420" alt="Screenshot from 2026-02-07 14-31-01" src="https://github.com/user-attachments/assets/e14b7ac8-e3d1-4b35-ac83-3ff0d3f509e5" />
 
 
-As a result, we have the password string as a `char array` and we can now spot it in the decompiler
+As a result the password string becomes a human readable `char array` we can now spot it in the decompiler
 - <img width="1008" height="442" alt="Screenshot from 2026-02-07 14-34-55" src="https://github.com/user-attachments/assets/4f24cffa-a79c-470c-9f0c-e0f842a3d2a2" />
 - <img width="909" height="184" alt="Screenshot from 2026-02-07 14-34-17" src="https://github.com/user-attachments/assets/315bb68b-2efa-4078-abf0-ad217559b7c9" />
 
@@ -472,6 +473,6 @@ Again, the loop ends when either string runs out, so we can type either _one cha
 **Help received**
 - From this [video](<https://www.youtube.com/watch?v=uyWVztMHWtk&list=PL_tws4AXg7auglkFo6ZRoWGXnWL0FHAEi&index=3>) by Matthew Alt produced by Hackaday (The whole video was interesting, but I specifically learned how to create the char array from the section starting at the **53:12** mark)
 - As well as [The Ghidra Book](<https://learning.oreilly.com/library/view/the-ghidra-book/9781098125684/>) by Chris Eagle 2020
-  - Chapter 7: Disassembly Manipulation
-  - Chapter 19: The Ghidra Decompiler
+  - **Chapter 7:** Disassembly Manipulation
+  - **Chapter 19:** The Ghidra Decompiler
 
