@@ -162,7 +162,6 @@ Just remove the `N` innit 😂
 - <img width="813" height="96" alt="Screenshot from 2026-02-05 18-59-44" src="https://github.com/user-attachments/assets/27a6cdb5-e53b-4e8e-b196-b818d31ecfa9" />
 - Save the file `Ctrl+S`
 - Export it back to binary
-  - Ghidra takes care of recompiling!
 - Then make the binary executable again
 - <img width="1670" height="398" alt="Screenshot from 2026-02-05 19-07-02" src="https://github.com/user-attachments/assets/4736f74b-e063-4ed7-bdbc-358949b18469" />
 
@@ -295,7 +294,7 @@ I figured the first variable `uVar1` inside the function might be used as the `e
 **To support our hypothesis**
 - We can see that it's used in the `if else` clause:
   - If the password is **correct** the variable is set to `0` and later returned
-    - Indicating that everything went well.
+    - Indicating that everything went well
   - If the password is **wrong** the variable is set to `0xffffffff`
     - Which will result in returning the highest possible exit status (which is 255 in Linux)
 
@@ -348,21 +347,20 @@ if ("password1"[i] + -1
   - a.k.a the `caesar cipher`
 - It also seemed as the loop is not accounting for the length of the input
   - Mainly because the for loop ends when **either** string ends
-- Which takes us to the next step:
 
 
-The letter before `p` is `o` so let's give it a go 
-> It can't be wrong if it rhymes...
-
-<img width="524" height="107" alt="Screenshot from 2026-02-06 16-45-27" src="https://github.com/user-attachments/assets/3e293b28-560f-4ceb-b655-ff1fe850d619" />
+**Which takes us to the next step:**
+- The letter before `p` is `o`, so let's give it a go
+  - It can't be wrong if it rhymes:
+  - <img width="524" height="107" alt="Screenshot from 2026-02-06 16-45-27" src="https://github.com/user-attachments/assets/3e293b28-560f-4ceb-b655-ff1fe850d619" />
 
 
 And wouldn't you know, didn't even have to type in the whole `password` == ``o`rrvnqc0``
 
 
-Here's an [ascii table](<https://www.ascii-code.com/>) for reference. 
-
-For the most part just knowing the alphabet was enough here. I just needed to know what comes before `a`, which was the backtick.
+Here's an [ascii table](<https://www.ascii-code.com/>) for reference
+- For the most part just knowing the alphabet was enough here
+- I just needed to know what comes before `a`, which was the backtick
 
 -----
 
@@ -376,7 +374,7 @@ For the most part just knowing the alphabet was enough here. I just needed to kn
 <img width="513" height="105" alt="Screenshot from 2026-02-06 22-04-11" src="https://github.com/user-attachments/assets/7329c63d-bc33-4929-a4fe-ad40b24adb90" />
 
 
-This is the main function ghidra spit out for us (I already took the liberty to rename a few entry level variables):
+### This is the main function ghidra spit out for us (I already took the liberty to rename a few variables):
 ```C
 undefined8 main(int cliArgs,long userInput)
 
@@ -407,10 +405,9 @@ My attention immediately went to the `&DAT_0010201f` variable, which seems to be
 - It's rather a **pointer** to **some data** located at a **specified address**
   - The `DAT` prefix signifies `data`
   - `0010201f` is the address
-  - The Ghidra Book Chapter 7 did a great job explaining this concept!
 
 
-I created an array from it using ghidra:
+**I went ahead and created an array from it:**
 - Double click the variable which takes us to the `assembly view`
 - Then right click -> Data -> `char`
 - Right click **again** -> Data -> `Create Array`, where I chose 8 as the length
