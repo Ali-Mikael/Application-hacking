@@ -118,7 +118,7 @@ Highlight the variable you want to change and press `L`
   - Without the original source code of course!
 - Demonstrate with tests that your solution works
 
-# Manipulation
+## Manipulation
 We import the second program called `passtr` 
 - Analyze it
 - Open up the main function
@@ -127,11 +127,11 @@ We import the second program called `passtr`
 
 
 
-#### I opened up the assembly instructions alongside the decompiler and highlighed the function I wanted to change so that the _corresponding instructions_ would be highlighted as well:
+**I opened up the assembly instructions alongside the decompiler and highlighed the function I wanted to change so that the _corresponding instructions_ would be highlighted as well:**
 - <img width="1314" height="539" alt="Screenshot from 2026-02-05 18-45-09" src="https://github.com/user-attachments/assets/25426108-b8dd-4c30-a9e5-733dcaf1d808" />
 
-#### I knew I had to modify the assembly instructions somehow
-So I did some googling on instructions, syntax and how `if else` logic is built in assembly
+### I knew I had to modify the assembly instructions somehow
+- So I did some googling on instructions, syntax and how `if else` logic is built in assembly
 - I realised that after _comparing the passwords_ there's an instruction following it == `JNZ`, which will **jump** to the **"sorry no bonus"** if value is **not zero**
 - `JNZ` = Jump Not Zero
 - And after the instructions `JNZ` the target of the operation is specified == `LAB_001011b6`
