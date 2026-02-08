@@ -345,7 +345,7 @@ The following section in the code really caught my interest:
 if ("password1"[i] + -1
 ```
 - It seems like the program is taking each character of the password and shifting it back by one
-  - a.k.a the `ceasar cipher`
+  - a.k.a the `caesar cipher`
 - It also seemed as the loop is not accounting for the length of the input
   - Mainly because the for loop ends when **either** string ends
 - Which takes us to the next step:
@@ -417,19 +417,22 @@ I created an array from it using ghidra:
 - <img width="1265" height="420" alt="Screenshot from 2026-02-07 14-31-01" src="https://github.com/user-attachments/assets/e14b7ac8-e3d1-4b35-ac83-3ff0d3f509e5" />
 
 
-As a result, we have the password string as a char array and we can now spot it in the decompiler
+As a result, we have the password string as a `char array` and we can now spot it in the decompiler
 - <img width="1008" height="442" alt="Screenshot from 2026-02-07 14-34-55" src="https://github.com/user-attachments/assets/4f24cffa-a79c-470c-9f0c-e0f842a3d2a2" />
 - <img width="909" height="184" alt="Screenshot from 2026-02-07 14-34-17" src="https://github.com/user-attachments/assets/315bb68b-2efa-4078-abf0-ad217559b7c9" />
 
 
 **Further clean up**
-- I also changed the **function return type** to `int` and **userInput type** to `char **`
-  - `function` we modify by right clicking it -> `Edit Function Signature` -> `builtin` -> `int`
-  - `userInput parameter` we modify by placing the cursor on top of it, then -> `Ctrl+L` (Retype Variable) -> `char **`
-    - By specifying the correct type, the code then becomes more readable and easier to interpret
+- I also changed the **function signature** by changing the **return type** to `int` and the **input type** to `char **` for the userInput parameter
+  - Return type we modify by right clicking the function -> `Edit Function Signature` -> `builtin` -> `int`
+  - Input type (userInput) we modify by placing the cursor on top of it -> `Ctrl+L` (Retype Variable) -> `char **`
+
+> [!IMPORTANT]
+> By specifying the correct types the code becomes more readable and easier to interpret!
+> 
 
 
-#### DevOps who? Call me the CleanOps engineer!
+### DevOps who? Call me the CleanOps engineer!
 ```C
 int main(int cliArgs,char **userInput)
 
@@ -455,7 +458,7 @@ int main(int cliArgs,char **userInput)
 
 ```
 
-Now that we have the code, we quickly realise it does the same thing as previously, but shifting with a 2 instead of 1 this time.
+### Analysing the code we quickly realise it performs the `caesar cipher` again, this time using a shift value of 2.
 
 Let's put that to test:
 - `yuvmnpoi` shifted back by 2 ascii is == `wstklnmg`
@@ -463,7 +466,7 @@ Let's put that to test:
 
 
 Again, the loop ends when either string runs out, so we can type either _one character_ of the string, the whole string or anything in between
-- Fu**it, we can even go _above and beyond_ as the password ends and doesn't have any more characters to compare
+- Fu**it, we can even go _above and beyond_ as the real password ends and doesn't have any more characters to compare
   - <img width="635" height="131" alt="Screenshot from 2026-02-07 16-09-55" src="https://github.com/user-attachments/assets/71bbdc4c-06dc-4e89-bb5f-9f7d864237ec" />
 - But as soon as the first character is different, we're denied entry:
   - <img width="635" height="131" alt="Screenshot from 2026-02-07 16-10-12" src="https://github.com/user-attachments/assets/51c3969e-1883-4dc5-a06e-079741b4e649" />
