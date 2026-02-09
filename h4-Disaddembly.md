@@ -323,7 +323,7 @@ I figured the first variable `uVar1` inside the function might be used as the `e
 #### This is achieved in the following manner:
 
 > [!NOTE]
-> This is pseudocode derived from the representation of the original source code to drive the point across!
+> This is pseudocode derived from the representation (also pseudocode) of the original source code to drive the point across!
 >
 
 ```C
@@ -400,9 +400,9 @@ undefined8 main(int cliArgs,long userInput)
   return exitCode;
 ```
 
-My attention immediately went to the `&DAT_0010201f` variable, which seems to be be the password
+My attention immediately went to the `&DAT_0010201f` label, which seems to be be the password
 - This time around the password is not in clear text though
-- It's rather a **label** to **some data** located at a **specified address**
+- It's rather a **label** associated with a **specified address** containing some **data**
   - The `DAT` prefix signifies `data`
   - `0010201f` is the address
 
