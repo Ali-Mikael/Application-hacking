@@ -402,7 +402,7 @@ undefined8 main(int cliArgs,long userInput)
 
 My attention immediately went to the `&DAT_0010201f` variable, which seems to be be the password
 - This time around the password is not in clear text though
-- It's rather a **pointer** to **some data** located at a **specified address**
+- It's rather a **label** to **some data** located at a **specified address**
   - The `DAT` prefix signifies `data`
   - `0010201f` is the address
 
