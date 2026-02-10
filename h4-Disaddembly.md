@@ -29,17 +29,27 @@ Hammond 2022 - [GHIDRA for Reverse Engineering](<https://www.youtube.com/watch?v
 
 -----
 
-# A) Install Ghidra
-For `Kali Linux`:
+# A) Ghidra
+**What is Ghidra?**
+- An open source _SRE (Software Reverse Engineering)_ _tool suite_ / _framework_ developed by USA's National Security Agency
+- The Ghidra environment includes an interactive disassembler and decompiler as well as a multitude of related tools that work together to help you analyze code
+- Ghidra supports a variety of instruction set architectures and binary formats
+- Source: [Chris Eagle (2020). The Ghidra Book](<https://learning.oreilly.com/library/view/the-ghidra-book/9781098125684/>)
+
+
+## Download Ghidra
+For **Kali Linux** it's as easy as:
 ```bash
 $ sudo apt update && sudo apt install -y ghidra
 ```
+
 Run it:
 ```
 $ ghidra
 ```
 <img width="1202" height="738" alt="Screenshot from 2026-01-27 21-54-40" src="https://github.com/user-attachments/assets/38020368-4485-4cdc-b92a-e287703f46c4" />
 
+If you're using another OS, you might want to check out the [ghidra repository README](<https://github.com/NationalSecurityAgency/ghidra?tab=readme-ov-file#install>)!
 
 ------
 
