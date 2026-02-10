@@ -11,7 +11,7 @@ Hammond 2022 - [GHIDRA for Reverse Engineering](<https://www.youtube.com/watch?v
 # Infrastructure for completing objectives
 **HOST a.k.a The Provider**
 - **Lenovo ThinkPad L490**
-  - _CPU:_ Intel i3-8145U (4) @ 3.900GHz 
+  - _CPU:_ Intel i3-8145U (4) @ 3.900GHz
   - _GPU:_ Intel WhiskeyLake-U GT2 UHD Graphics 620
   - _Memory:_ 8GB
   - _Disk size:_ 256GB
@@ -20,7 +20,7 @@ Hammond 2022 - [GHIDRA for Reverse Engineering](<https://www.youtube.com/watch?v
 - _Virtualization:_ KVM/QEMU Standard PC (Q35 + ICH9, 2009) (pc-q35-8.2)
 - _Managed by:_ Virtual Machine Manager v.4.1.0, powered by libvirt.
 
-**VM a.k.a The Playmaker a.k.a The Attacker**
+**VM a.k.a The Playmaker**
 - _OS:_ Kali GNU/Linux Rolling x86_64
 - _Kernel:_ Linux 6.18.5+kali-amd64
 - _Memory:_ 4GB
