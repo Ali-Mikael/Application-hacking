@@ -1,8 +1,8 @@
 # X) Read/Watch/Listen and Summarize
 Hammond 2022 - [GHIDRA for Reverse Engineering](<https://www.youtube.com/watch?v=oTD_ki86c9I>) (video)
 - Before pulling out ghidra, it might prove itself fruitful to poke the ice with tools such as `ltrace`, `strace` and `objdump`
-- Once the file is imported and analyzed in ghidra, first order of business is to locate strings
-- Find the main function, familiarise yourself with the code and rename variables if applicable/possible/feasible
+- Once the file is imported and analyzed in ghidra, first order of business is to locate human readable strings
+- Find the main function, familiarise yourself with the code and make it more readable by rename variables 
 - Pay attention to the way the function behaves
 - The solution for the example in the video was to find a `hex string` and pass the decimal representation of it into the program in order to capture the flag
 
