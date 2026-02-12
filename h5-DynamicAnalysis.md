@@ -13,7 +13,7 @@ Unzip the target, remove zip file and move into the directory
 $ unzip lab1.zip && rm lab1.zip && cd lab1
 ```
 
-**We now have:**
+**We're left with**
 - The src code
 - The binary
 - Build instructions
@@ -34,16 +34,14 @@ We start the _GNU Debugger_ by issuing the command:
 ```bash
 $ gdb gdb_example1
 ```
-We then get the `(gdb)` prompt. 
 
-If we want to see the `C` code being executed side by side, we can issue the command:
+
+We want to see the `C` code being executed side by side, so we enable the _text user interface_:
 ```bash
 $ (gdb) tui enable
 ```
-- TUI = Text User Interface
 - You can also skip this step by initially starting GDB with the `-tui` parameter
-
-<img width="1478" height="708" alt="Screenshot from 2026-02-11 11-43-27" src="https://github.com/user-attachments/assets/ef9590e0-8e5a-4e92-b347-e9384da39b37" />
+- <img width="1478" height="708" alt="Screenshot from 2026-02-11 11-43-27" src="https://github.com/user-attachments/assets/ef9590e0-8e5a-4e92-b347-e9384da39b37" />
 
 On the prompt, we issue commands:
 ```bash
@@ -78,16 +76,16 @@ We **run the program** and it automatically stops at the first break point insid
 > Meaning if you have two commands: `continue` and `complete`, you have to type `con` or `com`
 
 
-**Getting the values of the local variables:**
+**Getting information on the local variables:**
 - <img width="976" height="128" alt="Screenshot from 2026-02-12 08-25-16" src="https://github.com/user-attachments/assets/28aeb5f9-93fd-4da7-931a-28193ba1f6a9" />
 - `i lo` == `info locals`
 
 
-We then _move forward one line_ and inspect the variables again
+We then **step forward one line** and inspect the variables again
 - <img width="721" height="130" alt="Screenshot from 2026-02-12 08-30-43" src="https://github.com/user-attachments/assets/193fdd84-1013-468c-8361-2162be8f4054" />
 
 
-Once we get to `line 17` where a function call is made we use the _step command_
+Once we get to `line 17` where a function call is made, we use the _step command_
 - We receive some information on what's going on:
   - <img width="1648" height="125" alt="Screenshot from 2026-02-12 08-45-47" src="https://github.com/user-attachments/assets/8658b0d8-00db-4ebc-a2ba-32bdf4597fad" />
   - <img width="851" height="363" alt="Screenshot from 2026-02-12 08-45-32" src="https://github.com/user-attachments/assets/68ca5aa5-6132-451a-90d8-b782cbba05d9" />
@@ -136,22 +134,34 @@ The problem:
 - <img width="646" height="132" alt="Screenshot from 2026-02-12 11-58-34" src="https://github.com/user-attachments/assets/c089c789-35b2-4f56-8587-f1c3e3f1914e" />
 
 
-We then recocompile:
+Recocompile:
 ```
 $ gcc -g -o example1 gdb_example1.c
 ```
-By running the recompiled program **example1** alongside the **faulty one**, we can see that we got rid off the seg fault:
+By running the recompiled program **example1** alongside the **faulty one**, we can see that we got rid off the _seg fault_:
 - <img width="1091" height="242" alt="Screenshot from 2026-02-12 12-02-02" src="https://github.com/user-attachments/assets/2cb3afb3-a7c3-4634-a574-8d6c5f0f052c" />
 
 
 
 **Help received**
-- Norman M. Peter Jay S (2008) [The Art of Debugging With GDB, DDD and Eclipse](<https://zhjwpku.com/assets/pdf/books/The.Art.of.Debugging.with.GDB.DDD.and.Eclipse.pdf>)
+- Norman M, Peter Jay S. 2008. [The Art of Debugging With GDB, DDD and Eclipse](<https://zhjwpku.com/assets/pdf/books/The.Art.of.Debugging.with.GDB.DDD.and.Eclipse.pdf>)
 - [The GDB developer's GNU Debugger tutorial, Part 1: Getting started with the debugger](<https://developers.redhat.com/articles/the-gdb-developers-gnu-debugger-tutorial-part-1-getting-started-with-the-debugger#>)
-- [GDB command](<https://www.tutorialspoint.com/gnu_debugger/gdb_commands.htm>)
+- [GDB commands](<https://www.tutorialspoint.com/gnu_debugger/gdb_commands.htm>)
 - [Quick Guide to gdb: The GNU Debugger](<https://kauffman77.github.io/tutorials/gdb.html>)
 
 
+
+
+# B) Lab2
+**Objective**
+- Crack the `passtr2o` program
+- Find out the password and flag
+- Write a report on how it opened
+
+
+We have the [target](<https://terokarvinen.com/application-hacking/lab2.zip>) downloaded and unzipped, let's get to work!
+
+# Poking the ice
 
 
 
