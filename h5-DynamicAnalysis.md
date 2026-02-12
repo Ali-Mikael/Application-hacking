@@ -43,6 +43,7 @@ $ (gdb) tui enable
 - TUI = Text User Interface
 - You can also skip this step by initially starting GDB with the `-tui` parameter
 
+<img width="1478" height="708" alt="Screenshot from 2026-02-11 11-43-27" src="https://github.com/user-attachments/assets/ef9590e0-8e5a-4e92-b347-e9384da39b37" />
 
 On the prompt, we issue commands:
 ```bash
@@ -51,9 +52,6 @@ On the prompt, we issue commands:
 ```
 - This will effectively set breakpoints at the **first line** inside the `print_scrambled()` and `main()` **functions**
 - We can also do the abbreviated version: `b <line>`
-
-What it looks like:
-- <img width="1478" height="708" alt="Screenshot from 2026-02-11 11-43-27" src="https://github.com/user-attachments/assets/ef9590e0-8e5a-4e92-b347-e9384da39b37" />
 - <img width="1533" height="826" alt="Screenshot from 2026-02-11 11-45-53" src="https://github.com/user-attachments/assets/724dd9f6-65c7-43cb-b580-f7a2305048b7" />
 
 
@@ -80,7 +78,7 @@ We **run the program** and it automatically stops at the first break point insid
 > Meaning if you have two commands: `continue` and `complete`, you have to type `con` or `com`
 
 
-Getting the values of the local variables:
+**Getting the values of the local variables:**
 - <img width="976" height="128" alt="Screenshot from 2026-02-12 08-25-16" src="https://github.com/user-attachments/assets/28aeb5f9-93fd-4da7-931a-28193ba1f6a9" />
 - `i lo` == `info locals`
 
@@ -96,47 +94,51 @@ Once we get to `line 17` where a function call is made, we now use the command `
   - <img width="851" height="363" alt="Screenshot from 2026-02-12 08-45-32" src="https://github.com/user-attachments/assets/68ca5aa5-6132-451a-90d8-b782cbba05d9" />
 
 
-Instead of manually typing `print` or `i lo`, we want to keep track of the variables automatically, so we issue the command:
+Instead of manually typing `print` or `i lo` every time, we want GDB to display them for us automatically, so we issue the command:
 ```
 (gdb) display message
 ```
-This will show us the value after each step we take
+This will show us the value after each step
 - <img width="744" height="399" alt="Screenshot from 2026-02-12 08-58-06" src="https://github.com/user-attachments/assets/4b1276ea-283a-4674-a728-f0e034b53991" />
 
 We skip to the end of the loop with the `until` command:
 - <img width="564" height="202" alt="Screenshot from 2026-02-12 09-00-55" src="https://github.com/user-attachments/assets/2f9d0aa3-d31c-4847-8bdf-e42c9596fff6" />
 - We're able to see the scrambled message
 
-But what happens when we try to scramble a variable with the value `null`?
-- It first passes the null variable to the function as an argument
+
+But what happens when we try to scramble a `null` variable?
+- The code passes the variable to the function as an argument
   - `print_scrambled(bad_message)`
   - <img width="1179" height="163" alt="Screenshot from 2026-02-12 09-01-29" src="https://github.com/user-attachments/assets/e3500f1e-3f13-4678-8cfd-bd61099380a2" />
-- And what follows is a segmentation fault:
+- What follows is a **segmentation fault**:
   - <img width="1310" height="171" alt="Screenshot from 2026-02-12 09-02-04" src="https://github.com/user-attachments/assets/8a4e42d5-8b58-4b61-b9be-b3821f30595d" />
 
+
 ## What is a segmentation fault?
-Simply put:
+**Simply put:**
 - The program tries to access a memory location without having the permission to do so
 - The hardware will sense this and execute a jump to the OS
 - ON UNIX family platforms the OS will normally announce that the program has caused a seg fault and stop the execution of the program
 
 (Norman M. Peter Jay S, 2008)
 
+
 ## Fixing it
 The problem:
 - The program is trying to access a memory location it has no **access rights** to, which is the `0x0`
-- Why? Because the variable is `null`
+- Why? Because the variable is set to `null`
 
 
-We fix it by
+**We fix it by**
 - Changing the value to **not null** (i'm doing it straight from the source code, as we still have access to it)
-- <img width="646" height="132" alt="Screenshot from 2026-02-12 11-58-34" src="https://github.com/user-attachments/assets/71a7e0d1-d04c-483b-bdf6-7841ad164e42" />
+- <img width="646" height="132" alt="Screenshot from 2026-02-12 11-58-34" src="https://github.com/user-attachments/assets/c089c789-35b2-4f56-8587-f1c3e3f1914e" />
+
 
 We then recocompile:
 ```
 $ gcc -g -o example1 gdb_example1.c
 ```
-By running the recompiled program `example1` alongside the faulty one, we can see that we got rid off the seg fault:
+By running the recompiled program **example1** alongside the **faulty one**, we can see that we got rid off the seg fault:
 - <img width="1091" height="242" alt="Screenshot from 2026-02-12 12-02-02" src="https://github.com/user-attachments/assets/2cb3afb3-a7c3-4634-a574-8d6c5f0f052c" />
 
 
