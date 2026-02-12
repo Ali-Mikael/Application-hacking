@@ -57,14 +57,13 @@ What it looks like:
 - <img width="1533" height="826" alt="Screenshot from 2026-02-11 11-45-53" src="https://github.com/user-attachments/assets/724dd9f6-65c7-43cb-b580-f7a2305048b7" />
 
 
-We run the program and stop execution at the first break point inside `main()`
-
+We **run the program** and it automatically stops at the first break point inside `main()`
 ```bash
 (gdb) run
 ```
 - <img width="931" height="179" alt="Screenshot from 2026-02-12 08-25-31" src="https://github.com/user-attachments/assets/eee898ef-e0c5-44b8-b603-ac84fc8ba199" />
 
-
+## Executing the code
 > [!TIP]
 >
 > **Execution control commands**
@@ -76,16 +75,16 @@ We run the program and stop execution at the first break point inside `main()`
 > - `finish`: _Run until current function returns_
 > - `until`: _Continue until a certain line or loop ends_
 >
-> **Note also** that you can abbreviate the commands as long as there is no ambiguity
+> **Note also** that you can abbreviate the commands as long as there is no ambiguity!
 >
 > Meaning if you have two commands: `continue` and `complete`, you have to type `con` or `com`
 
 
+Getting the values of the local variables:
 ```bash
 (gdb) i lo
 ```
 = **info locals**
-- We get the values for the local variables
 - <img width="976" height="128" alt="Screenshot from 2026-02-12 08-25-16" src="https://github.com/user-attachments/assets/28aeb5f9-93fd-4da7-931a-28193ba1f6a9" />
 
 
