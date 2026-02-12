@@ -110,8 +110,5 @@ This will show us the value after each step we take (`next`)
 
 
 
-Now that the program is runnning, and we want to move forward a line, we use the `step` command (or abbreviated: `s`)
-
-
 
 
