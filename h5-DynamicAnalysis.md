@@ -83,42 +83,44 @@ We **run the program** and it automatically stops at the first break point insid
 - `i lo` == `info locals`
 
 
-We then move forward _one_ line and inspect the variables again with `i lo`
-- We can see that `bad_message` is null = `0x0`
+We then _move forward one line_ and inspect the variables again
 - <img width="721" height="130" alt="Screenshot from 2026-02-12 08-30-43" src="https://github.com/user-attachments/assets/193fdd84-1013-468c-8361-2162be8f4054" />
 
 
-Once we get to `line 17` where a function call is made, we now use the command `s` (step)
-- We get an informational message of what's happening:
+Once we get to `line 17` where a function call is made we use the _step command_
+- We receive some information on what's going on:
   - <img width="1648" height="125" alt="Screenshot from 2026-02-12 08-45-47" src="https://github.com/user-attachments/assets/8658b0d8-00db-4ebc-a2ba-32bdf4597fad" />
   - <img width="851" height="363" alt="Screenshot from 2026-02-12 08-45-32" src="https://github.com/user-attachments/assets/68ca5aa5-6132-451a-90d8-b782cbba05d9" />
 
 
-Instead of manually typing `print` or `i lo` every time, we want GDB to display them for us automatically, so we issue the command:
-```
+Instead of manually typing `print` or `i lo` every time, we want GDB to display them for us automatically.
+
+So we issue the command:
+```bash
 (gdb) display message
 ```
 This will show us the value after each step
 - <img width="744" height="399" alt="Screenshot from 2026-02-12 08-58-06" src="https://github.com/user-attachments/assets/4b1276ea-283a-4674-a728-f0e034b53991" />
 
-We skip to the end of the loop with the `until` command:
-- <img width="564" height="202" alt="Screenshot from 2026-02-12 09-00-55" src="https://github.com/user-attachments/assets/2f9d0aa3-d31c-4847-8bdf-e42c9596fff6" />
-- We're able to see the scrambled message
+We skip to the end of the loop with the `until` command and see the scrambled message:
+- <img width="564" height="202" alt="Screenshot from 2026-02-12 09-00-55" src="https://github.com/user-attachments/assets/07a43b07-1687-464d-956d-e2b8d57627a8" />
 
 
-But what happens when we try to scramble a `null` variable?
+But what happens when we try to scramble a variable with the value of `null`?
 - The code passes the variable to the function as an argument
   - `print_scrambled(bad_message)`
   - <img width="1179" height="163" alt="Screenshot from 2026-02-12 09-01-29" src="https://github.com/user-attachments/assets/e3500f1e-3f13-4678-8cfd-bd61099380a2" />
 - What follows is a **segmentation fault**:
   - <img width="1310" height="171" alt="Screenshot from 2026-02-12 09-02-04" src="https://github.com/user-attachments/assets/8a4e42d5-8b58-4b61-b9be-b3821f30595d" />
+  - <img width="1100" height="88" alt="Screenshot from 2026-02-12 09-02-35" src="https://github.com/user-attachments/assets/1e5812eb-b100-40b6-a592-18e4cdd77e73" />
+
 
 
 ## What is a segmentation fault?
 **Simply put:**
-- The program tries to access a memory location without having the permission to do so
+- _The program tries to access a memory location without having the permission to do so_
 - The hardware will sense this and execute a jump to the OS
-- ON UNIX family platforms the OS will normally announce that the program has caused a seg fault and stop the execution of the program
+- ON UNIX family platforms the OS will normally _announce that the program has caused a seg fault and stop the execution of the program_
 
 (Norman M. Peter Jay S, 2008)
 
