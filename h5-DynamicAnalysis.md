@@ -81,11 +81,8 @@ We **run the program** and it automatically stops at the first break point insid
 
 
 Getting the values of the local variables:
-```bash
-(gdb) i lo
-```
-= **info locals**
 - <img width="976" height="128" alt="Screenshot from 2026-02-12 08-25-16" src="https://github.com/user-attachments/assets/28aeb5f9-93fd-4da7-931a-28193ba1f6a9" />
+- `i lo` == `info locals`
 
 
 We then move forward _one_ line and inspect the variables again with `i lo`
