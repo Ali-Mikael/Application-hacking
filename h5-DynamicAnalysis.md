@@ -161,21 +161,3 @@ By running the recompiled program **example1** alongside the **faulty one**, we 
 
 We have the [target](<https://terokarvinen.com/application-hacking/lab2.zip>) downloaded and unzipped, let's get to work!
 
-# Poking the ice
-First we want to know how the program exits when the wrong password is given. For this we simply echo the exit status
-- <img width="1130" height="236" alt="Screenshot from 2026-02-13 10-17-24" src="https://github.com/user-attachments/assets/0476bb64-a07c-4cdb-bb4b-00d89dbe12a2" />
-
-
-We then naturally check for any low hanging fruit
-- <img width="1237" height="1096" alt="Screenshot from 2026-02-12 22-31-54" src="https://github.com/user-attachments/assets/4f543b81-a85d-4944-9f8e-6a75fe1b3135" />
-
-
-I used objdump to disassemble the binary quickly and find the ASM instructions for the main function
-```
-$ objdump -d passtr2o | less
-```
-<img width="1794" height="1144" alt="Screenshot from 2026-02-13 10-59-17" src="https://github.com/user-attachments/assets/38f119e1-bf3f-40c8-8c90-f117f9b0ad4d" />
-
-
-
-
