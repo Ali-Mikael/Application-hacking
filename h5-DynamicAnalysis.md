@@ -217,8 +217,12 @@ This way we'll see the instructions being executed above the initial prompt like
 - <img width="1896" height="1098" alt="2026-02-22-03:44:02" src="https://github.com/user-attachments/assets/e97c1c54-1d30-4328-aab6-8743adee4213" />
 
 
-We then set the breakpoint at main and run the program:
-- <img width="1677" height="1320" alt="2026-02-21-22:22:13" src="https://github.com/user-attachments/assets/377b56c1-97c4-41c9-8073-b121ab1e66eb" />
+We then set the breakpoint at `main` and run the program:
+```gdb
+(gdb) b main
+(gdb) run
+```
+
 
 
 ### Workflow
@@ -235,7 +239,7 @@ I landed at a **compare instruction** and printed the values of the targets
   - <img width="512" height="37" alt="2026-02-22-00:39:59" src="https://github.com/user-attachments/assets/5ce35a65-b57d-44f7-afb6-4cbfeb927358" />
   - <img width="184" height="81" alt="2026-02-22-00:40:12" src="https://github.com/user-attachments/assets/1c4886fa-3369-413e-82ac-56dad2a425fe" />
 
-We can see that the values are not equal, and next up we have a `jump not zero` instruction, which then jumps over the section marked in red
+We can see that the values are not equal, and next up we have a `jump not equal` instruction, which then jumps over the section marked in red
   - <img width="812" height="438" alt="2026-02-22-00:43:15" src="https://github.com/user-attachments/assets/58ef8bb5-1c00-4903-8e8e-296fa3fa1565" />
 
 I wanted to know what's going on inside, so I did some more digging. 
@@ -255,9 +259,9 @@ set $edx = 8
 This way we **don't jump**, and resume execution at the next instruction on the list. 
 
 
-This is also where I had an idea. The string I caught earlier was 8 characters long as well, so I decided to input that one, and the pass the first check!
+This is also where I had an idea. The string I caught earlier was 8 characters long as well, so I decided to input that one and automatically pass the first check!
 
-I then noticed that it subtracted 7 from a value, and then compared it against the user input (presumably)
+I then noticed that the program subtracted `7` from a value, and then compared it against the user input (presumably)
 - <img width="169" height="20" alt="2026-02-22-01:43:18" src="https://github.com/user-attachments/assets/93f55716-d5c1-482d-b189-8b81c024cf44" />
 
 
@@ -265,7 +269,7 @@ I printed the value and got = 97
 - <img width="132" height="45" alt="2026-02-22-01:44:33" src="https://github.com/user-attachments/assets/6e117fad-4deb-497e-924b-b77f74b8823a" />
 
 
-I googled what's 97 in ascii and got `a`
+I googled what's 97 in ascii and got = `a`
 
 Then to the actual comparison:
 ```asm
@@ -297,9 +301,9 @@ The following caught my interest again
 sub $0x7,%edx
 ```
 
-I **print the value** of `%edx`
+I print the value of `%edx`
 - which is = 110
-- subtracted with 7 is = 103
+- subtracted by 7 is = 103
 - a quick search online tells us the ascii value is = `g`
 
 Our letter was `q`, so the at the next compare operation, it fails and jumps. 
@@ -309,7 +313,7 @@ So I change my passwords second letter from `q` to `g` and run the program again
 Just as it felt like i'm brute forcing the password, and there has to be a better way of doing this, I noticed a pattern
 - <img width="391" height="96" alt="2026-02-22-02:17:43" src="https://github.com/user-attachments/assets/94555983-9ca9-41c6-96aa-c78f4effb9bd" />
 
-First it either **subtracts 7** from `%edx`, or **adds 3**, and then **compares it against** our value stored in `%ecx`.
+First first the program either **subtracts 7** from `%edx`, or **adds 3**, and then **compares it against** our value stored in `%ecx`.
 
 ### The aha moment
 Now on the _second round_ when the _second letter_ is `g`, the comparison is equal
@@ -340,26 +344,26 @@ We are left with the flag:
 <img width="705" height="82" alt="2026-02-22-02:42:28" src="https://github.com/user-attachments/assets/5c3ea953-3f2c-46fd-9a16-17bc19abc2f5" />
 
 
-I still wanted to check something out, and ghidra confirmed my doubts
+I still wanted to check something out, and `ghidra` confirmed my doubts
 - If the value is **even**, 3 is added
 - If the value is **odd**, 7 is subtracted
-- And by value I mean the index of the char array!
+- And by value I mean the `index` of the char array!
 
 Here we can see it in "plaintext"
 - <img width="505" height="518" alt="2026-02-22-02:37:35" src="https://github.com/user-attachments/assets/43de147c-fefc-44fd-abf9-5e69cf18e639" />
-- (I didn't bother to clean up the pseudocode just for a quick check)
+- ( I didn't bother to clean up the pseudocode just for a quick check.. )
 
 ### What's going on?
 - The program is doing a simple bitwise operation using the `AND` operator
 - In `C` this operator is expressed as = `&`
-- In this case, it checks it against the value 1
+- In this case, it checks it against the value of `1`
   - Which means the output will be a 1, **only** if `value_X` **AND** `value_Y` are `1`!
-  - Why it matters for us:
-    - Because the number 1 in binary could be represented as `001`, and the number 4 is `100`, the AND operation of this will equal to 0.
+  - A quick example:
+    - Because the number 1 in binary could be represented as `001`, and the number 4 as `100`, the **AND** operation of this will **equal to 0**.
    
 If this is confusing for you, just know this:
 - All equal numbers will always end in `0` in binary!
-- <img width="623" height="647" alt="2026-02-22-03:31:31" src="https://github.com/user-attachments/assets/377eb070-c140-4d6b-8970-74a68cd03e64" />
+- <img width="623" height="647" alt="2026-02-22-03:31:31" src="https://github.com/user-attachments/assets/377eb070-c140-4d6b-8970-74a68cd03e64" /> 
 
 
 
