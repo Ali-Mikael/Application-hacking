@@ -352,7 +352,8 @@ Here we can see it in "plaintext"
    
 If this is confusing for you, just know this:
 - All equal numbers will always end in `0` in binary!
-- <img width="115" height="294" alt="2026-02-22-03:22:28" src="https://github.com/user-attachments/assets/77900f13-43d3-44b2-80c0-b667d20e8ab7" />
+- <img width="623" height="647" alt="2026-02-22-03:31:31" src="https://github.com/user-attachments/assets/377eb070-c140-4d6b-8970-74a68cd03e64" />
+
 
 
 -----
