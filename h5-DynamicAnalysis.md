@@ -15,13 +15,6 @@ Unzip the target, remove zip file and move into the directory
 $ unzip lab1.zip && rm lab1.zip && cd lab1
 ```
 
-**We're left with**
-- The src code
-- The binary
-- Build instructions
-- <img width="847" height="91" alt="Screenshot from 2026-02-09 21-01-05" src="https://github.com/user-attachments/assets/c5e65d37-f95c-4bae-98ff-206cac07f146" />
-
-
 We start off by doing a quick sanity check:
 - <img width="1478" height="159" alt="Screenshot from 2026-02-10 18-15-22" src="https://github.com/user-attachments/assets/043321ef-217a-42cd-92d8-46f3f1a98f93" />
 
@@ -161,17 +154,19 @@ By running the recompiled program **example1** alongside the **faulty one**, we 
 
 
 > [!NOTE]
-> The execution environment has changed. New laptop, new OS:
-> - <img width="1037" height="362" alt="2026-02-21-18:50:26" src="https://github.com/user-attachments/assets/36a5dd75-c102-420b-aaa3-58a623556ff7" />
-> 
-> Now that that's out of the way, let's continue!
+> The execution environment has changed
+>
+> New hardware, new OS
+>
+> <img width="1037" height="362" alt="2026-02-21-18:50:26" src="https://github.com/user-attachments/assets/36a5dd75-c102-420b-aaa3-58a623556ff7" />
 
 
-We have the [target](<https://terokarvinen.com/application-hacking/lab2.zip>) downloaded and unzipped, let's get to work.
+Now that the technical specs are out of the way. Let's continue!
+
+We have the [target](<https://terokarvinen.com/application-hacking/lab2.zip>) downloaded and decompressed, let's get to work.
 
 
 In the target directory we have the old `passtr` program, and the new one: `passtr2o`. 
-
 We're going to be focusing on the latter one!
 
 
@@ -186,10 +181,11 @@ I noticed the string `anLTj4u8`, but at least in the current format doesn't give
 - <img width="563" height="81" alt="2026-02-22-01:14:07" src="https://github.com/user-attachments/assets/20cdffcd-64f6-4f94-a48a-f668a1898b9e" />
 
 
-We then quickly go through the ASM using the `objdump` utility.
+We then skim through the ASM using the `objdump` utility.
 
 **What is objdump?**
-- Straight from the man pages: _display information from object files_
+- Displays information about object files
+  - Source: man pages
 - The options for this utility are many, but we stick to the `-d` flag, which will `disassemble` it for us
   - <img width="1049" height="416" alt="2026-02-21-21:27:05" src="https://github.com/user-attachments/assets/a31fa4ac-d545-4212-8410-e1e19a5052b9" />
 
@@ -388,7 +384,12 @@ We already did a few of these [previously](<https://github.com/Ali-Mikael/Applic
 Unfortunately my time ran out. It's 3am and the task has to be given in before 8AM. I don't feel like doing an all nighter, so good night i'll figure out the rest later! 🫡
 
 
+
 ### This is later:
+
+We start off with a few basic steps to get us going
+- <img width="1677" height="1047" alt="2026-02-22-18:28:05" src="https://github.com/user-attachments/assets/ab5b096b-7e1a-423a-84e3-7fa999fb4df3" />
+- <img width="207" height="157" alt="2026-02-22-18:30:25" src="https://github.com/user-attachments/assets/68bce173-6d76-4748-befc-6cc30fe1a887" />
 
 I found the `check_pw` function using
 ```bash
@@ -414,4 +415,61 @@ $ objdump -d crackme03.64
     1187:	b8 01 00 00 00       	mov    $0x1,%eax
     118c:	c3                   	ret
 ```
+
+We start `GDB` and start poking around!
+
+```bash
+gdb -tui crackme03.64
+```
+
+We have set gdb to automatically look for debugging symbols, but we get the msg
+```bash
+(No debugging symbols found in crackme03.64)
+```
+So we're going to have to operate on the ASM again!
+
+
+# Workflow
+```bash
+(gdb) layout asm
+(gdb) break main
+(gdb) break check_pw
+(gdb) set args pword
+(gdb) run
+```
+- We layout the assembly instructions
+- Set breakpoints at `main` and `check_pw`
+- Use `pword` for the argument and run the program
+- Then we move forward step by step using `si` and `ni`, and when we find something that might be of interest, we print the value loaded in the register.
+
+At the top of main, we can notice two instructions
+```asm
+cmp   $0x2,%edi
+jne   0x5555555551fe <main+113>
+```
+The program is doing the `CLI arguments` check we're familiar with, and if there's not exactly two arguments, it will exit the program.
+
+This we already know, so we move on!
+
+The next comparison we come across is the:
+```asm
+cmp   $0x6,%rax
+```
+Followed by the `Jump Not Equal`
+Our value is stored in `%rax`, and it's being compared against the number `6`.
+
+When we print `%rax`, we get the value 5, which is the length of our input = pword. 
+
+**From this we can deduce == The password is 6 character in length**
+
+We circumvent this by assigning `%rax` a different value:
+```asm
+set $rax = 6
+```
+<img width="885" height="1107" alt="2026-02-22-19:26:47" src="https://github.com/user-attachments/assets/165a49e9-c740-4b24-9b3c-d40828abe87e" />
+
+Now we get to continue as if our password was 6 characters in length!
+
+
+
 
