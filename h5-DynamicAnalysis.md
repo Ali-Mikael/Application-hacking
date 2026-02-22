@@ -160,7 +160,7 @@ By running the recompiled program **example1** alongside the **faulty one**, we 
 - Find out the password and flag
 - Write a report on how it opened
 
-> [!INFO]
+> [!NOTE]
 > The execution environment has changed. New laptop, new OS:
 > - <img width="1037" height="362" alt="2026-02-21-18:50:26" src="https://github.com/user-attachments/assets/36a5dd75-c102-420b-aaa3-58a623556ff7" />
 > 
