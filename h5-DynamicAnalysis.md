@@ -383,7 +383,35 @@ Here we can see it in "plaintext"
 
 -----
 
-# C) Lab_3
+# C) Nora Crackme's 3 & 4
+We already did a few of these [previously](<https://github.com/Ali-Mikael/Application-hacking/blob/main/h4-Disaddembly.md#d-nora>), but the 3 and 4 are new so let's get cracking!
+Unfortunately my time ran out. It's 3am and the task has to be given in before 8AM. I don't feel like doing an all nighter, so good night i'll figure out the rest later! 🫡
 
-Unfortunately my time ran out. It's 3am and the task has to be given in before 8AM. I don't feel like doing an all nighter so good night i'll figure the rest out later! 🫡
+
+### This is later:
+
+I found the `check_pw` function using
+```bash
+$ objdump -d crackme03.64
+```
+
+```asm
+0000000000001159 <check_pw>:
+    1159:	b8 00 00 00 00       	mov    $0x0,%eax
+    115e:	0f b6 0c 02          	movzbl (%rdx,%rax,1),%ecx
+    1162:	02 0c 06             	add    (%rsi,%rax,1),%cl
+    1165:	38 0c 07             	cmp    %cl,(%rdi,%rax,1)
+    1168:	75 17                	jne    1181 <check_pw+0x28>
+    116a:	80 7c 06 01 00       	cmpb   $0x0,0x1(%rsi,%rax,1)
+    116f:	74 16                	je     1187 <check_pw+0x2e>
+    1171:	48 83 c0 01          	add    $0x1,%rax
+    1175:	80 3c 07 00          	cmpb   $0x0,(%rdi,%rax,1)
+    1179:	75 e3                	jne    115e <check_pw+0x5>
+    117b:	b8 01 00 00 00       	mov    $0x1,%eax
+    1180:	c3                   	ret
+    1181:	b8 00 00 00 00       	mov    $0x0,%eax
+    1186:	c3                   	ret
+    1187:	b8 01 00 00 00       	mov    $0x1,%eax
+    118c:	c3                   	ret
+```
 
