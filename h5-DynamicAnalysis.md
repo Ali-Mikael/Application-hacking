@@ -290,7 +290,7 @@ No worries, we run it again at the same breakpoint, and this time take the strin
 - <img width="735" height="201" alt="2026-02-22-01:58:00" src="https://github.com/user-attachments/assets/306ebe7a-a178-4478-bd38-a810cfb6a246" />
 
 Now when the `comparison` happens again, the values are equal
-```
+```asm
 %ecx = 100
 %edx = 100
 ```
@@ -342,7 +342,8 @@ If we take the string we found earlier and apply the logic
 
 | a | n | L | T | j | 4 | u | 8 |
 | - | - | - | - | - | - | - | - |
-| +3 | -7 | +3 | -7 | +3 | -7 | +3 |
+| +3 | -7 | +3 | -7 | +3 | -7 | +3 | -7 |
+| = | = | = | = | = | = | = | = |
 | d | g | O | M | m | - | x | 1 |
 
 
@@ -379,13 +380,9 @@ Here we can see it in "plaintext"
 
 -----
 
-# C) Nora Crackme's 3 & 4
+# C) Nora Crackme{3,4}
 We already did a few of these [previously](<https://github.com/Ali-Mikael/Application-hacking/blob/main/h4-Disaddembly.md#d-nora>), but the 3 and 4 are new so let's get cracking!
-Unfortunately my time ran out. It's 3am and the task has to be given in before 8AM. I don't feel like doing an all nighter, so good night i'll figure out the rest later! 🫡
 
-
-
-### This is later:
 
 We start off with a few basic steps to get us going
 - <img width="1677" height="1047" alt="2026-02-22-18:28:05" src="https://github.com/user-attachments/assets/ab5b096b-7e1a-423a-84e3-7fa999fb4df3" />
@@ -416,7 +413,7 @@ $ objdump -d crackme03.64
     118c:	c3                   	ret
 ```
 
-We start `GDB` and start poking around!
+We fire up `GDB` and start poking around!
 
 ```bash
 gdb -tui crackme03.64
@@ -429,7 +426,7 @@ We have set gdb to automatically look for debugging symbols, but we get the msg
 So we're going to have to operate on the ASM again!
 
 
-# Workflow
+## Workflow
 ```bash
 (gdb) layout asm
 (gdb) break main
@@ -437,12 +434,13 @@ So we're going to have to operate on the ASM again!
 (gdb) set args pword
 (gdb) run
 ```
-- We layout the assembly instructions
+- Display the instructions alongside the prompt
 - Set breakpoints at `main` and `check_pw`
 - Use `pword` for the argument and run the program
-- Then we move forward step by step using `si` and `ni`, and when we find something that might be of interest, we print the value loaded in the register.
+- Then we move forward step by step using `si` and `ni`
+- When we find something that might be of interest, we print the value loaded in the register.
 
-At the top of main, we can notice two instructions
+At the top of `main`, we can notice two instructions
 ```asm
 cmp   $0x2,%edi
 jne   0x5555555551fe <main+113>
@@ -458,7 +456,7 @@ cmp   $0x6,%rax
 Followed by the `Jump Not Equal`
 Our value is stored in `%rax`, and it's being compared against the number `6`.
 
-When we print `%rax`, we get the value 5, which is the length of our input = pword. 
+When we print `%rax`, we get the value 5, which is the length of our input (pword). 
 
 **From this we can deduce == The password is 6 character in length**
 
@@ -471,5 +469,57 @@ set $rax = 6
 Now we get to continue as if our password was 6 characters in length!
 
 
+So we hit the second breakpoint at the beginning `check_pw`
 
+Then we got to a new compare instruction:
+```asm
+cmp   %cl,(%rdi,%rax,1)
+```
+
+Immediately afterwards a `Jump Not Equal` instruction:
+```asm
+jne   0x555555555181 <check_pw+40>
+```
+Which our variable hits and the program jumps over the block highlighted in green:
+- <img width="589" height="212" alt="2026-02-22-21:11:40" src="https://github.com/user-attachments/assets/145ab156-f937-44ca-9c24-de1958269026" />
+
+I went back and printed the value of `‰cl`, which was 110. And the ascii code 110 equals to n.
+
+So I set my argument for the program to start with the lowercase letter n, and put 5 random characters after (to make up for the length).
+
+We got past the first comparison, but obviusly failed at the next one. 
+
+And because I didn't really find anything to compare this with from the `strings` output like in the last task, I decided to brute force it... 😂
+
+## Bruteforce workflow
+
+Everytime I got past the `cmp` instruction, just before the `jne`, I printed the value, took it up and continued. It looks something like this:
+
+```asm
+(gdb) p $cl
+--> get the value
+--> convert ascii code to char
+--> append it to the password and start again
+(gdb) continue
+(gdb) set args nxxxx
+(gdb) run
+```
+
+Here's the ascii values I gathered and the corresponding characters:
+
+- 110  ==  n
+- 68   ==  D
+- 111  ==  o
+- 69   ==  E
+- 105  ==  i
+- 65   ==  A
+
+Maybe not the smartest way, and I know for a fact there has to be some other way of doing this, but if it works it works... 🤷‍♂️
+
+<img width="694" height="42" alt="2026-02-22-23:29:58" src="https://github.com/user-attachments/assets/91ea23fd-6df0-4bfc-bc73-8dadb7576db0" />
+
+-----
+
+# Crackme 4
+Unfortunately I don't have time to do the #4 one, so i'll come back to this later! 🫡
 
