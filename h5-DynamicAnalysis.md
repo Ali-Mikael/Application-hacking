@@ -1,4 +1,4 @@
-# The workhorse
+# "It works on my machine"
 <img width="1473" height="848" alt="Screenshot from 2026-02-10 16-23-21" src="https://github.com/user-attachments/assets/e41794df-ec24-48fa-9001-4127d797f876" />
 
 -----
@@ -196,33 +196,40 @@ We navigate to the main function:
 
 I noticed that a function call is made  to `<mAsdf3a>`, (which can also be seen noted in the strings output btw)
 
-- Highlighted as **red** we can see that user input is prompted, and the `mAsdf3e` most probably takes it and does the string comparison against the password (among other things)
-- Highlighted as green we notice that if string do not match, `jnz`, it will **jump over** the `<EaseAs>` function. Which I suspect contains the string and password
+Highlighted with **red** we can see that user input is prompted, and the `mAsdf3e` most probably takes it and does the string comparison against the password (among other things)
+
+Highlighted with **green** we notice that if strings **do not match** (`jne` / jump not equal) it will **jump over** the `<EaseAs>` function. Which I suspect contains the string and password
   - <img width="727" height="194" alt="2026-02-21-22:01:00" src="https://github.com/user-attachments/assets/b6f61050-1a5d-40b8-8205-a45de3438c82" />
 
-I said earlier "among other things", because the function is not exactly short:
+I said earlier "among other things", because the `mAsdf3a` function is not exactly short:
   - <img width="718" height="643" alt="2026-02-21-21:57:33" src="https://github.com/user-attachments/assets/5c678e9e-134a-40e4-aa0d-f0f37b02af53" />
 
 
-For further examination, we're going to have to open up the GDB
+For further examination, we're going to have to open up the GDB -->
+
 
 ### One step at a time
-We start the gnu debugger in `TUI` mode and give the commands:
-- `layout asm`
-- `layout regs`
-- This way we'll see the instructions and registrers displayed while we give further commands!
+We start the gnu debugger in `TUI` mode and give the command
+```
+layout asm
+```
+This way we'll see the instructions being executed above the initial prompt like so:
+- <img width="1896" height="1098" alt="2026-02-22-03:44:02" src="https://github.com/user-attachments/assets/e97c1c54-1d30-4328-aab6-8743adee4213" />
+
 
 We then set the breakpoint at main and run the program:
 - <img width="1677" height="1320" alt="2026-02-21-22:22:13" src="https://github.com/user-attachments/assets/377b56c1-97c4-41c9-8073-b121ab1e66eb" />
 
 
 ### Workflow
-We use commands `si` & `ni` to go through the program. These are the `step/next` equivalents for instructions.
+We use commands `si` & `ni` to go through the program. These are the `step/next` equivalents for individual instructions.
 
 Disclaimer:
   - I did a whole bunch of stuff which I unfortunately didn't have time to report on, so I'm skipping the "messing about" part where i'm just trying to figure out what's going on.
 
-I ended up exiting and starting gdb again. But this time I set the break point at the `<mAsdf3a>` function, typed `run` to run it, and when prompted for the password entered in the letter `e`. Once we hit the breakpoint, we started stepping through it one instruction at a time.
+I ended up exiting and starting gdb again. But this time I set the break point at the `<mAsdf3a>` function, typed `run` to run it, and when prompted for the password entered in the letter `e`. 
+
+Once we hit the breakpoint, we started stepping through it one instruction at a time.
 
 I landed at a **compare instruction** and printed the values of the targets
   - <img width="512" height="37" alt="2026-02-22-00:39:59" src="https://github.com/user-attachments/assets/5ce35a65-b57d-44f7-afb6-4cbfeb927358" />
@@ -241,22 +248,16 @@ Now when we hit the compare instruction and compare the targets, instead of 1, m
 This made me suspect that the password string is 8 characters long.
 
 
-So I rewinded back to the compare instruction and set the `$eax` to value 8 by using the command
-
+So I went back to the compare instruction and set the register `$edx` to `8` by using the command
 ```asm
 set $edx = 8
 ```
-This way we don't jump, and resume execution at the next instruction in queue. But this time we jump at the second compare instruction.
+This way we **don't jump**, and resume execution at the next instruction on the list. 
 
-This is where I had an idea. The string I caught earlier was also 8 characters long, so I decided to input that one, and that way we pass the first check easily:
 
-Both strings are equal in length, so we continue execution. Next up there's a xor operation with $eax & $eax, which has the value of -1
-- <img width="650" height="23" alt="2026-02-22-01:29:26" src="https://github.com/user-attachments/assets/794ed054-fb0c-4eab-b467-97497afd43c1" />
-- <img width="142" height="47" alt="2026-02-22-01:29:59" src="https://github.com/user-attachments/assets/213d3076-5d4e-485a-bc63-660981b79577" />
+This is also where I had an idea. The string I caught earlier was 8 characters long as well, so I decided to input that one, and the pass the first check!
 
-This didn't yield any information that I could use, but then I moved forward and there came 2 compare operations back to back. 
-
-First it subtracted 7 from a value, and then compared it against the user input (presumably)
+I then noticed that it subtracted 7 from a value, and then compared it against the user input (presumably)
 - <img width="169" height="20" alt="2026-02-22-01:43:18" src="https://github.com/user-attachments/assets/93f55716-d5c1-482d-b189-8b81c024cf44" />
 
 
@@ -266,49 +267,55 @@ I printed the value and got = 97
 
 I googled what's 97 in ascii and got `a`
 
-Then the comparison happened
+Then to the actual comparison:
 ```asm
 cmp %ecx,%edx
 ```
-At this point I printed both values:
+I printed each value being compared:
 - <img width="155" height="82" alt="2026-02-22-01:48:20" src="https://github.com/user-attachments/assets/c6aa4973-9d53-4eba-a930-82c74f204983" />
+
+And made my deductions:
 - 97 in ascii is `a`
 - 100 in ascii is `d`
 
 I deduced that the password starts with the letter `d`, and right now there seems to be an offset of 3 for the string we found earlier.
 
-The comparison wasn't equal, so it jumped forward. No worries, we run it again at the same breakpoint, and this time take the string `anLTj4u8` shifted forward by 3 ascii and give it to the program:
-- <img width="735" height="201" alt="2026-02-22-01:58:00" src="https://github.com/user-attachments/assets/306ebe7a-a178-4478-bd38-a810cfb6a246" />
+The comparison wasn't equal, so it jumped forward. 
 
+No worries, we run it again at the same breakpoint, and this time take the string `anLTj4u8` _shifted forward by 3 ascii_ and give it to the program:
+- <img width="735" height="201" alt="2026-02-22-01:58:00" src="https://github.com/user-attachments/assets/306ebe7a-a178-4478-bd38-a810cfb6a246" />
 
 Now when the comparison happens again, the values are equal
 - <img width="147" height="83" alt="2026-02-22-02:02:47" src="https://github.com/user-attachments/assets/09e35fc1-47d7-486d-bc85-c35dda0fb6ca" />
 
-And we're still in the game! We get to see another round. And by going forward, we got to a `jmp` instruction, which takes us to a few instructions, where the
+And we're still in the game! We get to see another round. 
+
+By moving forward we got to a `jmp` instruction, where some magic happens. 
+
+The following caught my interest again
 ```asm
 sub $0x7,%edx
 ```
-pops up and gets my interest.
 
 I **print the value** of `%edx`
 - which is = 110
 - subtracted with 7 is = 103
 - a quick search online tells us the ascii value is = `g`
 
-Our letter was q, so the at the next compare operation, it fails and jumps. 
+Our letter was `q`, so the at the next compare operation, it fails and jumps. 
 
-I suspect that the next letter in the password is the letter `g`, so I change my passwords second letter form `q` to `g` and run the program again.
+So I change my passwords second letter from `q` to `g` and run the program again.
 
 Just as it felt like i'm brute forcing the password, and there has to be a better way of doing this, I noticed a pattern
 - <img width="391" height="96" alt="2026-02-22-02:17:43" src="https://github.com/user-attachments/assets/94555983-9ca9-41c6-96aa-c78f4effb9bd" />
 
-First it either subtracts 7 from `%edx`, or adds 3, and then compares it against our value `%ecx`.
+First it either **subtracts 7** from `%edx`, or **adds 3**, and then **compares it against** our value stored in `%ecx`.
 
 ### The aha moment
-Now on the second round when the second letter is g, the comparison is equal
+Now on the _second round_ when the _second letter_ is `g`, the comparison is equal
 - <img width="150" height="84" alt="2026-02-22-02:24:26" src="https://github.com/user-attachments/assets/be03ac4a-a1ec-4620-ae58-8e6829b5f862" />
 
-On the next round the value 3 is added to `%edx`
+We move forward in the instructions, and the value 3 is added to the value stored in `%edx`
 ```asm
 add $0x3,%edx
 ```
@@ -323,7 +330,7 @@ The patterns seems clear now, first round the value 3 is added, the next round 7
 If we take the string we found earlier and apply the logic
 
 | a | n | L | T | j | 4 | 8 |
-------------------------------
+| - | - | - | - | - | - | - |
 | +3 | -7 | +3 | -7 | +3 | -7 | +3 |
 | d | g | O | M | m | - | x | 1
 
