@@ -43,7 +43,6 @@ We want to see the `C` code being executed side by side, so we enable the _text 
 $ (gdb) tui enable
 ```
 - You can also skip this step by initially starting GDB with the `-tui` parameter
-- <img width="1478" height="708" alt="Screenshot from 2026-02-11 11-43-27" src="https://github.com/user-attachments/assets/ef9590e0-8e5a-4e92-b347-e9384da39b37" />
 
 On the prompt, we issue commands:
 ```bash
@@ -87,7 +86,7 @@ We then **step forward one line** and inspect the variables again
 - <img width="721" height="130" alt="Screenshot from 2026-02-12 08-30-43" src="https://github.com/user-attachments/assets/193fdd84-1013-468c-8361-2162be8f4054" />
 
 
-Once we get to `line 17` where a function call is made, we use the _step command_
+Once we get to `line 17` where a function call is made, we use the `step` command
 - We receive some information on what's going on:
   - <img width="1648" height="125" alt="Screenshot from 2026-02-12 08-45-47" src="https://github.com/user-attachments/assets/8658b0d8-00db-4ebc-a2ba-32bdf4597fad" />
   - <img width="851" height="363" alt="Screenshot from 2026-02-12 08-45-32" src="https://github.com/user-attachments/assets/68ca5aa5-6132-451a-90d8-b782cbba05d9" />
@@ -127,17 +126,17 @@ But what happens when we try to scramble a variable with the value of `null`?
 
 ### Fixing it
 The problem:
-- The program is trying to access a memory location it has no **access rights** to, which is the `0x0`
+- The program is trying to access a memory location it has no **access rights** to
 - Why? Because the variable is set to `null`
 
 
-**We fix it by**
-- Changing the value to **not null** (i'm doing it straight from the source code, as we still have access to it)
+So we simply change the value to **not null**
+- I'm doing it straight from the source code, as we still have access to it!
 - <img width="646" height="132" alt="Screenshot from 2026-02-12 11-58-34" src="https://github.com/user-attachments/assets/c089c789-35b2-4f56-8587-f1c3e3f1914e" />
 
 
 Recocompile:
-```
+```bash
 $ gcc -g -o example1 gdb_example1.c
 ```
 By running the recompiled program **example1** alongside the **faulty one**, we can see that we got rid off the _seg fault_:
@@ -160,6 +159,7 @@ By running the recompiled program **example1** alongside the **faulty one**, we 
 - Find out the password and flag
 - Write a report on how it opened
 
+
 > [!NOTE]
 > The execution environment has changed. New laptop, new OS:
 > - <img width="1037" height="362" alt="2026-02-21-18:50:26" src="https://github.com/user-attachments/assets/36a5dd75-c102-420b-aaa3-58a623556ff7" />
@@ -167,20 +167,22 @@ By running the recompiled program **example1** alongside the **faulty one**, we 
 > Now that that's out of the way, let's continue!
 
 
-We have the [target](<https://terokarvinen.com/application-hacking/lab2.zip>) downloaded and unzipped, let's get to work!
+We have the [target](<https://terokarvinen.com/application-hacking/lab2.zip>) downloaded and unzipped, let's get to work.
 
 
-In the folder we have the old `passtr` program, and the new one `passtr2o`. The latter is the one we're going to be focusing on!
+In the target directory we have the old `passtr` program, and the new one: `passtr2o`. 
+
+We're going to be focusing on the latter one!
 
 
 ### Poking around
-We naturally start by executing the program and figuring out what kind of exit code we get
+We naturally start by executing the program
 - <img width="576" height="120" alt="2026-02-21-18:56:53" src="https://github.com/user-attachments/assets/aa778fd8-75b8-4602-bb08-8bd144268ec0" />
 
 Then a quick check for any low hanging fruit:
 - <img width="689" height="641" alt="2026-02-21-21:10:12" src="https://github.com/user-attachments/assets/81078435-eaf8-4ff3-a112-6b35e3515408" />
 
-I noticed the string `anLTj4u8`, but atleast in the current format doesn't give us the flag :/
+I noticed the string `anLTj4u8`, but at least in the current format doesn't give us the flag :/
 - <img width="563" height="81" alt="2026-02-22-01:14:07" src="https://github.com/user-attachments/assets/20cdffcd-64f6-4f94-a48a-f668a1898b9e" />
 
 
@@ -188,17 +190,16 @@ We then quickly go through the ASM using the `objdump` utility.
 
 **What is objdump?**
 - Straight from the man pages: _display information from object files_
-- The options for this utility are many, but we stick to the `-d` flags, which will `disassemble` it for us
+- The options for this utility are many, but we stick to the `-d` flag, which will `disassemble` it for us
   - <img width="1049" height="416" alt="2026-02-21-21:27:05" src="https://github.com/user-attachments/assets/a31fa4ac-d545-4212-8410-e1e19a5052b9" />
 
 We navigate to the main function:
 - <img width="1050" height="873" alt="2026-02-21-21:27:47" src="https://github.com/user-attachments/assets/01a6a017-f2ac-4147-8f2d-5c70e10c0266" />
 
-I noticed that a function call is made  to `<mAsdf3a>`, (which can also be seen noted in the strings output btw)
 
-Highlighted with **red** we can see that user input is prompted, and the `mAsdf3e` most probably takes it and does the string comparison against the password (among other things)
+Highlighted in **red**: we can see that after prompting the user for input, the input is passed on to the `mAsdf3e`-function, which most probably takes it and does the string comparison against the password (among other things).
 
-Highlighted with **green** we notice that if strings **do not match** (`jne` / jump not equal) it will **jump over** the `<EaseAs>` function. Which I suspect contains the string and password
+Highlighted in **green** we notice that if strings do **not** match, there's and instruction following it, `jne` (jump not equal), which will **jump over** the `EaseAs` function. Which I suspect contains the flag!
   - <img width="727" height="194" alt="2026-02-21-22:01:00" src="https://github.com/user-attachments/assets/b6f61050-1a5d-40b8-8205-a45de3438c82" />
 
 I said earlier "among other things", because the `mAsdf3a` function is not exactly short:
@@ -210,15 +211,15 @@ For further examination, we're going to have to open up the GDB -->
 
 ### One step at a time
 We start the gnu debugger in `TUI` mode and give the command
-```
+```bash
 layout asm
 ```
-This way we'll see the instructions being executed above the initial prompt like so:
+This way we'll see the instructions above the prompt at all times.
 - <img width="1896" height="1098" alt="2026-02-22-03:44:02" src="https://github.com/user-attachments/assets/e97c1c54-1d30-4328-aab6-8743adee4213" />
 
 
 We then set the breakpoint at `main` and run the program:
-```gdb
+```bash
 (gdb) b main
 (gdb) run
 ```
@@ -231,12 +232,12 @@ We use commands `si` & `ni` to go through the program. These are the `step/next`
 Disclaimer:
   - I did a whole bunch of stuff which I unfortunately didn't have time to report on, so I'm skipping the "messing about" part where i'm just trying to figure out what's going on.
 
-I ended up exiting and starting gdb again. But this time I set the break point at the `<mAsdf3a>` function, typed `run` to run it, and when prompted for the password entered in the letter `e`. 
+I ended up exiting and starting gdb again, this times setting the break point at the start of the `mAsdf3a` function. When prompted for the password I entered in the letter `e`. 
 
-Once we hit the breakpoint, we started stepping through it one instruction at a time.
-
-I landed at a **compare instruction** and printed the values of the targets
+I went forward one line at a time and finally hit a **compare instruction**
   - <img width="512" height="37" alt="2026-02-22-00:39:59" src="https://github.com/user-attachments/assets/5ce35a65-b57d-44f7-afb6-4cbfeb927358" />
+
+We naturally printed the values of the targets
   - <img width="184" height="81" alt="2026-02-22-00:40:12" src="https://github.com/user-attachments/assets/1c4886fa-3369-413e-82ac-56dad2a425fe" />
 
 We can see that the values are not equal, and next up we have a `jump not equal` instruction, which then jumps over the section marked in red
@@ -254,66 +255,76 @@ This made me suspect that the password string is 8 characters long.
 
 So I went back to the compare instruction and set the register `$edx` to `8` by using the command
 ```asm
-set $edx = 8
+set  $edx = 8
 ```
-This way we **don't jump**, and resume execution at the next instruction on the list. 
+This way we **don't jump**, and resume execution at the next instruction on the list. So it confirms our doubts.
 
 
-This is also where I had an idea. The string I caught earlier was 8 characters long as well, so I decided to input that one and automatically pass the first check!
+At the same time of realising this, I had an idea: 
 
-I then noticed that the program subtracted `7` from a value, and then compared it against the user input (presumably)
-- <img width="169" height="20" alt="2026-02-22-01:43:18" src="https://github.com/user-attachments/assets/93f55716-d5c1-482d-b189-8b81c024cf44" />
+The string I caught earlier was 8 characters long as well, so I decided to pass it to the function as an argument and automatically pass the first check!
 
+I then noticed that the program subtracts `7` from some value, does some operation, and then compares it with user input.
+```asm
+sub  $0x7,%edx
+```
 
-I printed the value and got = 97
+I printed the value stored in `%edx` and got = `97`
 - <img width="132" height="45" alt="2026-02-22-01:44:33" src="https://github.com/user-attachments/assets/6e117fad-4deb-497e-924b-b77f74b8823a" />
 
 
-I googled what's 97 in ascii and got = `a`
+A quick browser hit tells us that `97` in ascii is = `a`
 
 Then to the actual comparison:
 ```asm
-cmp %ecx,%edx
+cmp  %ecx,%edx
 ```
 I printed each value being compared:
 - <img width="155" height="82" alt="2026-02-22-01:48:20" src="https://github.com/user-attachments/assets/c6aa4973-9d53-4eba-a930-82c74f204983" />
 
 And made my deductions:
-- 97 in ascii is `a`
-- 100 in ascii is `d`
+- ascii value 97 represented as a letter is `a`
+- ascii value 100 represented as a letter is `d`
 
-I deduced that the password starts with the letter `d`, and right now there seems to be an offset of 3 for the string we found earlier.
+I deduced that the password starts with the letter `d`, and right now there seems to be an offset of 3 between the string we found and the correct password.
 
-The comparison wasn't equal, so it jumped forward. 
+The comparison wasn't equal, so it jumped.
 
 No worries, we run it again at the same breakpoint, and this time take the string `anLTj4u8` _shifted forward by 3 ascii_ and give it to the program:
 - <img width="735" height="201" alt="2026-02-22-01:58:00" src="https://github.com/user-attachments/assets/306ebe7a-a178-4478-bd38-a810cfb6a246" />
 
-Now when the comparison happens again, the values are equal
-- <img width="147" height="83" alt="2026-02-22-02:02:47" src="https://github.com/user-attachments/assets/09e35fc1-47d7-486d-bc85-c35dda0fb6ca" />
+Now when the `comparison` happens again, the values are equal
+```
+%ecx = 100
+%edx = 100
+```
 
-And we're still in the game! We get to see another round. 
+We're still in the game and get to see another round. 
 
 By moving forward we got to a `jmp` instruction, where some magic happens. 
 
 The following caught my interest again
 ```asm
-sub $0x7,%edx
+sub  $0x7,%edx
 ```
 
-I print the value of `%edx`
-- which is = 110
-- subtracted by 7 is = 103
-- a quick search online tells us the ascii value is = `g`
+I print the value of `%edx` (For clarity: this is before the subtraction has taken place)
+```asm
+(gdb) print %edx
+```
+- This time around it's = `110`
+  - `110 - 7 = 103`
+  -  The ascii value 103 represent the letter = `g`
 
-Our letter was `q`, so the at the next compare operation, it fails and jumps. 
+Our letter unfortunately doesn't match, so the at the next compare operation it fails and jumps. 
 
 So I change my passwords second letter from `q` to `g` and run the program again.
 
+At this point it felt like i'm brute forcing the password and there has to be a better way of doing this. And that's when I noticed the pattern!
 Just as it felt like i'm brute forcing the password, and there has to be a better way of doing this, I noticed a pattern
 - <img width="391" height="96" alt="2026-02-22-02:17:43" src="https://github.com/user-attachments/assets/94555983-9ca9-41c6-96aa-c78f4effb9bd" />
 
-First first the program either **subtracts 7** from `%edx`, or **adds 3**, and then **compares it against** our value stored in `%ecx`.
+First first the program _either_ **subtracts 7** from `%edx`, _or_ **adds 3**, and then **compares it against** our value stored in `%ecx`.
 
 ### The aha moment
 Now on the _second round_ when the _second letter_ is `g`, the comparison is equal
@@ -321,7 +332,7 @@ Now on the _second round_ when the _second letter_ is `g`, the comparison is equ
 
 We move forward in the instructions, and the value 3 is added to the value stored in `%edx`
 ```asm
-add $0x3,%edx
+add  $0x3,%edx
 ```
 
 We print the value
@@ -333,10 +344,10 @@ The patterns seems clear now, first round the value 3 is added, the next round 7
 
 If we take the string we found earlier and apply the logic
 
-| a | n | L | T | j | 4 | 8 |
-| - | - | - | - | - | - | - |
+| a | n | L | T | j | 4 | u | 8 |
+| - | - | - | - | - | - | - | - |
 | +3 | -7 | +3 | -7 | +3 | -7 | +3 |
-| d | g | O | M | m | - | x | 1
+| d | g | O | M | m | - | x | 1 |
 
 
 We are left with the flag:
@@ -347,7 +358,7 @@ We are left with the flag:
 I still wanted to check something out, and `ghidra` confirmed my doubts
 - If the value is **even**, 3 is added
 - If the value is **odd**, 7 is subtracted
-- And by value I mean the `index` of the char array!
+- And by value I mean the `index` of the char array.
 
 Here we can see it in "plaintext"
 - <img width="505" height="518" alt="2026-02-22-02:37:35" src="https://github.com/user-attachments/assets/43de147c-fefc-44fd-abf9-5e69cf18e639" />
@@ -355,14 +366,17 @@ Here we can see it in "plaintext"
 
 ### What's going on?
 - The program is doing a simple bitwise operation using the `AND` operator
-- In `C` this operator is expressed as = `&`
-- In this case, it checks it against the value of `1`
+- In `C` this operator is expressed as `&`
+- In this case it checks it against the value of `1`
   - Which means the output will be a 1, **only** if `value_X` **AND** `value_Y` are `1`!
   - A quick example:
-    - Because the number 1 in binary could be represented as `001`, and the number 4 as `100`, the **AND** operation of this will **equal to 0**.
-   
-If this is confusing for you, just know this:
-- All equal numbers will always end in `0` in binary!
+    - Because the number 1 in binary could be represented as `001`, and the number 4 as `100`, the `AND` operation of this will **equal to 0**.
+    - So: `if 0 == 0` then add 3, `else` subract 7
+  
+
+**If this is confusing for you, just know this:**
+- All equal numbers will always end with a `0` in binary!
+- So the `AND` operation using a `1` will always equal in `0` _if it's an even number_!
 - <img width="623" height="647" alt="2026-02-22-03:31:31" src="https://github.com/user-attachments/assets/377eb070-c140-4d6b-8970-74a68cd03e64" /> 
 
 
@@ -372,3 +386,4 @@ If this is confusing for you, just know this:
 # C) Lab_3
 
 Unfortunately my time ran out. It's 3am and the task has to be given in before 8AM. I don't feel like doing an all nighter so good night i'll figure the rest out later! 🫡
+
