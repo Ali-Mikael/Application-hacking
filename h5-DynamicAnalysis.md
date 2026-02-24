@@ -157,20 +157,20 @@ By running the recompiled program **example1** alongside the **faulty one**, we 
 **Objective**
 - Crack the `passtr2o` program
 - Find out the password and flag
-- Write a report on how it 
+- Write a report on how you cracked it
 
-For the purpose of learning, i'm going to refrain from using the source code.
+For the purpose of learning, i'm going to refrain from using the source code!
 
 
 > [!NOTE]
 > The execution environment has changed
 >
-> New hardware, new OS
+> **New Hardware && New OS:**
 >
 > <img width="1037" height="362" alt="2026-02-21-18:50:26" src="https://github.com/user-attachments/assets/36a5dd75-c102-420b-aaa3-58a623556ff7" />
+>
+> Technical specs out of the way, let's continue!
 
-
-Now that the technical specs are out of the way. Let's continue!
 
 We have the [target](<https://terokarvinen.com/application-hacking/lab2.zip>) downloaded and decompressed, let's get to work.
 
@@ -395,13 +395,15 @@ Here we can see it in "plaintext"
 We already did a few of these [previously](<https://github.com/Ali-Mikael/Application-hacking/blob/main/h4-Disaddembly.md#d-nora>), but the 3 and 4 are new so let's get cracking!
 
 > [!NOTE]
-> Even though we have access to the source code, for the purpose of learning i'm going to refrain from using it, and only use/operate the already  program!
+> Even though we have access to the source code, for the purpose of learning i'm going to refrain from using it, and only use/operate the already compiled program!
+>
+> This simulates a real attack scenario and helps us learn more.
 
 We start off with a few basic steps to get us going
 - <img width="1677" height="1047" alt="2026-02-22-18:28:05" src="https://github.com/user-attachments/assets/ab5b096b-7e1a-423a-84e3-7fa999fb4df3" />
 - <img width="207" height="157" alt="2026-02-22-18:30:25" src="https://github.com/user-attachments/assets/68bce173-6d76-4748-befc-6cc30fe1a887" />
 
-I found the `check_pw` function using
+I found the `check_pw` function from the disassemply dump:
 ```bash
 $ objdump -d crackme03.64
 ```
