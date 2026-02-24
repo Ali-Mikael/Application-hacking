@@ -144,13 +144,22 @@ By running the recompiled program **example1** alongside the **faulty one**, we 
 - [Quick Guide to gdb: The GNU Debugger](<https://kauffman77.github.io/tutorials/gdb.html>)
 
 
+
+
+
+
 -----
+
+
+
 
 # B) LAB_2
 **Objective**
 - Crack the `passtr2o` program
 - Find out the password and flag
-- Write a report on how it opened
+- Write a report on how it 
+
+For the purpose of learning, i'm going to refrain from using the source code.
 
 
 > [!NOTE]
@@ -380,9 +389,13 @@ Here we can see it in "plaintext"
 
 -----
 
+
+
 # C) Nora Crackme{3,4}
 We already did a few of these [previously](<https://github.com/Ali-Mikael/Application-hacking/blob/main/h4-Disaddembly.md#d-nora>), but the 3 and 4 are new so let's get cracking!
 
+> [!NOTE]
+> Even though we have access to the source code, for the purpose of learning i'm going to refrain from using it, and only use/operate the already  program!
 
 We start off with a few basic steps to get us going
 - <img width="1677" height="1047" alt="2026-02-22-18:28:05" src="https://github.com/user-attachments/assets/ab5b096b-7e1a-423a-84e3-7fa999fb4df3" />
