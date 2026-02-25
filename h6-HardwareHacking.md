@@ -51,6 +51,51 @@ $ make
 The last command resulted in a bunch of errors:
 - <img width="1357" height="707" alt="2026-02-24-23:44:55" src="https://github.com/user-attachments/assets/09a4fd4c-b233-42f3-b624-32f0f4c12cad" />
 
+I don't want to focus on debugging this for hours on end, so I take the help of a little friend:
+- <img width="978" height="671" alt="2026-02-25-16:17:28" src="https://github.com/user-attachments/assets/6b17a712-a90d-4c54-a506-5055df1b7a7b" />
+
+
+We fix it and run make again, only to get the following in return
+```bash
+gcc -Wno-implicit-function-declaration -Isrc -c src/md5/md5.c -o obj/md5/md5.o
+src/md5/md5.c: In function ‘MD5_Init’:
+src/md5/md5.c:105:6: warning: old-style function definition [-Wold-style-definition]
+  105 | void MD5_Init (mdContext)
+      |      ^~~~~~~~
+src/md5/md5.c: In function ‘MD5_Update’:
+src/md5/md5.c:122:6: warning: old-style function definition [-Wold-style-definition]
+  122 | void MD5_Update (mdContext, inBuf, inLen)
+      |      ^~~~~~~~~~
+src/md5/md5.c:124:16: error: argument ‘inBuf’ doesn’t match prototype
+  124 | unsigned char *inBuf;
+      |                ^~~~~
+In file included from src/md5/md5.c:37:
+src/md5/md5.h:65:6: error: prototype declaration
+   65 | void MD5_Update(MD5_CTX *ctx, const unsigned char *data, unsigned int len);
+      |      ^~~~~~~~~~
+src/md5/md5.c:151:7: error: too many arguments to function ‘Transform’; expected 0, have 2
+  151 |       Transform (mdContext->buf, in);
+      |       ^~~~~~~~~  ~~~~~~~~~~~~~~
+src/md5/md5.c:51:13: note: declared here
+   51 | static void Transform ();
+      |             ^~~~~~~~~
+src/md5/md5.c: In function ‘MD5_Final’:
+src/md5/md5.c:160:6: warning: old-style function definition [-Wold-style-definition]
+  160 | void MD5_Final (hash, mdContext)
+      |      ^~~~~~~~~
+src/md5/md5.c:186:3: error: too many arguments to function ‘Transform’; expected 0, have 2
+  186 |   Transform (mdContext->buf, in);
+      |   ^~~~~~~~~  ~~~~~~~~~~~~~~
+src/md5/md5.c:51:13: note: declared here
+   51 | static void Transform ();
+      |             ^~~~~~~~~
+src/md5/md5.c: In function ‘Transform’:
+src/md5/md5.c:203:13: warning: old-style function definition [-Wold-style-definition]
+  203 | static void Transform (buf, in)
+      |             ^~~~~~~~~
+make: *** [Makefile:26: obj/md5/md5.o] Error 1
+```
+
 
 
 
