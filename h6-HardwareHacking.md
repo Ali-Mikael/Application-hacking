@@ -10,10 +10,10 @@
 
 # Execution environment
 
-**The host**
+**The Provider**
 - <img width="907" height="511" alt="2026-02-24-23:17:05" src="https://github.com/user-attachments/assets/a63fad39-ab06-4933-a8a1-c2bc71cfe727" />
 
-**The attacker**
+**The Attacker**
 - <img width="764" height="331" alt="2026-02-24-23:30:24" src="https://github.com/user-attachments/assets/fe19e135-f903-4c26-98f1-ee58b841154a" />
 
 
@@ -41,7 +41,9 @@
 
 
 # Preparation
-Installing the decrypter (read the repo README for more!)
+Installing the decrypter 
+
+(read the repo README for more!)
 ```bash
 $ git clone https://github.com/robbins/tp-link-decrypt.git
 $ cd tp-link-decrypt
@@ -70,7 +72,7 @@ Then
 $ make clean
 $ make
 ```
-Running make clean first, deletes old temporary files and provides a fresh build.
+Running make clean first, deletes old temporary files and provides a fresh build
 
 Now we only get one error:
 ```bash
@@ -81,7 +83,7 @@ compilation terminated.
 ```
 
 
-To tackle this, we download the necessary dependency (which I thought the `preinstall.sh` script would've taken care of)
+To tackle this, we download the necessary dependency
 ```bash
 $ sudo apt install libssl-dev -y
 $ make clean
@@ -97,9 +99,7 @@ $ aws s3 cp s3://download.tplinkcloud.com/firmware/Tapo_C200v3_en_1.4.2_Build_25
 ```
 
 
-And lastly the `Tapo camera C200 V3` dump file. 
-
-It's located at the schools **moodle course page**, so I downloaded it from my host machine straight to the `kali share` and moved it to my project folder at the destination:
+And lastly the `Tapo camera C200 V3` dump file. Which is located at the schools **moodle course page**, so I downloaded it from my host machine straight to the `kali share` and moved it to my project folder at the destination:
 - <img width="681" height="205" alt="2026-02-25-20:56:35" src="https://github.com/user-attachments/assets/3ee67c16-dd11-4f64-8f8e-10e93ab628c5" />
 - <img width="1093" height="280" alt="2026-02-25-20:58:16" src="https://github.com/user-attachments/assets/57f60d1e-daf1-4d7b-8ac1-462d15bfae9c" />
 
@@ -135,7 +135,7 @@ We confirm that the operation was succesfull, by printing any human readable str
 # Analysing
 Now to the juicy part.
 
-We analyse the file first using the `binwalk` utility.
+We analyse the file using the `binwalk` utility.
 ```bash
 $ binwalk Tapo_C200v4_en_1.4.2.bin.dec
 ```
@@ -156,21 +156,31 @@ x20400         uImage header, header size: 64 bytes, header CRC: 0x8F2C487E, cre
 0x3E0200        Squashfs filesystem, little endian, version 4.0, compression:xz, size: 3032084 bytes, 96 inodes, blocksize: 65536 bytes, created: 2025-03-13 03:15:05
 
 ```
+The image contains atleast:
+- An Android bootimage
+- uImage header:
+  - Name: "mips Ingenic Linux-3.10.14"
+  - Size: 1288473 bytes
+  - OS: Linux
+  - CPU type MIPS
+  - Compressions type: lzma
+- A xz compressed `Squashfw` filesystem, 3032084 bytes in size, little endian <- important when reverse engineering
+
+
+
+-----
+# Extracting the rootfs
+
 There's a lot of compressed data in the file
 - <img width="1371" height="652" alt="2026-02-25-22:25:37" src="https://github.com/user-attachments/assets/0f901ea9-95f5-41e2-9358-13cf22b3e6cb" />
 
-So we take binwalk for a spin again and extract the file system using the `--extract` flag
+So we take binwalk for a spin again and extract the contents using the `--extract` flag
 ```bash
 $ binwalk -e Tapo_C200v4_en_1.4.2.bin.dec
 ```
 <img width="1365" height="315" alt="2026-02-25-22:32:21" src="https://github.com/user-attachments/assets/7fcf1ddf-30c7-4164-ac6f-bf1e6fac4bbe" />
 
 
-
------
-
-
-# Extracting the rootfs
 We then go hunting
 ```bash
 $ cd _Tapo_C200v4_en_1.4.2.bin.dec.extracted 
@@ -187,7 +197,7 @@ $ ls
 - Inteded for general read-only filesystem use, archival use, and constrained block device/memory systems (e.g. embedded systems) where low overhead is needed.
   - Source [here](<https://docs.kernel.org/filesystems/squashfs.html>)
 
-This was a nice find, as we aquired the main program which we can now dissect with tools such as `strings`, `objdump`, `ghidra`, `gdb` and the likes.
+This was a nice find, as we aquired the `main program` which we can now dissect with tools such as `strings`, `objdump`, `ghidra`, `gdb` and the likes.
 - <img width="1360" height="222" alt="2026-02-25-22:44:27" src="https://github.com/user-attachments/assets/faf6a541-3502-4a59-8555-7381a42d4d7d" />
 
 
@@ -206,12 +216,12 @@ A list of interesting entries:
   - Found info on it [here](<https://community.infineon.com/t5/Knowledge-Base-Articles/HostApd-setup-in-Linux/ta-p/246026#.>)
 
 
-We start with the main program:
+We start dissecting the main program:
 ```bash
 $ strings main | egrep -i 'admin|pass|root|pwd|user|login|auth|username'
 ```
 
-This give us a whole bunch of hits, `381` to be exact. So it looks like we hit jackpot. My next step was to try finding individual hits, by printing 5 lines before & after the target, like so:
+This give us a whole bunch of hits, `381` to be exact. So it looks like we're digging at the right spot. My next step was finding individual hits, by printing 5 lines before & after the target, like so:
 ```
 $ strings main | grep -i -C 5 passw
 ```
@@ -225,9 +235,9 @@ I did the same for admin, pwd and a few other. A few interesting entries:
 
 
 
-I tried to get an assembly view of it, but got the following error:
-```
---$ objdump -d main
+I tried to disassemble main, but got the following error:
+```bash
+$ objdump -d main
 
 main:     file format elf32-little
 
