@@ -43,7 +43,7 @@
 # Preparation
 Installing the decrypter 
 
-(read the repo README for more!)
+(read the [repo](<https://github.com/robbins/tp-link-decrypt>) README for more!)
 ```bash
 $ git clone https://github.com/robbins/tp-link-decrypt.git
 $ cd tp-link-decrypt
@@ -117,12 +117,12 @@ Now we get to use the tool we compiled earlier:
 ```bash
 $ tp-link-decrypt/bin/tp-link-decrypt Tapo_C200v4_en_1.4.2.bin 
 ```
-Note that the commands given are relative to my working directory!
+Note that the command given is relative to my working directory!
 
 <img width="1246" height="594" alt="2026-02-25-21:07:47" src="https://github.com/user-attachments/assets/8b83be8d-2833-459d-9ef1-ad4a2d35e9a5" />
 
 
-We confirm that the operation was succesfull, by printing any human readable strings from the two files. We can notice that the output from the encrypted file doesn't make sense (1st picture), whereas the **unencrypted** one (2nd picture) is already revealing secrets to us:
+We confirm that the operation was successful by printing any human readable strings from the two files. We can notice that the output from the encrypted file doesn't make sense (1st picture), whereas the **unencrypted** one (2nd picture) is already revealing secrets to us:
 - <img width="556" height="601" alt="2026-02-25-21:14:13" src="https://github.com/user-attachments/assets/b8f75a88-3355-4972-be13-9c5a0f5526ba" />
 - <img width="1269" height="693" alt="2026-02-25-21:14:43" src="https://github.com/user-attachments/assets/05be6d90-4d68-432b-ac86-fd8a47ae41b6" />
 
@@ -157,14 +157,17 @@ x20400         uImage header, header size: 64 bytes, header CRC: 0x8F2C487E, cre
 
 ```
 The image contains atleast:
-- An Android bootimage
-- uImage header:
-  - Name: "mips Ingenic Linux-3.10.14"
+- **Android bootimage**
+- **uImage header** which describes the following:
   - Size: 1288473 bytes
   - OS: Linux
-  - CPU type MIPS
+  - CPU type: MIPS
   - Compressions type: lzma
-- A xz compressed `Squashfw` filesystem, 3032084 bytes in size, little endian <- important when reverse engineering
+  - Image Name: mips Ingenic Linux-3.10.14"
+- **Squashfs** filesystem
+  - xz compressed
+  - 3032084 bytes in size
+  - little endian
 
 
 
@@ -181,6 +184,7 @@ $ binwalk -e Tapo_C200v4_en_1.4.2.bin.dec
 <img width="1365" height="315" alt="2026-02-25-22:32:21" src="https://github.com/user-attachments/assets/7fcf1ddf-30c7-4164-ac6f-bf1e6fac4bbe" />
 
 
+
 We then go hunting
 ```bash
 $ cd _Tapo_C200v4_en_1.4.2.bin.dec.extracted 
@@ -192,10 +196,8 @@ $ ls
 
 **Q:** What is squashfs?
 
-**A:**
-- Squashfs is a compressed read-only filesystem for Linux.
-- Inteded for general read-only filesystem use, archival use, and constrained block device/memory systems (e.g. embedded systems) where low overhead is needed.
-  - Source [here](<https://docs.kernel.org/filesystems/squashfs.html>)
+**A:** _A compressed read-only filesystem for Linux_. Intended (among other things) for embedded systems where low overhead is needed!
+  - Read more about it [here](<https://docs.kernel.org/filesystems/squashfs.html>)
 
 This was a nice find, as we aquired the `main program` which we can now dissect with tools such as `strings`, `objdump`, `ghidra`, `gdb` and the likes.
 - <img width="1360" height="222" alt="2026-02-25-22:44:27" src="https://github.com/user-attachments/assets/faf6a541-3502-4a59-8555-7381a42d4d7d" />
@@ -231,11 +233,18 @@ I did the same for admin, pwd and a few other. A few interesting entries:
 
 <img width="814" height="265" alt="2026-02-26-00:26:24" src="https://github.com/user-attachments/assets/4f5793a6-d7c6-4ca7-8352-581f1e383a90" />
 
-<img width="1425" height="357" alt="2026-02-26-00:34:46" src="https://github.com/user-attachments/assets/ec3d935a-1e6b-4e63-a426-89c70bad4de6" />
+<img width="700" height="177" alt="2026-02-26-17:00:13" src="https://github.com/user-attachments/assets/35458e5b-8fdc-442d-8e02-bf5f2ef473aa" />
+
+<img width="828" height="330" alt="2026-02-26-17:07:24" src="https://github.com/user-attachments/assets/a203fdde-1ff1-4b1b-a740-ded876b2b7a7" />
+
+<img width="832" height="532" alt="2026-02-26-17:10:10" src="https://github.com/user-attachments/assets/70bc7ead-e406-4f4a-add7-59f8eb4d10b7" />
 
 
 
-I tried to disassemble main, but got the following error:
+
+
+
+I tried to disassemble main using `objdump`, but got the following error:
 ```bash
 $ objdump -d main
 
@@ -251,6 +260,5 @@ So we open up ghidra for further examination. I'm already set on finding the `ge
 ------
 
 # Hunting the Root Password
-
 
 
