@@ -1,4 +1,4 @@
-# Breaking into embedded systems
+# Breaking Into Embedded Systems
 
 **Objectives**
 1. Decrypt firmware image
@@ -8,7 +8,7 @@
 5. Search available applications
 6. Analyse and try to open the root password
 
-# Execution environment
+# Execution Environment
 
 **The Provider**
 - <img width="907" height="511" alt="2026-02-24-23:17:05" src="https://github.com/user-attachments/assets/a63fad39-ab06-4933-a8a1-c2bc71cfe727" />
@@ -59,7 +59,7 @@ The last command resulted in a bunch of errors:
 I don't want to focus on debugging this for hours on end, so I messaged a [friend](<https://github.com/MatPohj>), who also had the same issue as me. He came in clutch. Shoutout to Matti! 🙏
 
 
-The problem is that the code syntax is outdated, so we have to add the `-std=gnu89` flag to the makefile like this:
+The problem is that the code syntax is outdated, so we have to add the `-std=gnu89` flag to the `Makefile` like this:
 ```bash
 $ vim Makefile
 >>>
@@ -133,7 +133,7 @@ We confirm that the operation was successful by printing any human readable stri
 
 
 # Analysing
-Now to the juicy part.
+Now to the meat & bones.
 
 We analyse the file using the `binwalk` utility.
 ```bash
@@ -145,17 +145,8 @@ $ binwalk Tapo_C200v4_en_1.4.2.bin.dec
 **A:** Binwalk is a tool for searching binary images for embedded files and executable code. It's designed for identifying files and code embedded inside of firmware images. [source](<https://www.kali.org/tools/binwalk/>)
 
 
-I took up the following:
-```
-0x1683D         Android bootimg, kernel size: 0 bytes, kernel addr: 0x70657250, ramdisk size: 543519329 bytes, ramdisk addr: 0x6E72656B, product name: "mem boot start"
+I noted the following from the output produced by binwalk. -->
 
-
-x20400         uImage header, header size: 64 bytes, header CRC: 0x8F2C487E, created: 2025-03-13 03:14:58, image size: 1299473 bytes, Data Address: 0x80010000, Entry Point: 0x80329EF0, data CRC: 0xEBBECE5F, OS: Linux, CPU: MIPS, image type: OS Kernel Image, compression type: lzma, image name: "mips Ingenic Linux-3.10.14"
-
-
-0x3E0200        Squashfs filesystem, little endian, version 4.0, compression:xz, size: 3032084 bytes, 96 inodes, blocksize: 65536 bytes, created: 2025-03-13 03:15:05
-
-```
 The image contains atleast:
 - **Android bootimage**
 - **uImage header** which describes the following:
@@ -169,23 +160,29 @@ The image contains atleast:
   - 3032084 bytes in size
   - little endian
 
+The Squashfs filesystem is the main target at the moment. That's where we'll head next.
+
+**Q:** What is squashfs?
+
+**A:** _A compressed read-only filesystem for Linux_. Intended (among other things) for embedded systems where low overhead is needed!
+  - Read more about it [here](<https://docs.kernel.org/filesystems/squashfs.html>)
 
 
 -----
-# Extracting the rootfs
 
-There's a lot of compressed data in the file
-- <img width="1371" height="652" alt="2026-02-25-22:25:37" src="https://github.com/user-attachments/assets/0f901ea9-95f5-41e2-9358-13cf22b3e6cb" />
 
-So we take binwalk for a spin again and extract the contents using the `--extract` flag
+
+# Extracting Rootfs From The Image  
+<img width="1371" height="652" alt="2026-02-25-22:25:37" src="https://github.com/user-attachments/assets/0f901ea9-95f5-41e2-9358-13cf22b3e6cb" />
+
+Now that we have some sort of grasp what the image file contains, let's take binwalk for a spin again and **extract the contents** using the `--extract` flag 
 ```bash
 $ binwalk -e Tapo_C200v4_en_1.4.2.bin.dec
 ```
 <img width="1365" height="315" alt="2026-02-25-22:32:21" src="https://github.com/user-attachments/assets/7fcf1ddf-30c7-4164-ac6f-bf1e6fac4bbe" />
 
 
-
-We then go hunting
+Time to collect:
 ```bash
 $ cd _Tapo_C200v4_en_1.4.2.bin.dec.extracted 
 $ ls
@@ -193,11 +190,6 @@ $ cd squashfs-root
 $ ls
 ```
 <img width="1318" height="246" alt="2026-02-25-22:33:27" src="https://github.com/user-attachments/assets/612caa0f-2689-495e-9491-6e349ffac1ad" />
-
-**Q:** What is squashfs?
-
-**A:** _A compressed read-only filesystem for Linux_. Intended (among other things) for embedded systems where low overhead is needed!
-  - Read more about it [here](<https://docs.kernel.org/filesystems/squashfs.html>)
 
 This was a nice find, as we aquired the `main program` which we can now dissect with tools such as `strings`, `objdump`, `ghidra`, `gdb` and the likes.
 - <img width="1360" height="222" alt="2026-02-25-22:44:27" src="https://github.com/user-attachments/assets/faf6a541-3502-4a59-8555-7381a42d4d7d" />
@@ -223,7 +215,7 @@ We start dissecting the main program:
 $ strings main | egrep -i 'admin|pass|root|pwd|user|login|auth|username'
 ```
 
-This give us a whole bunch of hits, `381` to be exact. So it looks like we're digging at the right spot. My next step was finding individual hits, by printing 5 lines before & after the target, like so:
+This give us a whole bunch of hits, `381` to be exact. So it looks like we're digging in the right spot. My next step was to gain some context around the hits. This is achieved for example by printing 5 lines before & after the target, like so:
 ```
 $ strings main | grep -i -C 5 passw
 ```
@@ -238,10 +230,6 @@ I did the same for admin, pwd and a few other. A few interesting entries:
 <img width="828" height="330" alt="2026-02-26-17:07:24" src="https://github.com/user-attachments/assets/a203fdde-1ff1-4b1b-a740-ded876b2b7a7" />
 
 <img width="832" height="532" alt="2026-02-26-17:10:10" src="https://github.com/user-attachments/assets/70bc7ead-e406-4f4a-add7-59f8eb4d10b7" />
-
-
-
-
 
 
 I tried to disassemble main using `objdump`, but got the following error:
@@ -262,3 +250,24 @@ So we open up ghidra for further examination. I'm already set on finding the `ge
 # Hunting the Root Password
 
 
+<img width="1005" height="469" alt="2026-02-26-00:57:00" src="https://github.com/user-attachments/assets/f2a20b54-14b7-4287-9b61-d5e5e98e0a5f" />
+
+We import the main program (I also imported hostapd at the same time as it was a target of interest for me), let Ghidra analyse it for us, and start looking for functions that migh reveal more secrets to us.
+
+
+
+
+------
+
+
+
+# Extracting the rootfs from the dump file
+
+```bash
+$ binwalk -e dump-tapo-c200v3-1.4.2.bin
+$ cd _dump-tapo-c200v3-1.4.2.bin.extracted
+$ ls
+```
+<img width="1751" height="644" alt="2026-02-26-22:29:20" src="https://github.com/user-attachments/assets/7afdb7c3-2641-47f9-9824-ca33780e722d" />
+
+It looks like it's a copy of the image file
