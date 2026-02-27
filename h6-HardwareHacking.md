@@ -254,6 +254,105 @@ So we open up ghidra for further examination. I'm already set on finding the `ge
 
 We import the main program (I also imported hostapd at the same time as it was a target of interest for me), let Ghidra analyse it for us, and start looking for functions that migh reveal more secrets to us.
 
+By doing a quick analysis, we can also notice that the following services are in play:
+- ONVIF
+- oasis-open
+
+
+I started going through the symbol tree trying to find functions that could yield some results. I found `strcmp`, which is of interest, as we could find any authentication logic at places where strings are compared, so I opened it up and found all the references to it:
+
+<img width="1096" height="509" alt="2026-02-26-23:28:26" src="https://github.com/user-attachments/assets/2356671e-f97c-4b13-986e-e490f9605362" />
+
+
+I went through all of them and renamed them to the best of my ability:
+
+<img width="433" height="480" alt="2026-02-27-01:44:08" src="https://github.com/user-attachments/assets/a21bc51b-8da7-4259-bfd0-500ea97cfcd8" />
+
+I found a lot of stuff, here's one block for example:
+
+```C
+    uVar1 = FUN_0064d1b0(param_1);
+    FUN_0052e07c(iVar7,
+                 "HTTP/1.0 401 Unauthorized\r\nServer: Streamd\r\nDate: %s\r\nPragma: no-cache\r\nCa che-Control: no-cache\r\nContent-Length: 0\r\nWWW-Authenticate: Digest realm=\"%s\" ,algorithm=\"MD5\",encrypt_type=\"3\",qop=\"auth\",nonce=\"%s\",opaque=\"%s\"\r\nCo nnection: close\r\n\r\n"
+                 ,uVar1,&DAT_007e8770,param_1 + 0x4318,"64943214654649846565646421");
+    FUN_006499c4(param_1,0);
+    *(undefined4 *)(param_1 + 0x4c) = 0xffffffff;
+```
+The number string was intriguing but I didn't get any further with it for the time being.
+
+I also opened up the `Defined Strings` section in Ghidra and started typing in stuff I found from the strings output earlier. When we find it, we double click it for Ghidra to take us to the code section where it appears.
+
+Here's a list I went through:
+- gen_root_passwd
+- digest
+- loginPwd
+- admin
+- root
+- password
+- md5
+
+### Example workflow:
+<img width="1018" height="870" alt="2026-02-27-00:39:31" src="https://github.com/user-attachments/assets/87556c8c-893b-422c-8229-8f1b55848187" />
+
+<img width="946" height="196" alt="2026-02-27-02:12:31" src="https://github.com/user-attachments/assets/99910e95-25ca-4013-b415-969760438c3d" />
+
+<img width="967" height="654" alt="2026-02-27-02:13:03" src="https://github.com/user-attachments/assets/e31b4abb-af36-4bbd-9c36-ecdc33fb8f04" />
+
+
+
+Found some pretty interesting functions. Here's one as an example:
+
+I already renamed a few variables that made sense to me:
+```C
+
+int get_hub_password_list(undefined4 json_hub_obj,int *hub_password_table)
+
+{
+  int hub_password_array;
+  int encrypt_type_result;
+  char *password_str;
+  int iVar1;
+  int result;
+  int i;
+  int iVar2;
+  int *password_buffer;
+  int encrypt_type;
+  
+  encrypt_type = 0;
+  hub_password_array = jso_obj_get(json_hub_obj,"hub_password_list");
+  if (hub_password_array == 0) {
+    result = -0x9d0d;
+  }
+  else {
+    i = jso_array_length(hub_password_array);
+    iVar2 = 4;
+    if (i < 5) {
+      iVar2 = i;
+    }
+    for (i = 0; i < iVar2; i = i + 1) {
+      encrypt_type_result = jso_array_get_idx(hub_password_array,i);
+      password_str = (char *)jso_obj_get_string_origin(encrypt_type_result,"password");
+      password_buffer = hub_password_table + 1;
+      if (password_str == (char *)0x0) {
+        return -0x9d11;
+      }
+      strncpy((char *)password_buffer,password_str,0x40);
+      iVar1 = jso_obj_get_int(encrypt_type_result,"encrypt_type",&encrypt_type);
+      if (iVar1 == -1) {
+        return -0x9d11;
+      }
+      *hub_password_table = encrypt_type;
+      hub_password_table = hub_password_table + 0x12;
+      msg_debug(0,0x13,2,"get_passwd_list",0x217,"[HUB_MANAGE]get passwd:%s, encrypt_type: %d",
+                password_buffer,encrypt_type);
+    }
+    result = 0;
+  }
+  return result;
+}
+```
+
+At this point I had spent 3 hours in Ghidra going from one place to another trying to make sense of it all and it was already 2am, so a small nap for now and we'll continue fresh in the morning!
 
 
 
@@ -270,4 +369,4 @@ $ ls
 ```
 <img width="1751" height="644" alt="2026-02-26-22:29:20" src="https://github.com/user-attachments/assets/7afdb7c3-2641-47f9-9824-ca33780e722d" />
 
-It looks like it's a copy of the image file
+
