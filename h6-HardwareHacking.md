@@ -355,6 +355,40 @@ int get_hub_password_list(undefined4 json_hub_obj,int *hub_password_table)
 At this point I had spent 3 hours in Ghidra going from one place to another trying to make sense of it all and it was already 2am, so a small nap for now and we'll continue fresh in the morning!
 
 
+### 1 day later (not in fact, the next morning)
+During my time of absence, I had an idea.
+
+I'd been so focused on main, I didn't give the other files in the extracted image enough attention. 
+
+<img width="1465" height="460" alt="2026-02-28-17:07:07" src="https://github.com/user-attachments/assets/772bcc4b-3cb5-462f-b09f-39140843139f" />
+
+
+There were so many of them tho, and I didn't want to go through them one by one, so I created a quick shell loop
+```bash
+for f in ??????; do
+  echo "------ $f ------" >> results.txt
+  strings -n 10 $f | egrep -i 'passw|pwd|admin|root' >> results.txt
+done
+```
+The `echo` is there to pinpoint which file we got the information from. 
+
+
+We then check what we got:
+```bash
+$ less results.txt
+```
+<img width="1484" height="308" alt="2026-02-28-17:26:03" src="https://github.com/user-attachments/assets/d1e8433e-532e-47dc-96a0-2f84ee46e73c" />
+
+
+I was quite baffled to be honest. The admin password was just chilling there as I opened up my `result` file. I had spent 4 hours last time trying to find the password, and now when I came back I found it in less then 30min.
+
+Time and time again i'm reminded that breaks are actually good for you! 😂
+
+
+It seems like the password we extracted could be a hash, but that's some huge progress. And if nothing else, we could just reset the camera and input the default factory pword!
+
+
+
 
 ------
 
