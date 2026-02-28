@@ -142,7 +142,7 @@ $ binwalk Tapo_C200v4_en_1.4.2.bin.dec
 
 **Q:** What is binwalk?
 
-**A:** Binwalk is a tool for searching binary images for embedded files and executable code. It's designed for identifying files and code embedded inside of firmware images. [source](<https://www.kali.org/tools/binwalk/>)
+**A:** Binwalk is a tool for searching binary images for embedded files and executable code. It's designed for identifying files and code embedded inside of firmware images. >[source](<https://www.kali.org/tools/binwalk/>)<
 
 
 I noted the following from the output produced by binwalk. -->
@@ -164,8 +164,7 @@ The Squashfs filesystem is the main target at the moment. That's where we'll hea
 
 **Q:** What is squashfs?
 
-**A:** _A compressed read-only filesystem for Linux_. Intended (among other things) for embedded systems where low overhead is needed!
-  - Read more about it [here](<https://docs.kernel.org/filesystems/squashfs.html>)
+**A:** _A compressed read-only filesystem for Linux_. Intended (among other things) for embedded systems where low overhead is needed! >[Source](<https://docs.kernel.org/filesystems/squashfs.html>)<
 
 
 -----
@@ -175,7 +174,7 @@ The Squashfs filesystem is the main target at the moment. That's where we'll hea
 # Extracting Rootfs From The Image  
 <img width="1371" height="652" alt="2026-02-25-22:25:37" src="https://github.com/user-attachments/assets/0f901ea9-95f5-41e2-9358-13cf22b3e6cb" />
 
-Now that we have some sort of grasp what the image file contains, let's take binwalk for a spin again and **extract the contents** using the `--extract` flag 
+Now that we have some sort of grasp what the image file contains, let's take `binwalk` for a spin again and **extract the contents** using the `--extract` flag 
 ```bash
 $ binwalk -e Tapo_C200v4_en_1.4.2.bin.dec
 ```
@@ -241,7 +240,7 @@ main:     file format elf32-little
 objdump: can't disassemble for architecture UNKNOWN!
 ```
 
-So we open up ghidra for further examination. I'm already set on finding the `gen_root_passwd` function for starters.
+So we open up Ghidra for further examination. I'm already set on finding the `gen_root_passwd` function for starters.
 
 
 
@@ -259,7 +258,7 @@ By doing a quick analysis, we can also notice that the following services are in
 - oasis-open
 
 
-I started going through the symbol tree trying to find functions that could yield some results. I found `strcmp`, which is of interest, as we could find any authentication logic at places where strings are compared, so I opened it up and found all the references to it:
+I started going through the symbol tree trying to find functions that could yield some results. I found `strcmp`, which interests me, as it could lead us to parts in the code where authentication logic is handled. I opened it up and found all the references to it:
 
 <img width="1096" height="509" alt="2026-02-26-23:28:26" src="https://github.com/user-attachments/assets/2356671e-f97c-4b13-986e-e490f9605362" />
 
@@ -278,9 +277,15 @@ I found a lot of stuff, here's one block for example:
     FUN_006499c4(param_1,0);
     *(undefined4 *)(param_1 + 0x4c) = 0xffffffff;
 ```
-The number string was intriguing but I didn't get any further with it for the time being.
+The **number string** was intriguing, but I didn't get any further with it for the time being.
 
-I also opened up the `Defined Strings` section in Ghidra and started typing in stuff I found from the strings output earlier. When we find it, we double click it for Ghidra to take us to the code section where it appears.
+I then opened the `Defined Strings` section side by side in Ghidra and started typing in stuff I found from the strings output earlier. 
+
+When we locate a string:
+- Double click it
+- Ghidra takes us to the section in the instructions where we see all the references to it
+- We then go through the reference(s)
+- By double clicking the refernece Ghidra will display the C-pseudocode
 
 Here's a list I went through:
 - gen_root_passwd
@@ -302,7 +307,7 @@ Here's a list I went through:
 
 Found some pretty interesting functions. Here's one as an example:
 
-I already renamed a few variables that made sense to me:
+I already renamed the function and a few variables that made sense to me:
 ```C
 
 int get_hub_password_list(undefined4 json_hub_obj,int *hub_password_table)
@@ -358,34 +363,49 @@ At this point I had spent 3 hours in Ghidra going from one place to another tryi
 ### 1 day later (not in fact, the next morning)
 During my time of absence, I had an idea.
 
-I'd been so focused on main, I didn't give the other files in the extracted image enough attention. 
+I'd been so focused on main, I didn't give the other files from the _extracted image_ enough attention. 
 
 <img width="1465" height="460" alt="2026-02-28-17:07:07" src="https://github.com/user-attachments/assets/772bcc4b-3cb5-462f-b09f-39140843139f" />
 
 
-There were so many of them tho, and I didn't want to go through them one by one, so I created a quick shell loop
+There were so many of them tho, and as you already know, if we can avoid manual labour, we will, so I created a quick shell loop
 ```bash
 for f in ??????; do
   echo "------ $f ------" >> results.txt
   strings -n 10 $f | egrep -i 'passw|pwd|admin|root' >> results.txt
 done
 ```
-The `echo` is there to pinpoint which file we got the information from. 
+Explanation:
+- `??????` will match all file names with exactly 6 characters
+- The `echo` is there to pinpoint which file we got the information from
+- We then extract all human readable strings (minimum 10 chars in length)
+- Pipe it to `egrep` (same as `grep -E`), do a case insensitive search for the words specified
+- And lastly append the results to a text file we can refer to later
 
 
-We then check what we got:
+The whole operation took about 1 second. We then start combing through the file:
 ```bash
 $ less results.txt
 ```
 <img width="1484" height="308" alt="2026-02-28-17:26:03" src="https://github.com/user-attachments/assets/d1e8433e-532e-47dc-96a0-2f84ee46e73c" />
 
 
-I was quite baffled to be honest. The admin password was just chilling there as I opened up my `result` file. I had spent 4 hours last time trying to find the password, and now when I came back I found it in less then 30min.
+I was quite baffled to be honest. No way it was the first hit... The admin password was just chilling there as I opened up my `result` file. (the ones who were paying attention realised this is the same string we already caught earlier)
 
-Time and time again i'm reminded that breaks are actually good for you! 😂
+Last time I spent 4 hours trying to find the password, and now when I came back I found it in 10 minutes, which of the majority of time was spent on opening up my machine and starting the VM.
 
 
-It seems like the password we extracted could be a hash, but that's some huge progress. And if nothing else, we could just reset the camera and input the default factory pword!
+Time and time again i'm reminded that breaks are actually good for you! 😂 💯
+
+
+
+> [!NOTE]
+> 
+> It does seem like the `passwd` we extracted is likely a hash.
+>
+> Even so, this is huge progress. And if I have enough time, I will try to crack the hash. 
+>
+> And if nothing else, we could just reset the camera and input the default factory password. Maybe?
 
 
 
