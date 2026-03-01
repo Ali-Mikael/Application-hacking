@@ -212,7 +212,10 @@ I also roamed around the files system opening up scripts and looking for interes
 $ strings main | egrep -i 'admin|pass|root|pwd|user|login|auth|username'
 ```
 
-This give us a whole bunch of hits, `381` to be exact. So it looks like we're digging in the right spot. My next step was to gain some context around the hits. This is achieved for example by printing 5 lines before & after the target, like so:
+This give us a whole bunch of hits, `381` to be exact. So it looks like we're digging in the right spot. 
+
+
+My next step was to gain some context around the hits. This is achieved for example by printing 5 lines before & after the target, like so:
 ```
 $ strings main | grep -i -C 5 passw
 ```
@@ -233,9 +236,10 @@ I did the same for admin, pwd and a few others. A few interesting entries:
 
 
 We can also note from the output that the `ONVIF` service is in play
-- Yes but what is is?
-- === ONVIF "provides standardized interfaces for effective interoparability of IP-based physical security products and services"
-- >[source](<https://www.onvif.org/>)<
+
+**Q:** Yes but what is is?
+
+**A:** ONVIF "provides standardized interfaces for effective interoparability of IP-based physical security products and services". >[source](<https://www.onvif.org/>)<
 
 
 **Q:** Why are we noting this down?
@@ -243,7 +247,7 @@ We can also note from the output that the `ONVIF` service is in play
 **A:** Because it will better help us understand the system we're working with. It also gives us clues as where to look when hunting for the password!
 
 
-I tried to disassemble main using `objdump`, but got the following error:
+I then tried to disassemble main using `objdump`, but got the following error:
 ```bash
 $ objdump -d main
 
@@ -286,7 +290,8 @@ I found a lot of stuff in the process, here's one block for example:
 ```
 The **number string** was intriguing, but I didn't get any further with it for the time being.
 
-We could also make not of MD5 being used as the encryption algorithm. There's a nonce involved
+We could also note the use of the `MD5 algorithm` in conjuction with a `nonce` ( a unique value used once when encrypting ).
+
 
 I then opened the `Defined Strings` section side by side in Ghidra and started typing in stuff I found from the strings output earlier. 
 
@@ -294,7 +299,7 @@ When we locate a string:
 - Double click it
 - Ghidra takes us to the section in the instructions where we see all the references to it
 - We then go through the reference(s)
-- By double clicking the refernece Ghidra will display the C-pseudocode
+- By double clicking the reference Ghidra will display the C-pseudocode
 
 Here's a list I went through:
 - gen_root_passwd
@@ -365,11 +370,15 @@ int get_hub_password_list(undefined4 json_hub_obj,int *hub_password_table)
   return result;
 }
 ```
+It would seem as the program is storing the hub_password_list as a json object, and accessing it that way.
 
-At this point I had spent 3 hours in Ghidra going from one place to another trying to make sense of it all and it was already 2am, so a small nap for now and we'll continue fresh in the morning!
+
+At this point I had spent 3 hours in Ghidra going from one place to another trying to make sense of it all, and it was already 2am...
+
+We'll continue fresh in the morning!
 
 
-### 1 day later (not in fact, the next morning)
+### 1 day later (not in fact, the next morning.. 😂)
 During my time of absence, I had an idea.
 
 I'd been so focused on main, I didn't give the other files from the _extracted image_ enough attention. 
@@ -377,7 +386,7 @@ I'd been so focused on main, I didn't give the other files from the _extracted i
 <img width="1465" height="460" alt="2026-02-28-17:07:07" src="https://github.com/user-attachments/assets/772bcc4b-3cb5-462f-b09f-39140843139f" />
 
 
-There were so many of them tho, and as you already know, if we can avoid manual labour, we will, so I created a quick shell loop
+There were so many of them tho, and as you already know, if we can avoid manual labour we will, so I created a quick shell loop
 ```bash
 for f in ??????; do
   echo "------ $f ------" >> results.txt
@@ -388,20 +397,22 @@ Explanation:
 - `??????` will match all file names with exactly 6 characters
 - The `echo` is there to pinpoint which file we got the information from
 - We then extract all human readable strings (minimum 10 chars in length)
-- Pipe it to `egrep` (same as `grep -E`), do a case insensitive search for the words specified
+- Pipe it to `egrep` (same as `grep -E`) and do a case insensitive search for the words specified
 - And lastly append the results to a text file we can refer to later
 
 
-The whole operation took about 1 second. We then start combing through the file:
+The whole operation took about 1 second. 
+
+We then start combing through the file:
 ```bash
 $ less results.txt
 ```
 <img width="1484" height="308" alt="2026-02-28-17:26:03" src="https://github.com/user-attachments/assets/d1e8433e-532e-47dc-96a0-2f84ee46e73c" />
 
 
-I was quite baffled to be honest. No way it was the first hit... The admin password was just chilling there as I opened up my `result` file. (the ones who were paying attention realised this is the same string we already caught earlier)
+I was quite baffled to be honest. The admin password was just chilling there as I opened up my `results.txt` file. (the ones who were paying attention realised this is the same string we already caught earlier)
 
-Last time I spent 4 hours trying to find the password, and now when I came back I found it in 10 minutes, which of the majority of time was spent on opening up my machine and starting the VM.
+Last time I spent 4 hours trying to find the password and now when I came back I found it in 10 minutes, which of the majority of time was spent on opening up my machine and starting the VM.
 
 
 Time and time again i'm reminded that breaks are actually good for you! 😂 💯
@@ -415,6 +426,8 @@ Time and time again i'm reminded that breaks are actually good for you! 😂 �
 > Even so, this is huge progress. And if I have enough time, I will try to crack the hash. 
 >
 > And if nothing else, we could just reset the camera and input the default factory password. Maybe?
+>
+> Or just try to circumvent the whole hashing function and try to compare the password directly?
 
 
 
