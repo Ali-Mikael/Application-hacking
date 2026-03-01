@@ -391,7 +391,7 @@ Here we can see it in "plaintext"
 
 
 
-# C) Nora Crackme{3,4}
+# C) LAB_3 / Nora Crackme 3 & 4
 We already did a few of these [previously](<https://github.com/Ali-Mikael/Application-hacking/blob/main/h4-Disaddembly.md#d-nora>), but the 3 and 4 are new so let's get cracking!
 
 > [!NOTE]
@@ -537,4 +537,19 @@ Maybe not the smartest way, and I know for a fact there has to be some other way
 
 # Crackme 4
 Unfortunately I don't have time to do the #4 one, so i'll come back to this later! 🫡
+
+
+
+
+
+# LAB_4 / Optional
+**Objective**
+- Solve the `crackme`
+
+
+<img width="646" height="129" alt="2026-03-01-23:43:02" src="https://github.com/user-attachments/assets/5122a100-df9e-4e21-b3cd-fd194d6d68c3" />
+
+I tried the strings utility on the binary. But coulnd't find anything, so we move on!
+
+
 
