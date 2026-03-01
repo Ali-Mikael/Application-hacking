@@ -132,17 +132,22 @@ We confirm that the operation was successful by printing any human readable stri
 
 
 
-# Analysing
+# Analysing The Image & Extracting The Rootfs
 Now to the meat & bones.
 
 We analyse the file using the `binwalk` utility.
-```bash
-$ binwalk Tapo_C200v4_en_1.4.2.bin.dec
-```
+
 
 **Q:** What is binwalk?
 
 **A:** Binwalk is a tool for searching binary images for embedded files and executable code. It's designed for identifying files and code embedded inside of firmware images. >[source](<https://www.kali.org/tools/binwalk/>)<
+
+
+
+```bash
+$ binwalk Tapo_C200v4_en_1.4.2.bin.dec
+```
+<img width="1371" height="652" alt="2026-02-25-22:25:37" src="https://github.com/user-attachments/assets/0f901ea9-95f5-41e2-9358-13cf22b3e6cb" />
 
 
 I noted the following from the output produced by binwalk. -->
@@ -167,13 +172,6 @@ The Squashfs filesystem is the main target at the moment. That's where we'll hea
 **A:** _A compressed read-only filesystem for Linux_. Intended (among other things) for embedded systems where low overhead is needed! >[Source](<https://docs.kernel.org/filesystems/squashfs.html>)<
 
 
------
-
-
-
-# Extracting Rootfs From The Image  
-<img width="1371" height="652" alt="2026-02-25-22:25:37" src="https://github.com/user-attachments/assets/0f901ea9-95f5-41e2-9358-13cf22b3e6cb" />
-
 Now that we have some sort of grasp what the image file contains, let's take `binwalk` for a spin again and **extract the contents** using the `--extract` flag 
 ```bash
 $ binwalk -e Tapo_C200v4_en_1.4.2.bin.dec
@@ -190,13 +188,13 @@ $ ls
 ```
 <img width="1318" height="246" alt="2026-02-25-22:33:27" src="https://github.com/user-attachments/assets/612caa0f-2689-495e-9491-6e349ffac1ad" />
 
-This was a nice find, as we aquired the `main program` which we can now dissect with tools such as `strings`, `objdump`, `ghidra`, `gdb` and the likes.
+This was a nice find, as we aquired the root filesystem including `main program` which we can now dissect with tools such as `strings`, `objdump`, `ghidra`, `gdb` and the likes.
 - <img width="1360" height="222" alt="2026-02-25-22:44:27" src="https://github.com/user-attachments/assets/faf6a541-3502-4a59-8555-7381a42d4d7d" />
 
 
-I also roamed around the files system opening up scripts and looking for interesting executables.
+I also roamed around the files system opening up scripts and looking for interesting executables. Trying to grasp how the IP-camera operates.
 
-A list of interesting entries:
+**A list of interesting entries:**
 - `/bin/gdbserver`
   - Remote debugging server
   - This could be a big one if gained access to
@@ -209,7 +207,7 @@ A list of interesting entries:
   - Found info on it [here](<https://community.infineon.com/t5/Knowledge-Base-Articles/HostApd-setup-in-Linux/ta-p/246026#.>)
 
 
-We start dissecting the main program:
+### We dissect the main program
 ```bash
 $ strings main | egrep -i 'admin|pass|root|pwd|user|login|auth|username'
 ```
@@ -218,17 +216,31 @@ This give us a whole bunch of hits, `381` to be exact. So it looks like we're di
 ```
 $ strings main | grep -i -C 5 passw
 ```
-I did the same for admin, pwd and a few other. A few interesting entries:
+
+
+I did the same for admin, pwd and a few others. A few interesting entries:
+- `http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordDigest`
+- `digest_password`
+- `gen_root_passwd`
+- `/www/cert/onvif/private_key.pem`
+- `wep_key0`
 
 <img width="1429" height="516" alt="2026-02-26-00:24:30" src="https://github.com/user-attachments/assets/c2725166-cf5f-4d3c-a440-c61456c2782e" />
-
-<img width="814" height="265" alt="2026-02-26-00:26:24" src="https://github.com/user-attachments/assets/4f5793a6-d7c6-4ca7-8352-581f1e383a90" />
-
-<img width="700" height="177" alt="2026-02-26-17:00:13" src="https://github.com/user-attachments/assets/35458e5b-8fdc-442d-8e02-bf5f2ef473aa" />
 
 <img width="828" height="330" alt="2026-02-26-17:07:24" src="https://github.com/user-attachments/assets/a203fdde-1ff1-4b1b-a740-ded876b2b7a7" />
 
 <img width="832" height="532" alt="2026-02-26-17:10:10" src="https://github.com/user-attachments/assets/70bc7ead-e406-4f4a-add7-59f8eb4d10b7" />
+
+
+We can also note from the output that the `ONVIF` service is in play
+- Yes but what is is?
+- === ONVIF "provides standardized interfaces for effective interoparability of IP-based physical security products and services"
+- >[source](<https://www.onvif.org/>)<
+
+
+**Q:** Why are we noting this down?
+
+**A:** Because it will better help us understand the system we're working with. It also gives us clues as where to look when hunting for the password!
 
 
 I tried to disassemble main using `objdump`, but got the following error:
@@ -246,19 +258,14 @@ So we open up Ghidra for further examination. I'm already set on finding the `ge
 
 ------
 
-# Hunting the Root Password
+
+# Hunting The Root Password
+We create a new project in `Ghidra`, import the main program, and let Ghidra analyse it for us.
 
 
-<img width="1005" height="469" alt="2026-02-26-00:57:00" src="https://github.com/user-attachments/assets/f2a20b54-14b7-4287-9b61-d5e5e98e0a5f" />
+I started going through the `symbol tree` looking for functiongs that might reveal more secrets to us. 
 
-We import the main program (I also imported hostapd at the same time as it was a target of interest for me), let Ghidra analyse it for us, and start looking for functions that migh reveal more secrets to us.
-
-By doing a quick analysis, we can also notice that the following services are in play:
-- ONVIF
-- oasis-open
-
-
-I started going through the symbol tree trying to find functions that could yield some results. I found `strcmp`, which interests me, as it could lead us to parts in the code where authentication logic is handled. I opened it up and found all the references to it:
+My first find was: `strcmp`. Why? Because it could lead us to parts in the code where authentication logic is handled. I opened it up and found all the references to it:
 
 <img width="1096" height="509" alt="2026-02-26-23:28:26" src="https://github.com/user-attachments/assets/2356671e-f97c-4b13-986e-e490f9605362" />
 
@@ -267,7 +274,7 @@ I went through all of them and renamed them to the best of my ability:
 
 <img width="433" height="480" alt="2026-02-27-01:44:08" src="https://github.com/user-attachments/assets/a21bc51b-8da7-4259-bfd0-500ea97cfcd8" />
 
-I found a lot of stuff, here's one block for example:
+I found a lot of stuff in the process, here's one block for example:
 
 ```C
     uVar1 = FUN_0064d1b0(param_1);
@@ -278,6 +285,8 @@ I found a lot of stuff, here's one block for example:
     *(undefined4 *)(param_1 + 0x4c) = 0xffffffff;
 ```
 The **number string** was intriguing, but I didn't get any further with it for the time being.
+
+We could also make not of MD5 being used as the encryption algorithm. There's a nonce involved
 
 I then opened the `Defined Strings` section side by side in Ghidra and started typing in stuff I found from the strings output earlier. 
 
