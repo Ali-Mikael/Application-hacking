@@ -8,7 +8,7 @@
   - The data in itself can take many forms, but as far as the computer is concerned, it's just binary data
 - **Ciphertext** : Encrypted plaintext
   - Denoted by _C_
-  - Also binary data. Sometimes bigger than _M_, sometimes larger
+  - Also binary data. Sometimes bigger than _M_, sometimes smaller
 - **Encryption** : Disguising a message in order to hide its substance
   - E(M) = C
 - **Decryption** : Turning ciphertext back into plaintext
@@ -181,6 +181,10 @@ $ export PYTHONBREAKPOINT=ipdb.set_trace
 - 5-8 are optional
 
 
+> [!NOTE]
+> I will be using `Python 3.14.3`
+
+
 # A) Convert hex to base64
 **Objective**
 - The string:     `49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d`
@@ -191,16 +195,17 @@ This one I did already, here's my solution:
 import base64
 
 
-def hexToBase(s):
+def convertHexToBase(s):
 
     raw = bytes.fromhex(s)
     b64 = base64.b64encode(raw).decode("ascii")
     return b64
 
 
-s = input("Give me the hex sequence to convert to base64: ")
-print("All done:")
-print(hexToBase(s))
+if __name__ == "__main__":
+    s = input("Give me the hex sequence to convert to base64: ")
+    print("All done:")
+    print(convertHexToBase(s))
 ```
 <img width="1861" height="198" alt="2026-03-05-23:16:59" src="https://github.com/user-attachments/assets/0d2376c6-0b94-4e78-85a3-7c0e85750142" />
 
