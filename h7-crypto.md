@@ -190,7 +190,7 @@ $ export PYTHONBREAKPOINT=ipdb.set_trace
 - The string:     `49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d`
 - Should produce: `SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t`
 
-**My solution**
+### My solution
 ```py
 import base64
 
@@ -198,19 +198,25 @@ import base64
 def convertHexToBase(s):
 
     raw = bytes.fromhex(s)
-    b64 = base64.b64encode(raw).decode("ascii")
-    return b64
+    return base64.b64encode(raw).decode("ascii")
 
 
 if __name__ == "__main__":
-    s = input("Give me the hex sequence to convert to base64: ")
-    print("All done:")
-    print(convertHexToBase(s))
+    s = input("Hex array to convert to base64 >> ")
+    print("Computing...")
+    print()
+    print(f"Here you go:\n------------\n >> {convertHexToBase(s)}")
 ```
 <img width="1861" height="250" alt="2026-03-06-21:01:53" src="https://github.com/user-attachments/assets/336b149d-6bb0-4544-9cce-8fb189f7ed25" />
 
-Explanation:
-- This one was
+**Explanation:**
+- We decode the hex string to bytes using the `bytes.fromhex()` function
+- Then in turn we `base64` encode the bytes using the `base64.b64encode()` function and further decode the string using ASCII for pretty printing
+- This one was relatively simple (so far...)
+
+
+-------
+
 
 # B) Fixed XOR
 **Objective**
@@ -221,10 +227,73 @@ Explanation:
   - Should produce:                        `746865206b696420646f6e277420706c6179`
 
 
-
-My solution:
+### My solution
 ```py
+def xor(s1, s2):
 
+    s1b = bytes.fromhex(s1)
+    s2b = bytes.fromhex(s2)
+
+    result = ""
+
+    if len(s1) == len(s2):
+        for c1, c2 in zip(s1b, s2b):
+            result += chr(c1 ^ c2)
+
+    return bytes(result, 'utf-8').hex()
+
+
+if __name__ == "__main__":
+
+    s1 = "1c0111001f010100061a024b53535009181c"
+    s2 = "686974207468652062756c6c277320657965"
+    print(f"XORing:\n-------\n >> {s1}\n and\n >> {s2}")
+    print()
+    print(f"The result:\n-----------\n >> {xor(s1, s2)}")
 ```
+
+<img width="897" height="321" alt="2026-03-06-21:11:05" src="https://github.com/user-attachments/assets/356fd5c0-7074-464c-848e-7d65e5770b69" />
+
+I'm not going to lie to you and tell you that I didn't struggle a little bit with this one... I've never used python to operate on binary before, so it took me a little while to fully understand what was really going on, especially with all the type conversions etc. I must've spent around an hour in the python3 shell just trying out different stuff and seeing what `foo` looks like after I poke around `bar` and decode `baz`, and how `o` behaves after i've done `x`, `y` and `z`. 
+
+After many iterations and finally understanding what's what, I came up with a solution. (without AI, which in this day and age I felt proud of hahahah). Without further ado, here's what's going on:
+
+
+**Explanation**
+- We convert the hex string to bytes same as before
+- Then initialize an empty variable to store our result
+- Quickly check that the buffers are equal in length
+  - Quick note: This is unnecessary here as we know they are, but it's easy to iterate on this code and expand it to handle cases with different buffer lengths later on
+- We then use the `zip()` function to combine our two strings into a tuple (which makes it easy to loop through)
+- All that's left to do is simply:
+  - `xor` the values
+  - Convert the result back into a character using `chr()`
+  - Append it to our result
+- Once we have the XOR'd string, we turn it back to bytes, and then further back to hex
+  - Note: We specify `utf-8` so that the machine knows how to accurately represent the string as bytes 
+- Are there better ways to do this? 99% sure there is, but this is what I came up with for the time being
+
+
+-----
+
+
+
+# C) Single-byte XOR cipher
+Background:
+
+The hex encoded string `1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736` has been XOR'd against a single character
+
+Objective
+- Find the key, decrypt the message
+
+> [!NOTE]
+> You can do this by hand. But don't: write code to do it for you.
+>
+> How? Devise some method for "scoring" a piece of English plaintext. Character frequency is a good metric. Evaluate each output and choose the one with the best score. 
+
+
+
+
+
 
 
