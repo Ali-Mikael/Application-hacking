@@ -279,11 +279,12 @@ After many iterations and finally understanding what's what, I came up with a so
 
 
 # C) Single-byte XOR cipher
-Background:
 
-The hex encoded string `1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736` has been XOR'd against a single character
+**Background**
+- The hex encoded string `1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736` has been XOR'd against a single character
 
-Objective
+
+**Objective**
 - Find the key, decrypt the message
 
 > [!NOTE]
@@ -292,8 +293,51 @@ Objective
 > How? Devise some method for "scoring" a piece of English plaintext. Character frequency is a good metric. Evaluate each output and choose the one with the best score. 
 
 
+I started by first searching for a frequency map online. Found a pretty good one from [Cornell university](<https://pi.math.cornell.edu/~mec/2003-2004/cryptography/subs/frequencies.html>). The picture is theirs!
+
+<img width="783" height="753" alt="2026-03-06-23:42:18" src="https://github.com/user-attachments/assets/da0a0564-098c-4d68-b110-71b7e6bf0e6c" />
 
 
+So now we have something to look out for! Next up we create the logic for XOR'ing against other characters and then doing a frequency analysis. For this I import the code I created earlier:
+```py
+def freqAnalysis(s):
+    strngList = s.lower().replace(" ", "")
+
+    keymap = {}
+
+    for c in strngList:
+        if c not in keymap:
+            keymap[c] = 1
+        else:
+            keymap[c] += 1
+
+    for k, v in keymap.items():
+        keymap[k] = round(v/int(len(strngList)) * 100, 2)
+
+    freqMap = dict(sorted(keymap.items(), key=lambda item: item[1], reverse=True))
+
+    return freqMap
 
 
+if __name__ == "__main__":
+
+    s = "This is my string you know"
+    print(f"Using string:\n-------------\n >> '{s}'\n")
+    print("Analysis:\n---------")
+
+    freqMap = freqAnalysis(s)
+
+    for k, v in freqMap.items():
+        print(f"{k} = {v}%")
+```
+
+<img width="840" height="624" alt="2026-03-07-00:02:37" src="https://github.com/user-attachments/assets/c34e6814-fcba-4567-b44d-5da10f0b51db" />
+
+
+Now what's left do do, is gather up the results!
+
+### My solution
+```py
+
+```
 
