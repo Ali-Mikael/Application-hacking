@@ -101,7 +101,7 @@ The complexity of an attack can be measured like the following:
 
 ### 1.4 Simple XOR
 I already touched on this subject in my `h3 - section: B` assigment, but to recap:
-- Two bit streams are but side by side, and each bit is `XOR`ed, meaning the output will be a `1`, **ONLY** if **EITHER** value is a `1`, otherwise it will equal to `0`
+- Two bit streams are put side by side, and each bit is `XOR`'d, meaning the output will be a `1`, **ONLY** if **EITHER** value is a `1`, otherwise it will equal to `0`
 
 When used in encryption, this means that `XOR`ing the same value twice restores the original
 Meaning:
@@ -301,6 +301,7 @@ I started by first searching for a frequency map online. Found a pretty good one
 So now we have something to look out for! Next up we create the logic for XOR'ing against other characters and then doing a frequency analysis. For this I import the code I created earlier:
 ```py
 def freqAnalysis(s):
+
     strngList = s.lower().replace(" ", "")
 
     keymap = {}
