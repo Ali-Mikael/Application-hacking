@@ -293,12 +293,12 @@ After many iterations and finally understanding what's what, I came up with a so
 > How? Devise some method for "scoring" a piece of English plaintext. Character frequency is a good metric. Evaluate each output and choose the one with the best score. 
 
 
-I started by first searching for a frequency map online. Found a pretty good one from [Cornell university](<https://pi.math.cornell.edu/~mec/2003-2004/cryptography/subs/frequencies.html>). The picture is theirs!
+My first step was aquiring a frequency map. Found a pretty good one from [Cornell university](<https://pi.math.cornell.edu/~mec/2003-2004/cryptography/subs/frequencies.html>). The picture is theirs!
 
 <img width="783" height="753" alt="2026-03-06-23:42:18" src="https://github.com/user-attachments/assets/da0a0564-098c-4d68-b110-71b7e6bf0e6c" />
 
 
-So now we have something to look out for! Next up we create the logic for XOR'ing against other characters and then doing a frequency analysis. For this I import the code I created earlier:
+So now we have something to look out for! Next up we create the logic for XOR'ing against other characters and then doing a frequency analysis. For the latter I import code I already have:
 ```py
 def freqAnalysis(s):
 
@@ -335,10 +335,52 @@ if __name__ == "__main__":
 <img width="840" height="624" alt="2026-03-07-00:02:37" src="https://github.com/user-attachments/assets/c34e6814-fcba-4567-b44d-5da10f0b51db" />
 
 
-Now what's left do do, is gather up the results!
+Now what's left do do, is gather up some results for our function!
+
+At first without any decoding, this is the string we're dealing with (encoded to bytes from hex and transformed to ASCII):
+```
+7316?x+x413=x9x(7-6<x7>x:9;76
+```
+
 
 ### My solution
 ```py
+from freq import freqAnalysis
 
+
+def decodeXor(s):
+
+    bs = bytes.fromhex(s)
+
+    rList = []  # <- Result List
+    cList = []  # <- Character List
+    i = 0
+
+    while i < 256:
+
+        for c in bs:
+            cList.append(chr(c ^ i))
+
+        res = "".join(cList)
+
+        if res.isprintable() and res.isascii():
+            rList.append({f"XOR char == {chr(i)}": res})
+
+        cList.clear()
+        i += 1
+
+    return rList
+
+
+if __name__ == "__main__":
+
+    s = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
+    print(f"Decrypting >> {s}")
+    print()
+
+    maybe = decodeXor(s)
+
+    for o in maybe:
+        print(o)
 ```
 
