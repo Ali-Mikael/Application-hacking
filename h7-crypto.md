@@ -190,7 +190,7 @@ $ export PYTHONBREAKPOINT=ipdb.set_trace
 - The string:     `49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d`
 - Should produce: `SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t`
 
-This one I did already, here's my solution:
+**My solution**
 ```py
 import base64
 
@@ -207,8 +207,10 @@ if __name__ == "__main__":
     print("All done:")
     print(convertHexToBase(s))
 ```
-<img width="1861" height="198" alt="2026-03-05-23:16:59" src="https://github.com/user-attachments/assets/0d2376c6-0b94-4e78-85a3-7c0e85750142" />
+<img width="1861" height="250" alt="2026-03-06-21:01:53" src="https://github.com/user-attachments/assets/336b149d-6bb0-4544-9cce-8fb189f7ed25" />
 
+Explanation:
+- This one was
 
 # B) Fixed XOR
 **Objective**
