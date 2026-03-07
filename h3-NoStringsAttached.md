@@ -286,28 +286,5 @@ print(hexToBase(s))
 <img width="1147" height="163" alt="Screenshot 2026-01-28 at 20 19 30" src="https://github.com/user-attachments/assets/68ebfcc7-591c-45d5-9968-fcff11aafa0e" />
 
 
-## [2. Fixed XOR](<https://www.cryptopals.com/sets/1/challenges/2>)
-Objective:
-- Write a function that takes two equal-length buffers and produces their XOR combination.
-
-The function should be able to take a string:
-```
-1c0111001f010100061a024b53535009181c
-```
-
-After hex decoded and when XOR'd against:
-```
-686974207468652062756c6c277320657965
-```
-
-Should produce:
-```
-746865206b696420646f6e277420706c6179
-```
-
-
-
-
-
 
 
