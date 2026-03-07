@@ -149,7 +149,7 @@ For example:
 name = bob
 assert type(name) == int
 
-results in:
+# results in:
 assert type(name) == int
        ^^^^^^^^^^^^^^^^^
 AssertionError
@@ -256,7 +256,7 @@ if __name__ == "__main__":
 
 I'm not going to lie to you and tell you that I didn't struggle a little bit with this one... I've never used python to operate on binary before, so it took me a little while to fully understand what was really going on, especially with all the type conversions etc. I must've spent around an hour in the python3 shell just trying out different stuff and seeing what `foo` looks like after I poke around `bar` and decode `baz`, and how `o` behaves after i've done `x`, `y` and `z`. 
 
-After many iterations and finally understanding what's what, I came up with a solution. (without AI, which in this day and age I felt proud of hahahah). Without further ado, here's what's going on:
+After many iterations and finally understanding what's what, I came up with a solution.
 
 
 **Explanation**
@@ -300,20 +300,15 @@ My first step was aquiring a frequency map. Found a pretty good one from [Cornel
 
 So now we have something to look out for! Next up we create the logic for XOR'ing against other characters and then doing a frequency analysis. For the latter I import code I already have:
 ```py
+from collections import Counter
+
+
 def freqAnalysis(s):
 
-    strngList = s.lower().replace(" ", "")
-
-    keymap = {}
-
-    for c in strngList:
-        if c not in keymap:
-            keymap[c] = 1
-        else:
-            keymap[c] += 1
+    keymap = Counter(s.lower())
 
     for k, v in keymap.items():
-        keymap[k] = round(v/int(len(strngList)) * 100, 2)
+        keymap[k] = round((v / len(s)) * 100, 2)
 
     freqMap = dict(sorted(keymap.items(), key=lambda item: item[1], reverse=True))
 
@@ -322,7 +317,7 @@ def freqAnalysis(s):
 
 if __name__ == "__main__":
 
-    s = "This is my string you know"
+    s = "This is just a test string!"
     print(f"Using string:\n-------------\n >> '{s}'\n")
     print("Analysis:\n---------")
 
@@ -332,55 +327,15 @@ if __name__ == "__main__":
         print(f"{k} = {v}%")
 ```
 
-<img width="840" height="624" alt="2026-03-07-00:02:37" src="https://github.com/user-attachments/assets/c34e6814-fcba-4567-b44d-5da10f0b51db" />
+<img width="751" height="622" alt="2026-03-07-16:45:47" src="https://github.com/user-attachments/assets/272e8681-e147-4a05-a69a-caec8f0d5f02" />
+
 
 
 Now what's left do do, is gather up some results for our function!
-
-At first without any decoding, this is the string we're dealing with (encoded to bytes from hex and transformed to ASCII):
-```
-7316?x+x413=x9x(7-6<x7>x:9;76
-```
 
 
 ### My solution
 ```py
 from freq import freqAnalysis
-
-
-def decodeXor(s):
-
-    bs = bytes.fromhex(s)
-
-    rList = []  # <- Result List
-    cList = []  # <- Character List
-    i = 0
-
-    while i < 256:
-
-        for c in bs:
-            cList.append(chr(c ^ i))
-
-        res = "".join(cList)
-
-        if res.isprintable() and res.isascii():
-            rList.append({f"XOR char == {chr(i)}": res})
-
-        cList.clear()
-        i += 1
-
-    return rList
-
-
-if __name__ == "__main__":
-
-    s = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
-    print(f"Decrypting >> {s}")
-    print()
-
-    maybe = decodeXor(s)
-
-    for o in maybe:
-        print(o)
 ```
 
