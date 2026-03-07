@@ -298,44 +298,14 @@ My first step was aquiring a frequency map. Found a pretty good one from [Cornel
 <img width="783" height="753" alt="2026-03-06-23:42:18" src="https://github.com/user-attachments/assets/da0a0564-098c-4d68-b110-71b7e6bf0e6c" />
 
 
-So now we have something to look out for! Next up we create the logic for XOR'ing against other characters and then doing a frequency analysis. For the latter I import code I already have:
-```py
-from collections import Counter
+Now we have something to look out for! 
 
-
-def freqAnalysis(s):
-
-    keymap = Counter(s.lower())
-
-    for k, v in keymap.items():
-        keymap[k] = round((v / len(s)) * 100, 2)
-
-    freqMap = dict(sorted(keymap.items(), key=lambda item: item[1], reverse=True))
-
-    return freqMap
-
-
-if __name__ == "__main__":
-
-    s = "This is just a test string!"
-    print(f"Using string:\n-------------\n >> '{s}'\n")
-    print("Analysis:\n---------")
-
-    freqMap = freqAnalysis(s)
-
-    for k, v in freqMap.items():
-        print(f"{k} = {v}%")
-```
-
-<img width="751" height="622" alt="2026-03-07-16:45:47" src="https://github.com/user-attachments/assets/272e8681-e147-4a05-a69a-caec8f0d5f02" />
-
-
-
-Now what's left do do, is gather up some results for our function!
 
 
 ### My solution
 ```py
-from freq import freqAnalysis
+
+
+
 ```
 
