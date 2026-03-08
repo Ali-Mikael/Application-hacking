@@ -6,8 +6,9 @@ List and link here your completed
 - [H4 - I](<https://github.com/Ali-Mikael/Application-hacking/blob/main/h4-Disaddembly.md#i-optional-solve-the-crackme02e>)
   - I think I also did the optional `H` task, but not sure. It's explained at the end of the `F` task. Technically I found two solutions 🤷‍♂️
 - Half of [H5 - Lab3](<https://github.com/Ali-Mikael/Application-hacking/blob/main/h5-DynamicAnalysis.md#c-lab_3--nora-crackme-3--4-optional>)
-  - I'm not 100% sure if it was optional, but Lari gave the assigment through the moodle page, and that one said it was optional 🤷‍♂️
+  - I'm not 100% sure if it was optional, Lari gave the assigment through the moodle page, and that one said it was optional, but the other page is saying it's not. So not really sure here. 👀
   - <img width="222" height="41" alt="2026-03-07-22:55:22" src="https://github.com/user-attachments/assets/b580dcaa-8556-48bb-9dae-82a5f90f70b5" />
+- [H6 - 5](<https://github.com/Ali-Mikael/Application-hacking/blob/main/h7-crypto.md#5---implement-repeating-key-xor>): Repeating key XOR
 
 
 ### B) Substantially improved tasks after grading
