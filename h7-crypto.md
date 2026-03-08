@@ -299,14 +299,6 @@ After many iterations and finally understanding what's what, I came up with a so
 > How? Devise some method for "scoring" a piece of English plaintext. Character frequency is a good metric. Evaluate each output and choose the one with the best score. 
 
 
-My first step was aquiring a frequency map. Found a pretty good one from [Cornell university](<https://pi.math.cornell.edu/~mec/2003-2004/cryptography/subs/frequencies.html>). The picture is theirs!
-
-<img width="783" height="753" alt="2026-03-06-23:42:18" src="https://github.com/user-attachments/assets/da0a0564-098c-4d68-b110-71b7e6bf0e6c" />
-
-
-Now we have something to look out for! 
-
-
 ### My solution
 ```py
 
@@ -377,13 +369,17 @@ The decoded string == `"Cooking MC's like a pound of bacon"`
 First off, I just want to say, that this was in no way shape or form and easy task for me 😂
 It took me hours upon hours to get the results I wanted. The most amusing part about it all is that after the decrypting and initial sorting using the `isprintable() and isascii()`, I could already see the answer, but I still needed a way to sort and score them (which probably took me about 2 hours)
 
-But don't get me wrong, I enjoyed it thorougly and this was an extremely teaching exercise, especially as you couldn't use AI 😂. 
+But don't get me wrong, I enjoyed it thorougly and this was an extremely teaching exercise! 
 
-I want to give a huge shoutout to [GeeksForGeeks](<https://www.geeksforgeeks.org/>), [this guy](<https://note.nkmk.me/en/>), [PythonGeeks](<https://pythongeeks.org/>) and Tero's _python for hackers_ article. Without these I wouldn't have been able to complete this task, as the python docs are somewhat a tough read, at least for me... Plus you couldn't use AI. Which normally I use to explain certain concepts for me and only afterwards go and legit check. Shoot me.
+I want to give a huge shoutout to [GeeksForGeeks](<https://www.geeksforgeeks.org/>), [this guy](<https://note.nkmk.me/en/>), [PythonGeeks](<https://pythongeeks.org/>) and Tero's _python for hackers_ article. Without these I wouldn't have been able to complete the objective, as the python docs are somewhat a tough read, at least for me... Plus you couldn't use AI. Which I normally use to explain certain concepts for me and only afterwards go and legit check. Shoot me.
 
-### TL;DR: Task was hard and it made me put in that workkk 🔨
+### TL;DR: Task was hard and had to put in that workkk 🔨
 
-But anyhow, let's get down to explaining what's going on, as this code might be a bit confusing 😂. With some more time, I don't doubt that I could solve it in a smarter and more efficient way, but on this run I just wanted to reach the finish line tbh, we'll iterate over this later when we want to enhance our python skills.
+But anyhow, let's get down to business.
+
+Allthough I quickly want to preface this by saying if I had some more time, I could've probably solved it in a smarter and more efficient way, but on this run I just wanted to reach the finish line tbh.
+
+We'll iterate over this at later time when we want to enhance our python skills. So don't be to harsh on my code innit 😂
 
 ### Explanation
 
@@ -391,7 +387,7 @@ But anyhow, let's get down to explaining what's going on, as this code might be 
 - We naturally start by converting hex to bytes
 - We "quickly" do a little brute force by going through the whole ASCII table char by char, XOR'ng as we go
 - Before adding the result to our `rList`, we do a quick sanity check and remove all entries that don't confine to `isprintable() and isascii()`
-  - This way we already _cut down_ the results we have to score later on
+  - This way we already _cut down_ on all the possibilities
 - If the string passes the check we create a dictionary like so: 
   - **Key** = _Character that was used to XOR with_
   - **Value** = _Decoded string_
@@ -400,7 +396,7 @@ But anyhow, let's get down to explaining what's going on, as this code might be 
 
 **Part2 - `sortDecoded()`**
 - In our main function we collect the list of viable entries and pass it along to the second function
-- With the inner loop `for k, v in e.items()` we access the string through: `v`
+- With the inner loop `for k, v in e.items()` we access the string through `v`
 ```py
 for e in viable:
         for k, v in e.items():
@@ -408,24 +404,32 @@ for e in viable:
             rank.append((k, v, len(top & cmon))
 ```
 **#111**
-- We then create a `Counter` object for the string in question, which gives us a frequency table we can utilize
+- We then create a `Counter` object for the current string in the loop, which gives us a frequency table we can utilize
 
 Here's an example of how it works:
 
 <img width="718" height="94" alt="2026-03-08-02:00:38" src="https://github.com/user-attachments/assets/e0874e0e-240d-4418-a4a2-d67bf97009d1" />
 
-We also do the same for the 12 most frequent character in the english language `cmon = Counter("etaoinsrhdlu")`
+We also do the same for the **12 most frequent characters** in the english language 
+```py 
+cmon = Counter("etaoinsrhdlu")
+```
 
 **The magic**
-- We can now access the _12 most frequently appearing characters_ in the string by using the _counter method_ `most_common()`. Store the result in a variable = `top` and compare it against our `cmon` counter object for any overlapping values using `top & cmon`
+- We can now access the 12 **most frequently appearing** characters in the **decoded string** by using the _counter method_ `most_common()`.
+- Store the result in a variable = `top`
+- And compare it against `cmon` for any overlapping values using `top & cmon`
   - (It's called an `intersection union operation`, and the ampersand (&) works as the operator)
 - We wrap the result in `dict()` and further in `Counter()` to create a new Counter object
-- Now we can easily count all the matches using `len()` A.K.A `length_of(#the_matching_chars_object#)`
-- We then create a tuple with the values and append it to our list: `XOR char`, `decoded string` and `amont of overlaps`
-- You can notice this in the output
+- This allows for effortlessly counting all the matches using `len()` A.K.A `length_of(#matching_chars_object#)`
+- We then create a tuple with the values
+  - `XOR char`
+  - `decoded string`
+  - `amont of overlaps`
+    - and append it to our list
 - Read more about using Counter [here](<https://www.geeksforgeeks.org/python/counters-in-python-set-1/>)
 
-Lastly we sort the the list by the _third value in the tuple_ `x[2]` (the overlap counter) and reverse the order to get entries with the most amount of matches at the top of the list.
+Lastly we sort the the list using the _third value in the tuple_ `x[2]` (the overlap counter) and _reverse the order_ to get entries with the most amount of matches at the top of the list.
 ```py
 rank.sort(key=lambda x: x[2], reverse=True)
 ```
