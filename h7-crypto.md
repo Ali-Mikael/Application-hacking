@@ -661,7 +661,7 @@ if __name__ == "__main__":
 
 **BTW:**
 
-I realised that because I didn't add the linebreak at first, the target wasn't matching our string. The thought just popped to my head randomly after I got my first result. I tried it _with_ and _without_ the line break, and surprisingly caught the small difference with my naked eye. So I added a small check at the end just to be sure!
+I realised that because I didn't add the linebreak at first, the encrypted strings wasn't matching our target. The thought just popped to my head randomly after I got my first result. I tried it _with_ and _without_ the line break, and surprisingly caught the small difference from a quick glance. So I added a small check at the end just to be sure!
 
 ```py
   print(f"Encrypted string is matching target = {res == target}\n")
