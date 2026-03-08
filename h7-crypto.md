@@ -209,9 +209,9 @@ if __name__ == "__main__":
 ```
 <img width="1861" height="250" alt="2026-03-06-21:01:53" src="https://github.com/user-attachments/assets/336b149d-6bb0-4544-9cce-8fb189f7ed25" />
 
-**Explanation:**
-- We decode the hex string to bytes using the `bytes.fromhex()` function
-- Then in turn we `base64` encode the bytes using the `base64.b64encode()` function and further decode the string using ASCII for pretty printing
+**Explanation**
+- We decode the _hex string_ to _bytes_ using the `bytes.fromhex()` function
+- Then `base64` encode the bytes using the `base64.b64encode()` function and further decode the string using ASCII for pretty printing
 - This one was relatively simple (so far...)
 
 
@@ -443,10 +443,10 @@ print(ranked[0])
 
 
 # Detect single-character XOR
-Background
+**Background**
 - One of the 60-character strings in [this file](<https://cryptopals.com/static/challenge-data/4.txt>) has been encrypted by single-character XOR.
 
-Objective
+**Objective**
 - Find it
 - (Your code from #3 should help.)
 
@@ -462,9 +462,34 @@ $ cat 4.txt
 ### My solution
 ```py
 
+    bigRank = []
+
+    with open("4.txt", "r") as f:
+        for line in f:
+            retVal = sortDecoded(decodeXor(line.strip()))
+            if len(retVal) != 0:
+                bigRank.extend(retVal)
+
+    bigRank.sort(key=lambda x: x[2], reverse=True)
+    print("\nDecrypting the file....\n")
+
+    print("Ranking most likely entries from best to worst:")
+    print("-----------------------------------------------")
+
+    for e in bigRank:
+        print(e)
+
 ```
 
+I extended the previous code, and got a bunch of empty lists, so I filter them out using `len(returnList) != 0`.
 
+I then `extend` my rank list with the return values.
+
+But for some reason i'm getting nothing but garbage in return:
+
+<img width="1180" height="667" alt="2026-03-08-06:05:37" src="https://github.com/user-attachments/assets/a861070b-a271-482e-a728-348ae7780046" />
+
+It's 6AM now and I have to go sleep. I'll try to fix this in the morning!
 
 
 
