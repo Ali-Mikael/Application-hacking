@@ -362,7 +362,7 @@ if __name__ == "__main__":
 
 ### Walkthrough
 First off, I just want to say, that this was in no way shape or form and easy task for me 😂
-It took me hours upon hours to get the results I wanted. The most amusing part about it all is that after the decrypting and initial sorting using the `isprintable() and isascii()`, I could already see the answer, but I still needed a way to sort and score them (which probably took me about 2 hours)
+It took me hours upon hours to get the results I wanted. The most amusing part about it all is that after the decrypting and initial sorting using the `isprintable() and isascii()`, I could already see the answer, but I still needed a way to sort and score them (which probably took me about 2 hours).
 
 But don't get me wrong, I enjoyed it thorougly and this was an extremely teaching exercise! 
 
@@ -380,7 +380,7 @@ We'll iterate over this at later time when we want to enhance our python skills.
 
 **Part1 - `decodeXor()`**
 - We naturally start by converting hex to bytes
-- We "quickly" do a little brute force by going through the whole ASCII table char by char, XOR'ng as we go
+- We then do a quick little brute force by going through the whole ASCII table char by char, XOR'nig as we go
 - Before appending the result to our `rList`, we do a quick sanity check and remove all entries that don't confine to `isprintable() and isascii()`
   - This way we already _cut down_ on all the possibilities
 - If the string passes the check we create a dictionary like so: 
@@ -414,7 +414,7 @@ cmon = Counter("etaoinsrhdlu")
 - We can now access the 12 **most frequently appearing** characters in the **decoded string** by using the _counter method_ `most_common()`
 - Store the result in a variable = `top`
 - And compare it against `cmon` for any **overlapping** values using `top & cmon`
-  - (It's called an `intersection union operation`, and the ampersand (&) works as the operator)
+  - It's called an `intersection union operation`, and the ampersand (&) works as the operator
 - We wrap the result in `dict()` and further in `Counter()` to create a new Counter object
 - Now we can easily count all the overlaps with `len()` A.K.A `length_of(#matching_chars_object#)`
 - We then create a tuple with the values
@@ -429,7 +429,7 @@ Lastly we sort the the list using the _third value in the tuple_ `x[2]` (the ove
 rank.sort(key=lambda x: x[2], reverse=True)
 ```
 
-We can also change the last block of code to
+To get the best result only, we can change the last block of code to
 ```py
 print(ranked[0])
 ```
@@ -482,7 +482,7 @@ $ cat 4.txt
 
 I continued building on the previous code, and got a bunch of empty lists mixed with the results, so I filter them out using `len(returnList) != 0`.
 
-I then `extend` my rank list with the return values. If we simply `append`, we'll be left with a list of lists of tuples, and that's wayyy to complicated 😂. So we rather extend it, meaning we continue in the good old fashioned list of tuples!
+I then `extend` my rank list with the return values. If we simply `append`, we'll be left with a `list` of `lists` of `tuples`, and that's wayyy to complicated 😂. So we rather extend it, meaning we continue building the good old fashioned _list of tuples_!
 
 But for some reason i'm getting nothing but garbage in return:
 
@@ -495,14 +495,13 @@ And wouldn't you know the problem was actually the initial filtering being too a
 
 
 ### Solution
-I simply removed `res.isprintable()` from my first function and in my main function printed the **first 5** suspects. 
+I simply **removed** `res.isprintable()` from my first function and in my main function printed the **first 5** suspects. 
 
 I also did some small changes
 - Mainly
   - Added the file handling logic into its own function
   - Renamed the first value in the return tuple
   - Added a space " " to my `most common` char counter object
-  - I also wanted to be a bit fancy so I added 
 ```py
 
 from collections import Counter
@@ -575,7 +574,11 @@ if __name__ == "__main__":
 
 
 
-And there it was at the top of the list. Even though the scoring logic is not perfect, it still works lol 😂. Why fix something that works hahaha. JK I have to fix it!
+And there it was at the top of the list. 
+
+Even though the scoring logic is not perfect it still works lol 😂. Why fix something that works... JK I have to fix it!
+
+I suspect this doesn't scale well, and will give a lot of false positives.
 
 
 
@@ -641,7 +644,7 @@ if __name__ == "__main__":
 - All that's left to do is a quick and simple for loop `XOR`'ing the string
 - We use the **modulo operator** for the index so that it wraps after 3, as the key length is only 3 characters
 - Once the correct index is in play, we get the ASCII representation `ord()` of the key character and do the actual XOR
-- The result is an integer, which we turn back to a character using `chr()`
+- The result is an integer, which we convert back to a character using `chr()`
 - Lastly we append it to our list
 - Looks like this:
 ```py
@@ -677,5 +680,10 @@ Still surprised that I caught it 😂
 
 <img width="1861" height="324" alt="2026-03-08-21:36:32" src="https://github.com/user-attachments/assets/74639c71-87db-46dc-b920-1ebf4d0beb3b" />
 
+Usually I would've just pasted it to an LLM.
 
+#### Random side note
+Crazy how much AI has changed our lives, as soon as you can't use it, I keep constantly mentioning it. It's like an ex you can't get over... 😂😂😂
+
+But thank you Tero for the challenge, I learned so much from this and deffo going to challenge myself more like this in the future, can't rely too much on the AI....
 
