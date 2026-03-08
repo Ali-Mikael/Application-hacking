@@ -185,7 +185,7 @@ $ export PYTHONBREAKPOINT=ipdb.set_trace
 > I will be using `Python 3.14.3`
 
 
-# A) Convert hex to base64
+# 1 - Convert hex to base64
 **Objective**
 - The string:     `49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d`
 - Should produce: `SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t`
@@ -222,7 +222,7 @@ if __name__ == "__main__":
 
 
 
-# B) Fixed XOR
+# 2 - Fixed XOR
 **Objective**
 - Write a function that takes two equal-length buffers and produces their XOR combination
 - If the function works:
@@ -284,7 +284,7 @@ After many iterations and finally understanding what's what, I came up with a so
 
 
 
-# C) Single-byte XOR cipher
+# 3 - Single-byte XOR cipher
 
 **Background**
 - The hex encoded string `1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736` has been XOR'd against a single character
@@ -366,7 +366,7 @@ It took me hours upon hours to get the results I wanted. The most amusing part a
 
 But don't get me wrong, I enjoyed it thorougly and this was an extremely teaching exercise! 
 
-I want to give a huge shoutout to [GeeksForGeeks](<https://www.geeksforgeeks.org/>), [this guy](<https://note.nkmk.me/en/>), [PythonGeeks](<https://pythongeeks.org/>) and Tero's _python for hackers_ article. Without these I wouldn't have been able to complete the objective, as the python docs are somewhat a tough read, at least for me... Plus you couldn't use AI. Which I normally use to explain certain concepts for me and only afterwards go and legit check. Shoot me.
+I want to give a huge shoutout to [GeeksForGeeks](<https://www.geeksforgeeks.org/>), [this guy](<https://note.nkmk.me/en/>), [PythonGeeks](<https://pythongeeks.org/>) and Tero's _python for hackers_ article. Without these I wouldn't have been able to complete the objective, as the python docs are somewhat a tough read, at least for me... Plus you couldn't use AI. Which I more often than not use to explain certain concepts for me and then afterwards go and legit check. Shoot me.
 
 ### TL;DR: Task was hard and had to put in that workkk 🔨
 
@@ -441,7 +441,7 @@ print(ranked[0])
 
 
 
-# Detect single-character XOR
+# 4 - Detect single-character XOR
 **Background**
 - One of the 60-character strings in [this file](<https://cryptopals.com/static/challenge-data/4.txt>) has been encrypted by single-character XOR.
 
@@ -458,7 +458,7 @@ $ cat 4.txt
 <img width="1573" height="498" alt="2026-03-08-04:14:05" src="https://github.com/user-attachments/assets/1d301738-1830-4a82-b330-ac4fee5a0509" />
 
 
-### My solution
+### Walkthrough
 ```py
 
     bigRank = []
@@ -480,7 +480,7 @@ $ cat 4.txt
 
 ```
 
-I extended the previous code, and got a bunch of empty lists, so I filter them out using `len(returnList) != 0`.
+I continued building on the previous code, and got a bunch of empty lists mixed with the results, so I filter them out using `len(returnList) != 0`.
 
 I then `extend` my rank list with the return values.
 
@@ -488,8 +488,113 @@ But for some reason i'm getting nothing but garbage in return:
 
 <img width="1180" height="667" alt="2026-03-08-06:05:37" src="https://github.com/user-attachments/assets/a861070b-a271-482e-a728-348ae7780046" />
 
-It's 6AM now and I have to go sleep. I'll try to fix this in the morning!
+
+At first I thought it had something to do with my scoring logic (which deffo is not perfect and has to be improved), but I tinkered with the code for an hour, removing and adding stuff one by one to get different results. And wouldn't you know the problem was actually that my initial filtering was too strict. Because our target string had a **non printable character** the gate keeper wasn't letting it through. 
+
+### Solution
+I simply removed `res.isprintable()` from my first function and in my main function printed the first 5 suspects. 
+
+I also did some small changes
+- Mainly added the reading from a file into its own function and renamed the first value in the return tuple
+```py
+
+from collections import Counter
 
 
+def decodeXor(s):
+
+    bs = bytes.fromhex(s)
+
+    rList = []  # <- Result List
+    cList = []  # <- Character List
+
+    for i in range(256):
+        for c in bs:
+            cList.append(chr(c ^ i))  # XOR w every ascii char 1 by 1
+
+        res = "".join(cList)
+
+        if res.isascii():  # Sanity check
+            rList.append({f"KEY = {chr(i)}": res})
+
+        cList.clear()
+
+    return rList
+
+
+def sortDecoded(v):
+
+    cmon = Counter("etaoin srhdlu")
+    rank = []
+
+    for e in v:
+        for k, v in e.items():
+            top = Counter(dict(Counter(v.lower()).most_common(12)))
+            rank.append((k, v, len(top & cmon)))  # Cmp most frequent against top 12 & count overlap
+
+    rank.sort(key=lambda x: x[2], reverse=True)
+
+    return rank
+
+
+def decodeFromFile(file):
+
+    bigRank = []
+
+    with open(file, "r") as f:
+        for line in f:
+            rList = sortDecoded(decodeXor(line.strip()))
+            if len(rList) != 0:
+                bigRank.extend(rList)
+
+    bigRank.sort(key=lambda x: x[2], reverse=True)
+
+    return bigRank
+
+
+if __name__ == "__main__":
+    res = decodeFromFile("4.txt")
+
+    print("\nDecrypting the file....\n")
+    print("Ranking most likely entries from best to worst:")
+    print("-----------------------------------------------")
+
+    [print(e) for e in res[:5]]
+
+```
+
+
+<img width="1446" height="342" alt="2026-03-08-20:07:09" src="https://github.com/user-attachments/assets/093c5279-d0e6-4b16-a534-affb9e03bfab" />
+
+
+
+And there it was at the top of the list. Even though the scoring logic is not perfect, it still works lol 😂. Why fix something that works hahaha. JK I have to fix it!
+
+
+
+
+-----
+
+
+
+
+# 5 - Implement repeating-key XOR
+**Background**
+- Here is the opening stanza of an important work of the English language:
+```
+Burning 'em, if you ain't quick and nimble
+I go crazy when I hear a cymbal
+```
+
+**Objective**
+-  Encrypt it, under the key "ICE", using repeating-key XOR
+- In repeating-key XOR, you'll sequentially apply each byte of the key; the first byte of plaintext will be XOR'd against I, the next C, the next E, then I again for the 4th byte, and so on
+- It should come out to:
+```
+0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272
+a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f
+```
+
+### My solution
 
 
