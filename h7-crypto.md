@@ -312,13 +312,13 @@ def decodeXor(s):
     rList = []  # <- Result List
     cList = []  # <- Character List
 
-    for i in range(256):
+    for i in range(255):
         for c in bs:
-            cList.append(chr(c ^ i))  # XOR'ing with every ascii char 1 by 1
+            cList.append(chr(c ^ i))  # XOR against each ascii char 1 by 1
 
         res = "".join(cList)
 
-        if res.isprintable() and res.isascii():
+        if res.isprintable() and res.isascii():  # Sanity check
             rList.append({f"XOR char == {chr(i)}": res})
 
         cList.clear()
@@ -329,13 +329,13 @@ def decodeXor(s):
 
 def sortDecoded(v):
 
-    cmon = Counter("etaoinsrhdlu")
+    cmon = Counter("etaoinsrhdlu")  # Most frequent letters
     rank = []
 
     for e in v:
         for k, v in e.items():
             top = Counter(dict(Counter(v.lower()).most_common(12)))
-            rank.append((k, v, len(top & cmon)))
+            rank.append((k, v, len(top & cmon)))  # Cmp most common against top 12 & count overlap
 
     rank.sort(key=lambda x: x[2], reverse=True)
 
