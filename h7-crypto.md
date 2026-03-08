@@ -312,7 +312,7 @@ def decodeXor(s):
     rList = []  # <- Result List
     cList = []  # <- Character List
 
-    for i in range(255):
+    for i in range(256):
         for c in bs:
             cList.append(chr(c ^ i))  # XOR against each ascii char 1 by 1
 
@@ -322,7 +322,6 @@ def decodeXor(s):
             rList.append({f"XOR char == {chr(i)}": res})
 
         cList.clear()
-        i += 1
 
     return rList
 
