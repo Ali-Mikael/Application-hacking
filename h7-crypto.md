@@ -680,10 +680,4 @@ Still surprised that I caught it 😂
 
 <img width="1861" height="324" alt="2026-03-08-21:36:32" src="https://github.com/user-attachments/assets/74639c71-87db-46dc-b920-1ebf4d0beb3b" />
 
-Usually I would've just pasted it to an LLM.
-
-#### Random side note
-Crazy how much AI has changed our lives, as soon as you can't use it, I keep constantly mentioning it. It's like an ex you can't get over... 😂😂😂
-
-But thank you Tero for the challenge, I learned so much from this and deffo going to challenge myself more like this in the future, can't rely too much on the AI....
 
