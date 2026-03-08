@@ -358,11 +358,7 @@ if __name__ == "__main__":
         print(v)
 
 ```
-
-### Objective Achieved Successfully
-The character used for XOR operation == `X`
-
-The decoded string == `"Cooking MC's like a pound of bacon"`
+<img width="1420" height="720" alt="2026-03-08-02:06:38" src="https://github.com/user-attachments/assets/faa636cb-3c29-48c7-978d-2847f4b7e2bd" />
 
 
 ### Walkthrough
@@ -416,12 +412,12 @@ cmon = Counter("etaoinsrhdlu")
 ```
 
 **The magic**
-- We can now access the 12 **most frequently appearing** characters in the **decoded string** by using the _counter method_ `most_common()`.
+- We can now access the 12 **most frequently appearing** characters in the **decoded string** by using the _counter method_ `most_common()`
 - Store the result in a variable = `top`
-- And compare it against `cmon` for any overlapping values using `top & cmon`
+- And compare it against `cmon` for any **overlapping** values using `top & cmon`
   - (It's called an `intersection union operation`, and the ampersand (&) works as the operator)
 - We wrap the result in `dict()` and further in `Counter()` to create a new Counter object
-- This allows for effortlessly counting all the matches using `len()` A.K.A `length_of(#matching_chars_object#)`
+- Now we can easily count all the overlaps with `len()` A.K.A `length_of(#matching_chars_object#)`
 - We then create a tuple with the values
   - `XOR char`
   - `decoded string`
@@ -434,7 +430,11 @@ Lastly we sort the the list using the _third value in the tuple_ `x[2]` (the ove
 rank.sort(key=lambda x: x[2], reverse=True)
 ```
 
-<img width="1420" height="720" alt="2026-03-08-02:06:38" src="https://github.com/user-attachments/assets/faa636cb-3c29-48c7-978d-2847f4b7e2bd" />
+We can also change the last block of code to
+```py
+print(ranked[0])
+```
+<img width="1438" height="193" alt="2026-03-08-04:06:50" src="https://github.com/user-attachments/assets/299c1474-c4bd-431e-bfbf-97e7326ef407" />
 
 
 
@@ -443,3 +443,29 @@ rank.sort(key=lambda x: x[2], reverse=True)
 
 
 # Detect single-character XOR
+Background
+- One of the 60-character strings in [this file](<https://cryptopals.com/static/challenge-data/4.txt>) has been encrypted by single-character XOR.
+
+Objective
+- Find it
+- (Your code from #3 should help.)
+
+
+Download the file
+```bash
+$ wget https://cryptopals.com/static/challenge-data/4.txt
+$ cat 4.txt
+```
+<img width="1573" height="498" alt="2026-03-08-04:14:05" src="https://github.com/user-attachments/assets/1d301738-1830-4a82-b330-ac4fee5a0509" />
+
+
+### My solution
+```py
+
+```
+
+
+
+
+
+
