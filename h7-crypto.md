@@ -386,7 +386,7 @@ We'll iterate over this at later time when we want to enhance our python skills.
 **Part1 - `decodeXor()`**
 - We naturally start by converting hex to bytes
 - We "quickly" do a little brute force by going through the whole ASCII table char by char, XOR'ng as we go
-- Before adding the result to our `rList`, we do a quick sanity check and remove all entries that don't confine to `isprintable() and isascii()`
+- Before appending the result to our `rList`, we do a quick sanity check and remove all entries that don't confine to `isprintable() and isascii()`
   - This way we already _cut down_ on all the possibilities
 - If the string passes the check we create a dictionary like so: 
   - **Key** = _Character that was used to XOR with_
