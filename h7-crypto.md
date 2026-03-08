@@ -482,20 +482,27 @@ $ cat 4.txt
 
 I continued building on the previous code, and got a bunch of empty lists mixed with the results, so I filter them out using `len(returnList) != 0`.
 
-I then `extend` my rank list with the return values.
+I then `extend` my rank list with the return values. If we simply `append`, we'll be left with a list of lists of tuples, and that's wayyy to complicated 😂. So we rather extend it, meaning we continue in the good old fashioned list of tuples!
 
 But for some reason i'm getting nothing but garbage in return:
 
 <img width="1180" height="667" alt="2026-03-08-06:05:37" src="https://github.com/user-attachments/assets/a861070b-a271-482e-a728-348ae7780046" />
 
 
-At first I thought it had something to do with my scoring logic (which deffo is not perfect and has to be improved), but I tinkered with the code for an hour, removing and adding stuff one by one to get different results. And wouldn't you know the problem was actually that my initial filtering was too strict. Because our target string had a **non printable character** the gate keeper wasn't letting it through. 
+At first I thought it had something to do with my scoring logic (which deffo is not perfect and has to be improved), but I tinkered with the code for an hour, removing and adding stuff one by one getting different results. 
+
+And wouldn't you know the problem was actually the initial filtering being too aggressive. Because our target string had a **non printable character** the gate keeper wasn't letting it through. 
+
 
 ### Solution
-I simply removed `res.isprintable()` from my first function and in my main function printed the first 5 suspects. 
+I simply removed `res.isprintable()` from my first function and in my main function printed the **first 5** suspects. 
 
 I also did some small changes
-- Mainly added the reading from a file into its own function and renamed the first value in the return tuple
+- Mainly
+  - Added the file handling logic into its own function
+  - Renamed the first value in the return tuple
+  - Added a space " " to my `most common` char counter object
+  - I also wanted to be a bit fancy so I added 
 ```py
 
 from collections import Counter
@@ -596,5 +603,79 @@ a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f
 ```
 
 ### My solution
+```py
+
+def repeatKeyEncrypt(s):
+
+    bs = s.encode('utf-8')
+    key = "ICE"
+    enc = []
+
+    for i, c in enumerate(bs):
+        enc.append(chr(c ^ ord(key[i % 3])))
+
+    return "".join(enc).encode('utf-8').hex()
+
+
+if __name__ == "__main__":
+
+    s = "Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal"
+    target = "0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f"
+    res = repeatKeyEncrypt(s)
+
+    print("\nEncrypting the string now...\n")
+
+    print("Your encrypted string:")
+    print("----------------------")
+    print(f"{res}\n")
+    print(f"Encrypted string is matching target = {res == target}\n")
+
+```
+
+<img width="1864" height="340" alt="2026-03-08-21:18:30" src="https://github.com/user-attachments/assets/a258a501-f0da-4908-8bd2-8470e5ec4cac" />
+
+
+### Explanation
+- This time we're working with a string, so we convert it to bytes using `encode('utf-8)`
+- We initialise `the key` and the `encrypted characters list`
+- All that's left to do is a quick and simple for loop `XOR`'ing the string
+- We use the **modulo operator** for the index so that it wraps after 3, as the key length is only 3 characters
+- Once the correct index is in play, we get the ASCII representation `ord()` of the key character and do the actual XOR
+- The result is an integer, which we turn back to a character using `chr()`
+- Lastly we append it to our list
+- Looks like this:
+```py
+  enc.append(chr(c ^ ord(key[i % 3])))
+```
+
+
+**The return value:**
+- `"".join(enc)` creates a **string** out of our **character list**
+- `encode('utf-8)` creates a **byte object** out of the **string** using `utf-8` encoding
+- And lastly:
+- `hex()` gives the **hexadecimal representation** of the **bytes object**
+
+
+**BTW:**
+
+I realised that because I didn't add the linebreak at first, the target wasn't matching our string. The thought just popped to my head randomly after I got my first result. I tried it _with_ and _without_ the line break, and surprisingly caught the small difference with my naked eye. So I added a small check at the end just to be sure!
+
+```py
+  print(f"Encrypted string is matching target = {res == target}\n")
+```
+
+```
+>> Burning 'em, if you ain't quick and nimble I go crazy when I hear a cymbal
+
+Becomes:
+>> Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal
+
+Small but crucial difference!
+```
+
+Still surprised that I caught it 😂
+
+<img width="1861" height="324" alt="2026-03-08-21:36:32" src="https://github.com/user-attachments/assets/74639c71-87db-46dc-b920-1ebf4d0beb3b" />
+
 
 
